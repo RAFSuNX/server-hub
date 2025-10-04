@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Network - Access Restricted</title>
+    <title>SECURITY BREACH DETECTED - ACCESS DENIED</title>
     <style>
         * {
             margin: 0;
@@ -20,60 +20,106 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            cursor: none;
         }
 
         .container {
             text-align: center;
             padding: 2rem;
-            border: 2px solid #ff4444;
+            border: 3px solid #ff4444;
             border-radius: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            max-width: 600px;
-            animation: pulse 2s infinite;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(15px);
+            max-width: 700px;
+            animation: pulse 1s infinite, shake 0.5s infinite;
+            position: relative;
         }
 
         @keyframes pulse {
-            0%, 100% { border-color: #ff4444; }
-            50% { border-color: #ff6666; }
+            0%, 100% { 
+                border-color: #ff4444; 
+                box-shadow: 0 0 20px #ff4444;
+            }
+            50% { 
+                border-color: #ff0000; 
+                box-shadow: 0 0 40px #ff0000;
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
         }
 
         .warning-icon {
-            font-size: 4rem;
+            font-size: 5rem;
             margin-bottom: 1rem;
-            animation: blink 1.5s infinite;
+            animation: blink 0.5s infinite;
         }
 
         @keyframes blink {
             0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0.3; }
+            51%, 100% { opacity: 0; }
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin-bottom: 1rem;
-            text-shadow: 0 0 10px #ff4444;
+            text-shadow: 0 0 20px #ff4444;
+            animation: glitch 0.3s infinite;
         }
 
         .subtitle {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             margin-bottom: 2rem;
-            color: #ffaa00;
+            color: #ff0000;
+            font-weight: bold;
         }
 
-        .message {
-            font-size: 1rem;
+        .threat-message {
+            font-size: 1.2rem;
             line-height: 1.6;
             margin-bottom: 2rem;
-            color: #cccccc;
+            color: #ff6666;
+            animation: pulse 2s infinite;
         }
 
-        .footer {
-            font-size: 0.9rem;
-            color: #888888;
-            margin-top: 2rem;
-            border-top: 1px solid #333;
-            padding-top: 1rem;
+        .ip-info {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff0000;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            font-size: 1.1rem;
+        }
+
+        .countdown {
+            font-size: 2rem;
+            color: #ffff00;
+            margin: 1rem 0;
+            animation: blink 1s infinite;
+        }
+
+        .chaos-text {
+            position: absolute;
+            color: #ff0000;
+            font-size: 1rem;
+            animation: float 2s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
         .matrix-bg {
@@ -83,7 +129,24 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.1;
+            opacity: 0.2;
+        }
+
+        .glitch-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 98%, #ff0000 100%);
+            z-index: 1000;
+            pointer-events: none;
+            animation: scan 2s infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100vw); }
         }
 
         @media (max-width: 768px) {
@@ -95,39 +158,68 @@
             h1 {
                 font-size: 2rem;
             }
-            
-            .subtitle {
-                font-size: 1rem;
-            }
         }
     </style>
 </head>
 <body>
     <div class="matrix-bg"></div>
+    <div class="glitch-overlay"></div>
     
     <div class="container">
-        <div class="warning-icon">⚠️</div>
-        <h1>ACCESS RESTRICTED</h1>
-        <div class="subtitle">PRIVATE NETWORK INFRASTRUCTURE</div>
+        <div class="warning-icon">🚨</div>
+        <h1>SECURITY BREACH DETECTED</h1>
+        <div class="subtitle">UNAUTHORIZED ACCESS LOGGED</div>
         
-        <div class="message">
-            <p><strong>WARNING:</strong> You have accessed a private network infrastructure.</p>
-            <br>
-            <p>This domain and its associated services are privately owned and operated. Unauthorized access, exploration, or any attempts to breach security measures are strictly prohibited and may be subject to legal action.</p>
-            <br>
-            <p>All activities on this network are monitored and logged.</p>
-            <br>
-            <p><strong>If you are not an authorized user, please leave immediately.</strong></p>
+        <div class="ip-info">
+            <p><strong>⚠️ YOUR CONNECTION HAS BEEN LOGGED ⚠️</strong></p>
+            <p>IP ADDRESS: <span id="user-ip">Detecting...</span></p>
+            <p>TIMESTAMP: <span id="timestamp"></span></p>
+            <p>GEOLOCATION: <span id="location">Tracing...</span></p>
         </div>
         
-        <div class="footer">
-            <p>🔒 ROGx Network Infrastructure</p>
-            <p>Protected by advanced security systems</p>
+        <div class="threat-message">
+            <p><strong>WARNING:</strong> You have illegally accessed a classified network infrastructure.</p>
+            <br>
+            <p>Your IP address, browser fingerprint, and connection details have been logged and reported to our cybersecurity team. Continued presence will trigger automatic defensive measures.</p>
+            <br>
+            <p><strong style="color: #ffff00;">LEAVE NOW OR FACE CONSEQUENCES</strong></p>
+        </div>
+        
+        <div class="countdown">
+            SYSTEM DEFENSE ACTIVATION IN: <span id="countdown">15</span>
         </div>
     </div>
 
     <script>
-        // Simple matrix rain effect
+        let chaosLevel = 0;
+        let countdownTimer = 15;
+        let defenseActivated = false;
+
+        // Display timestamp
+        document.getElementById('timestamp').textContent = new Date().toISOString();
+
+        // Detect and display IP (using a service)
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('user-ip').textContent = data.ip;
+                // Get location info
+                fetch('https://ipapi.co/' + data.ip + '/json/')
+                    .then(response => response.json())
+                    .then(locationData => {
+                        document.getElementById('location').textContent = 
+                            (locationData.city || 'Unknown') + ', ' + (locationData.country_name || 'Unknown');
+                    })
+                    .catch(() => {
+                        document.getElementById('location').textContent = 'Location masked';
+                    });
+            })
+            .catch(() => {
+                document.getElementById('user-ip').textContent = 'IP masked';
+                document.getElementById('location').textContent = 'Location masked';
+            });
+
+        // Enhanced matrix rain effect
         function createMatrixRain() {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -137,17 +229,17 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
 
-            const chars = '01';
+            const chars = '01!@#$%^&*()BREACH_DETECTED_UNAUTHORIZED_ACCESS_LOGGED';
             const charArray = chars.split('');
-            const fontSize = 14;
+            const fontSize = 12;
             const columns = canvas.width / fontSize;
             const drops = Array(Math.floor(columns)).fill(1);
 
             function draw() {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                ctx.fillStyle = '#0f0';
+                ctx.fillStyle = chaosLevel > 3 ? '#ff0000' : '#00ff00';
                 ctx.font = fontSize + 'px monospace';
 
                 for (let i = 0; i < drops.length; i++) {
@@ -161,10 +253,112 @@
                 }
             }
 
-            setInterval(draw, 100);
+            setInterval(draw, chaosLevel > 2 ? 50 : 100);
         }
 
+        // Countdown timer
+        function startCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            const interval = setInterval(() => {
+                countdownTimer--;
+                countdownElement.textContent = countdownTimer;
+                
+                if (countdownTimer <= 10) {
+                    chaosLevel = Math.min(chaosLevel + 1, 5);
+                    escalateThreats();
+                }
+                
+                if (countdownTimer <= 0) {
+                    clearInterval(interval);
+                    activateDefenses();
+                }
+            }, 1000);
+        }
+
+        // Create floating chaos text
+        function createChaosText() {
+            const messages = [
+                'ACCESS DENIED', 'SECURITY BREACH', 'LOGGING IP', 'TRACING LOCATION',
+                'UNAUTHORIZED', 'WARNING WARNING', 'LEAVE NOW', 'DEFENSE ACTIVE'
+            ];
+            
+            const chaosText = document.createElement('div');
+            chaosText.className = 'chaos-text';
+            chaosText.textContent = messages[Math.floor(Math.random() * messages.length)];
+            chaosText.style.left = Math.random() * window.innerWidth + 'px';
+            chaosText.style.top = Math.random() * window.innerHeight + 'px';
+            
+            document.body.appendChild(chaosText);
+            
+            setTimeout(() => {
+                document.body.removeChild(chaosText);
+            }, 2000);
+        }
+
+        // Escalate threats based on chaos level
+        function escalateThreats() {
+            if (chaosLevel >= 1) {
+                setInterval(createChaosText, 500);
+            }
+            
+            if (chaosLevel >= 2) {
+                document.body.style.filter = 'invert(' + (chaosLevel * 10) + '%)';
+            }
+            
+            if (chaosLevel >= 3) {
+                // Screen flashing
+                setInterval(() => {
+                    document.body.style.background = Math.random() > 0.5 ? '#ff0000' : '#000000';
+                }, 200);
+            }
+            
+            if (chaosLevel >= 4) {
+                // Intense screen shaking
+                document.body.style.animation = 'shake 0.1s infinite';
+            }
+        }
+
+        // Activate defensive measures
+        function activateDefenses() {
+            if (defenseActivated) return;
+            defenseActivated = true;
+            
+            // Create multiple popups
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const popup = window.open('', '_blank', 'width=400,height=300');
+                    if (popup) {
+                        popup.document.write('<html><head><title>SECURITY BREACH</title></head><body style="background: red; color: white; text-align: center; font-family: monospace;"><h1>ACCESS DENIED</h1><p>Your activities have been logged</p><script>setInterval(() => { document.title = Math.random().toString(); }, 100);</script></body></html>');
+                    }
+                }, i * 200);
+            }
+            
+            // Rapid page reloading effect
+            let reloadCount = 0;
+            const reloadInterval = setInterval(() => {
+                if (reloadCount < 10) {
+                    history.pushState({}, '', '?breach=' + Math.random());
+                    reloadCount++;
+                } else {
+                    // Final dramatic effect
+                    document.body.innerHTML = '<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, #ff0000, #000000); display: flex; justify-content: center; align-items: center; font-family: monospace; font-size: 3rem; color: white; animation: pulse 0.1s infinite;"><div style="text-align: center;"><h1>SYSTEM COMPROMISED</h1><p style="font-size: 1rem;">Connection terminated by security protocols</p></div></div>';
+                    clearInterval(reloadInterval);
+                }
+            }, 300);
+        }
+
+        // Start all effects
         createMatrixRain();
+        startCountdown();
+        
+        // Prevent right-click and text selection
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+        
+        // Log attempted exit
+        window.addEventListener('beforeunload', () => {
+            fetch('/log-exit', { method: 'POST', body: 'User attempted to leave' }).catch(() => {});
+        });
     </script>
 </body>
 </html>
