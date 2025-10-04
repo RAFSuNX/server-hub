@@ -1,0 +1,15 @@
+services:
+  warning-site:
+    image: nginx:alpine
+    container_name: warning-site
+    restart: unless-stopped
+    volumes:
+      - ${HOME}/a_dockerdata/warning-site:/usr/share/nginx/html:ro
+    networks:
+      - public
+    # ports:
+    #   - "80:80"
+
+networks:
+  public:
+    external: true
