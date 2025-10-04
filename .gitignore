@@ -1,0 +1,21 @@
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+
+# Docker data directories
+**/data/
+**/volumes/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
