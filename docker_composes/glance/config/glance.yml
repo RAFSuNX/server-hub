@@ -1,0 +1,67 @@
+theme:
+  background-color: 240 13 14 # Deep red background (custom HSL)
+  primary-color: 51 33 68 # Rich violet for accents  
+  negative-color: 358 100 68 # Warning/danger hue (reddish tone)
+  contrast-multiplier: 1.2 # Slightly enhanced contrast for visibility
+
+pages:
+  - name: SAPPHIRE
+    hide-desktop-navigation: true # Single page mode; clean UI
+    columns:
+      - size: small
+        widgets:
+          - type: weather
+            location: Dhaka, Bangladesh
+            units: metric
+            hour-format: 12h
+            # hide-location: true
+          - type: calendar
+            first-day-of-week: friday
+          - type: markets
+            markets:
+              - symbol: GC=F
+                name: Gold Future
+                chart-link: https://www.tradingview.com/chart/?symbol=OANDA:XAUUSD
+              - symbol: GBPJPY=X
+                name: GBP / JPY
+                chart-link: https://www.tradingview.com/chart/?symbol=OANDA:GBPJPY
+              - symbol: EURJPY=X
+                name: EUR / JPY
+                chart-link: https://www.tradingview.com/chart/?symbol=OANDA:EURJPY
+      - size: full
+        widgets:
+          - type: clock
+            hour-format: 12h
+            timezones:
+              - timezone: Asia/Dhaka
+                label: Dhaka
+          - type: search
+            search-engine: google
+          - type: server-stats
+            servers:
+              - type: local
+                name: sapphire
+      - size: small
+        widgets:
+          - type: monitor
+            title: Uptime
+            cache: 1m
+            sites:
+              - title: Portainer
+                url: https://pt.rogx.cc
+              - title: N8N
+                url: https://n8n.rogx.cc
+              - title: AriaNg
+                url: https://ariang.rogx.cc
+              - title: FileBrowser
+                url: https://fx.rogx.cc
+              - title: Firefox
+                url: https://firefox.rogx.cc
+          - type: docker-containers
+            hide-by-default: false
+
+branding:
+  custom-footer: |
+    <p>Powered by <a href="https://github.com/rafsunx/">ORACLE | RAFSuNX</a></p>
+  # logo-url: /assets/logo.png
+  # favicon-url: /assets/logo.png

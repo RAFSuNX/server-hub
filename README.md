@@ -31,23 +31,7 @@ server-hub/
 
 ## Current Services
 
-### Portainer
-- **Purpose**: Docker container management UI
-- **File**: `docker_composes/portainer/compose.yaml`
-- **Access**: Via Cloudflare tunnel (configured in Cloudflare dashboard)
-- **Environment Variables Used**: `CLOUDFLARE_TOKEN`, `HOME`, `PORTAINER_DOMAIN`
-
-### N8N
-- **Purpose**: Workflow automation platform
-- **File**: `docker_composes/n8n/compose.yaml`
-- **Access**: Via Cloudflare tunnel (configured in Cloudflare dashboard)
-- **Environment Variables Used**: `N8N_HOST`, `N8N_PORT`, `N8N_PROTOCOL`, `N8N_WEBHOOK_URL`, `TZ`, `HOME`
-
-### AriaNg
-- **Purpose**: Web UI for Aria2 download manager
-- **File**: `docker_composes/ariang/compose.yaml`
-- **Access**: Via Cloudflare tunnel (configured in Cloudflare dashboard)
-- **Environment Variables Used**: `UPGID`, `UPUID`, `ARIANG_USER`, `ARIANG_PASSWORD`, `ARIANG_DOMAIN`, `HOME`
+Each service is deployed via Cloudflare tunnel and configured in the Cloudflare dashboard. Service folders contain their respective `compose.yaml` files.
 
 ## Usage
 
@@ -66,21 +50,14 @@ When adding a new service:
 
 ## Environment Variables
 
-Current environment variables in `.env`:
+The `.env` file is organized into sections:
 
-- `HOME`: Home directory path for volume mounts
-- `CLOUDFLARE_TOKEN`: Cloudflare tunnel authentication token
-- `N8N_HOST`: N8N host configuration
-- `N8N_PORT`: N8N port configuration
-- `N8N_PROTOCOL`: N8N protocol (http/https)
-- `N8N_WEBHOOK_URL`: N8N webhook URL
-- `TZ`: System timezone setting
-- `PORTAINER_DOMAIN`: Portainer domain configuration
-- `UPGID`: User group ID for AriaNg
-- `UPUID`: User ID for AriaNg
-- `ARIANG_USER`: AriaNg authentication username
-- `ARIANG_PASSWORD`: AriaNg authentication password
-- `ARIANG_DOMAIN`: AriaNg domain configuration
+- **Global Configuration**: System-wide settings (HOME, TZ, user IDs)
+- **Cloudflare Tunnel**: Authentication token for tunnel access
+- **Service Domains**: Domain configurations for each service
+- **Service Configurations**: Service-specific settings and credentials
+
+All environment variables are centralized in the root `.env` file and referenced in compose files using `${VARIABLE_NAME}` syntax.
 
 ## Security
 

@@ -1,0 +1,17 @@
+services:
+  glance:
+    image: glanceapp/glance:latest
+    hostname: glance
+    container_name: glance
+    restart: unless-stopped
+    volumes:
+      - ${HOME}/a_dockerdata/glance/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - public
+    # ports:
+    #   - "8080:8080"
+
+networks:
+  public:
+    external: true
