@@ -5,7 +5,7 @@ services:
     container_name: glance
     restart: unless-stopped
     volumes:
-      - ${HOME}/a_dockerdata/glance/config:/app/config
+      - ${HOME}/${GLANCE_C_F}:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - public
