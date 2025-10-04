@@ -4,7 +4,7 @@ services:
     container_name: warning-site
     restart: unless-stopped
     volumes:
-      - ${HOME}/a_dockerdata/warning-site:/usr/share/nginx/html:ro
+      - ${HOME}/${WARNING_SITE_F}:/usr/share/nginx/html:ro
     networks:
       - public
     # ports:
