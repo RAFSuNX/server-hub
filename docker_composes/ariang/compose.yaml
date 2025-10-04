@@ -1,0 +1,30 @@
+services:
+  ariang:
+    image: wahyd4/aria2-ui:6.0.1
+    hostname: ariang
+    container_name: ariang
+    restart: unless-stopped
+    environment:
+      - PGID=${UPGID}
+      - PUID=${UPUID}
+      - ENABLE_AUTH=true
+      - ARIA2_EXTERNAL_PORT=443
+      - ARIA2_SSL=false
+      - ENABLE_FILEBROWSER=false
+      - ENABLE_RCLONE=false
+      - CADDY_LOG_LEVEL=ERROR
+      - RPC_SECRET=${ARIANG_PASSWORD}
+      - ARIA2_USER=${ARIANG_USER}
+      - ARIA2_PWD=${ARIANG_PASSWORD}
+    volumes:
+      - ${HOME}/Downloads:/data
+    networks:
+      - public
+    # ports:
+    #   - "80:80"
+    #   - "443:443"
+    #   - "6881:6881"
+
+networks:
+  public:
+    external: true

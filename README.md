@@ -43,6 +43,12 @@ server-hub/
 - **Access**: Via Cloudflare tunnel (configured in Cloudflare dashboard)
 - **Environment Variables Used**: `N8N_HOST`, `N8N_PORT`, `N8N_PROTOCOL`, `N8N_WEBHOOK_URL`, `TZ`, `HOME`
 
+### AriaNg
+- **Purpose**: Web UI for Aria2 download manager
+- **File**: `docker_composes/ariang/compose.yaml`
+- **Access**: Via Cloudflare tunnel (configured in Cloudflare dashboard)
+- **Environment Variables Used**: `UPGID`, `UPUID`, `ARIANG_USER`, `ARIANG_PASSWORD`, `ARIANG_DOMAIN`, `HOME`
+
 ## Usage
 
 1. Copy `.env.example` to `.env` and configure your environment variables
@@ -70,6 +76,11 @@ Current environment variables in `.env`:
 - `N8N_WEBHOOK_URL`: N8N webhook URL
 - `TZ`: System timezone setting
 - `PORTAINER_DOMAIN`: Portainer domain configuration
+- `UPGID`: User group ID for AriaNg
+- `UPUID`: User ID for AriaNg
+- `ARIANG_USER`: AriaNg authentication username
+- `ARIANG_PASSWORD`: AriaNg authentication password
+- `ARIANG_DOMAIN`: AriaNg domain configuration
 
 ## Security
 
