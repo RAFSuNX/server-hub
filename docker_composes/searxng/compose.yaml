@@ -19,7 +19,8 @@ services:
         max-file: "1"
 
 networks:
-  searxng:
+  public:
+    external: true
 
 volumes:
   searxng-data:
