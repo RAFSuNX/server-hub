@@ -153,9 +153,9 @@ install_base() {
   # Define packages based on OS family
   local packages=()
   if [[ "$OS_FAMILY" == "debian" ]]; then
-    packages=("sudo" "curl" "wget" "nano" "openssh-server" "passwd")
+    packages=("sudo" "curl" "wget" "nano" "openssh-server" "passwd" "net-tools" "procps")
   elif [[ "$OS_FAMILY" == "alpine" ]]; then
-    packages=("sudo" "curl" "wget" "nano" "openssh" "openssh-server" "shadow")
+    packages=("sudo" "curl" "wget" "nano" "openssh" "openssh-server" "shadow" "net-tools" "procps")
   fi
 
   local to_install=()
@@ -508,29 +508,62 @@ EOF
     done
   fi
 
-  # Enable SSH service if available
+  # Force enable and start SSH service
   verbose_log "Enabling and starting SSH service..."
   local service_manager
   service_manager="$(get_service_manager)"
   
   local ssh_service_enabled=false
   if [[ "$service_manager" == "systemd" ]]; then
-    # Try different SSH service names in systemd
+    # Force reinstall openssh-server if needed
+    if ! systemctl list-unit-files | grep -q ssh; then
+      log "SSH service not found, forcing openssh-server reinstallation..."
+      if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        apt-get install --reinstall -y openssh-server
+      fi
+    fi
+    
+    # Try different SSH service names in systemd with aggressive enabling
     for service_name in ssh sshd openssh; do
       if systemctl list-unit-files "${service_name}.service" >/dev/null 2>&1; then
         verbose_log "Found SSH service: ${service_name}.service"
-        if enable_service "$service_name"; then
+        # Force enable and start
+        systemctl unmask "$service_name" 2>/dev/null || true
+        systemctl enable "$service_name" 2>/dev/null || true
+        systemctl start "$service_name" 2>/dev/null || true
+        systemctl restart "$service_name" 2>/dev/null || true
+        
+        # Verify it's running
+        if systemctl is-active --quiet "$service_name" 2>/dev/null; then
+          log "SSH service '$service_name' is now active and running"
           ssh_service_enabled=true
           break
         fi
       fi
     done
+    
+    # If still not working, try manual daemon start
+    if [[ "$ssh_service_enabled" == "false" ]] && command -v sshd >/dev/null 2>&1; then
+      log "Attempting manual SSH daemon start..."
+      /usr/sbin/sshd -D &
+      sleep 2
+      if pgrep -x sshd >/dev/null; then
+        log "SSH daemon started manually"
+        ssh_service_enabled=true
+      fi
+    fi
+    
   elif [[ "$service_manager" == "openrc" ]]; then
     # Try different SSH service names in OpenRC
     for service_name in ssh sshd openssh; do
       if rc-service --exists "$service_name" 2>/dev/null; then
         verbose_log "Found SSH service: $service_name"
-        if enable_service "$service_name"; then
+        rc-update add "$service_name" default 2>/dev/null || true
+        rc-service "$service_name" start 2>/dev/null || true
+        rc-service "$service_name" restart 2>/dev/null || true
+        
+        if rc-service "$service_name" status 2>/dev/null | grep -q "started"; then
+          log "SSH service '$service_name' is now running"
           ssh_service_enabled=true
           break
         fi
@@ -538,8 +571,29 @@ EOF
     done
   fi
   
-  if [[ "$ssh_service_enabled" == "false" ]]; then
-    log "Warning: SSH service not found or could not be enabled. SSH may need manual configuration."
+  # Final verification
+  if [[ "$ssh_service_enabled" == "true" ]]; then
+    # Test if SSH port is listening
+    sleep 2
+    if command -v netstat >/dev/null 2>&1; then
+      if netstat -tlnp 2>/dev/null | grep -q ":${SSH_PORT}\s"; then
+        log "SSH is listening on port $SSH_PORT"
+      else
+        log "Warning: SSH service started but not listening on port $SSH_PORT"
+      fi
+    elif command -v ss >/dev/null 2>&1; then
+      if ss -tlnp 2>/dev/null | grep -q ":${SSH_PORT}\s"; then
+        log "SSH is listening on port $SSH_PORT"
+      else
+        log "Warning: SSH service started but not listening on port $SSH_PORT"
+      fi
+    fi
+  else
+    error_log "Failed to start SSH service. Manual intervention required."
+    log "To manually start SSH:"
+    log "  systemctl enable ssh && systemctl start ssh"
+    log "  OR: systemctl enable sshd && systemctl start sshd"
+    log "  OR: /usr/sbin/sshd"
   fi
 }
 
