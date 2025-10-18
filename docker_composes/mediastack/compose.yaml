@@ -32,7 +32,7 @@ services:
       - HTTPPROXY=on
       - SHADOWSOCKS=on
     volumes:
-      - ${HOME}/a_dockerdata/mediastack/gluetun:/gluetun
+      - ${HOME}/dockerc/mediastack/gluetun:/gluetun
     networks:
       - public
     healthcheck:
@@ -48,7 +48,7 @@ services:
 #    hostname: prometheus
 #    restart: unless-stopped
 #    volumes:
-#      - ${HOME}/a_dockerdata/mediastack/prometheus:/prometheus
+#      - ${HOME}/dockerc/mediastack/prometheus:/prometheus
 #    environment:
 #      - TZ=${TZ}
 #    networks:
@@ -62,7 +62,7 @@ services:
 #    hostname: grafana
 #    restart: unless-stopped
 #    volumes:
-#      - ${HOME}/a_dockerdata/mediastack/grafana:/var/lib/grafana
+#      - ${HOME}/dockerc/mediastack/grafana:/var/lib/grafana
 #    environment:
 #      - TZ=${TZ}
 #    networks:
@@ -80,7 +80,7 @@ services:
 #    user: ${PUID:?err}:${PGID:?err}
 #    volumes:
 #      - ${HOME}/${FOLDER_FOR_MEDIA:?err}:/data
-#      - ${HOME}/a_dockerdata/mediastack/bazarr:/config
+#      - ${HOME}/dockerc/mediastack/bazarr:/config
 #    environment:
 #      - TZ=${TZ}
 #    networks:
@@ -96,7 +96,7 @@ services:
 #    user: ${PUID:?err}:${PGID:?err}
 #    volumes:
 #      - ${HOME}/${FOLDER_FOR_MEDIA:?err}:/data
-#      - ${HOME}/a_dockerdata/mediastack/lidarr:/config
+#      - ${HOME}/dockerc/mediastack/lidarr:/config
 #    environment:
 #      - TZ=${TZ}
 #    networks:
@@ -116,7 +116,7 @@ services:
         restart: true
     volumes:
       - ${HOME}/${FOLDER_FOR_MEDIA:?err}:/data
-      - ${HOME}/a_dockerdata/mediastack/qbittorrent:/config
+      - ${HOME}/dockerc/mediastack/qbittorrent:/config
     environment:
       - TZ=${TZ}
       - WEBUI_PORT=${WEBUI_PORT_QBITTORRENT:?err}
@@ -142,7 +142,7 @@ services:
     user: ${PUID:?err}:${PGID:?err}
     volumes:
       - ${HOME}/${FOLDER_FOR_MEDIA:?err}:/data
-      - ${HOME}/a_dockerdata/mediastack/radarr:/config
+      - ${HOME}/dockerc/mediastack/radarr:/config
     environment:
       - TZ=${TZ}
     networks:
@@ -158,7 +158,7 @@ services:
     user: ${PUID:?err}:${PGID:?err}
     volumes:
       - ${HOME}/${FOLDER_FOR_MEDIA:?err}:/data
-      - ${HOME}/a_dockerdata/mediastack/sonarr:/config
+      - ${HOME}/dockerc/mediastack/sonarr:/config
     environment:
       - TZ=${TZ}
     networks:
@@ -174,7 +174,7 @@ services:
 #    user: ${PUID:?err}:${PGID:?err}
 #    volumes:
 #      - ${HOME}/${FOLDER_FOR_MEDIA:?err}:/data
-#      - ${HOME}/a_dockerdata/mediastack/readarr:/config
+#      - ${HOME}/dockerc/mediastack/readarr:/config
 #    environment:
 #      - TZ=${TZ}
 #    networks:
@@ -189,7 +189,7 @@ services:
     restart: unless-stopped
     user: ${PUID:?err}:${PGID:?err}
     volumes:
-      - ${HOME}/a_dockerdata/mediastack/prowlarr:/config
+      - ${HOME}/dockerc/mediastack/prowlarr:/config
     environment:
       - TZ=${TZ}
     networks:

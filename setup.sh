@@ -124,7 +124,7 @@ update_package_cache() {
     # Only update if we haven't updated recently (within 1 hour)
     local apt_updated_file="/tmp/.apt-updated-$(date +%Y%m%d%H)"
     if [[ ! -f "$apt_updated_file" ]]; then
-      apt-get update -y
+      DEBIAN_FRONTEND=noninteractive apt-get update -y
       touch "$apt_updated_file"
       verbose_log "APT package cache updated"
     else
@@ -139,7 +139,11 @@ update_package_cache() {
 install_packages() {
   local packages=("$@")
   if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
-    apt-get install -y "${packages[@]}"
+    # Force non-interactive mode with explicit environment and options
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
+      -o Dpkg::Options::="--force-confdef" \
+      -o Dpkg::Options::="--force-confold" \
+      "${packages[@]}"
   elif [[ "$PACKAGE_MANAGER" == "apk" ]]; then
     apk add "${packages[@]}"
   fi

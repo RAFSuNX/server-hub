@@ -12,7 +12,7 @@ services:
       - WEB_AUDIO=1
       - LANG=en_US.UTF-8
     volumes:
-      - ${HOME}/a_dockerdata/firefox:/config
+      - ${HOME}/dockerc/firefox:/config
     networks:
       - public
     # ports:

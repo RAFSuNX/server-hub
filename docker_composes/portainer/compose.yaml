@@ -18,7 +18,7 @@ services:
     #   - "9443:9443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${HOME}/a_dockerdata/portainer/data:/data
+      - ${HOME}/dockerc/portainer/data:/data
     networks:
       - public
 

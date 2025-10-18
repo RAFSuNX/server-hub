@@ -9,7 +9,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ${HOME}:/srv
-      - ${HOME}/a_dockerdata/filebrowser/database.db:/database.db
+      - ${HOME}/dockerc/filebrowser/database.db:/database.db
     networks:
       - public
     # ports:

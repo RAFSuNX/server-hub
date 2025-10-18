@@ -12,7 +12,7 @@ services:
     # ports:
     #   - "5678:5678"
     volumes:
-      - ${HOME}/a_dockerdata/n8n/data:/home/node/.n8n
+      - ${HOME}/dockerc/n8n/data:/home/node/.n8n
     networks:
       - public
 
