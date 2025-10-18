@@ -169,8 +169,25 @@ install_base() {
   done
 
   if [[ ${#to_install[@]} -gt 0 ]]; then
-    verbose_log "Installing packages: ${to_install[*]}"
-    install_packages "${to_install[@]}"
+    log "Installing missing packages: ${to_install[*]}"
+    if install_packages "${to_install[@]}"; then
+      log "Successfully installed packages: ${to_install[*]}"
+    else
+      error_log "Failed to install some packages: ${to_install[*]}"
+      # Continue anyway, script might still work partially
+    fi
+    
+    # Verify critical packages were installed
+    local failed_packages=()
+    for package in "${to_install[@]}"; do
+      if ! check_package_installed "$package"; then
+        failed_packages+=("$package")
+      fi
+    done
+    
+    if [[ ${#failed_packages[@]} -gt 0 ]]; then
+      log "Warning: These packages failed to install: ${failed_packages[*]}"
+    fi
   else
     log "All base packages already installed"
   fi
