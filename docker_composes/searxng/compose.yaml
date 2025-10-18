@@ -1,7 +1,8 @@
 services:
   searxng:
-    container_name: searxng
     image: docker.io/searxng/searxng:latest
+    hostname: searxng
+    container_name: searxng
     restart: unless-stopped
     networks:
       - public

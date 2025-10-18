@@ -1,6 +1,7 @@
 services:
   warning-site:
     image: nginx:alpine
+    hostname: warning-site
     container_name: warning-site
     restart: unless-stopped
     volumes:
