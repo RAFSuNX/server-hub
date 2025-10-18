@@ -519,7 +519,8 @@ EOF
     if ! systemctl list-unit-files | grep -q ssh; then
       log "SSH service not found, forcing openssh-server reinstallation..."
       if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
-        apt-get install --reinstall -y openssh-server
+        # Use non-interactive mode and force overwrite config files
+        DEBIAN_FRONTEND=noninteractive apt-get install --reinstall -y -o Dpkg::Options::="--force-confnew" openssh-server
       fi
     fi
     
