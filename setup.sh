@@ -363,6 +363,49 @@ harden_sshd() {
   log "[6/9] Hardening SSH server for key-only access..."
   local sshd=/etc/ssh/sshd_config
   
+  # Check if SSH config directory exists, create if missing
+  if [[ ! -d /etc/ssh ]]; then
+    verbose_log "Creating SSH config directory..."
+    mkdir -p /etc/ssh
+  fi
+  
+  # Check if SSH config file exists, create basic one if missing
+  if [[ ! -f "$sshd" ]]; then
+    verbose_log "SSH config file missing, creating basic configuration..."
+    cat > "$sshd" <<EOF
+# Basic SSH daemon configuration
+Port 22
+Protocol 2
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+UsePrivilegeSeparation yes
+KeyRegenerationInterval 3600
+ServerKeyBits 1024
+SyslogFacility AUTH
+LogLevel INFO
+LoginGraceTime 120
+PermitRootLogin yes
+StrictModes yes
+RSAAuthentication yes
+PubkeyAuthentication yes
+IgnoreRhosts yes
+RhostsRSAAuthentication no
+HostbasedAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+PasswordAuthentication yes
+X11Forwarding yes
+X11DisplayOffset 10
+PrintMotd no
+PrintLastLog yes
+TCPKeepAlive yes
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server
+UsePAM yes
+EOF
+  fi
+  
   # Backup original config if not already backed up
   if [[ ! -f "${sshd}.bak" ]]; then
     verbose_log "Creating backup of SSH config..."
@@ -370,7 +413,7 @@ harden_sshd() {
   fi
 
   # Ensure Include directive exists
-  if ! grep -Eq '^[#\s]*Include\s+/etc/ssh/sshd_config\.d/\*' "$sshd"; then
+  if [[ -f "$sshd" ]] && ! grep -Eq '^[#\s]*Include\s+/etc/ssh/sshd_config\.d/\*' "$sshd"; then
     verbose_log "Adding Include directive to SSH config..."
     echo -e "\nInclude /etc/ssh/sshd_config.d/*" >> "$sshd"
   fi
@@ -407,23 +450,42 @@ Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.
 MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com
 EOF
 
-  # Configure AllowUsers
-  if grep -Eiq '^[#\s]*AllowUsers\b' "$sshd"; then
-    verbose_log "Updating AllowUsers directive..."
-    sed -i -E "s|^[#\s]*AllowUsers\b.*|AllowUsers ${REQUIRED_USER}|I" "$sshd"
-  else
-    verbose_log "Adding AllowUsers directive..."
-    echo "AllowUsers ${REQUIRED_USER}" >> "$sshd"
+  # Configure AllowUsers in main config file
+  if [[ -f "$sshd" ]]; then
+    if grep -Eiq '^[#\s]*AllowUsers\b' "$sshd"; then
+      verbose_log "Updating AllowUsers directive..."
+      sed -i -E "s|^[#\s]*AllowUsers\b.*|AllowUsers ${REQUIRED_USER}|I" "$sshd"
+    else
+      verbose_log "Adding AllowUsers directive..."
+      echo "AllowUsers ${REQUIRED_USER}" >> "$sshd"
+    fi
   fi
 
+  # Test SSH configuration if sshd command is available
   verbose_log "Testing SSH configuration..."
-  if ! sshd -t; then
-    error_log "SSH configuration test failed"
-    exit 1
+  if command -v sshd >/dev/null 2>&1; then
+    if ! sshd -t; then
+      error_log "SSH configuration test failed"
+      exit 1
+    fi
+  else
+    log "Warning: sshd command not found, skipping configuration test"
   fi
 
-  verbose_log "Enabling and restarting SSH service..."
-  enable_service ssh
+  # Generate SSH host keys if they don't exist
+  verbose_log "Ensuring SSH host keys exist..."
+  if command -v ssh-keygen >/dev/null 2>&1; then
+    for keytype in rsa ecdsa ed25519; do
+      keyfile="/etc/ssh/ssh_host_${keytype}_key"
+      if [[ ! -f "$keyfile" ]]; then
+        verbose_log "Generating SSH host key: $keyfile"
+        ssh-keygen -t "$keytype" -f "$keyfile" -N "" -q 2>/dev/null || true
+      fi
+    done
+  fi
+
+  verbose_log "Enabling and starting SSH service..."
+  enable_service ssh || enable_service sshd
 }
 
 configure_grub() {
