@@ -533,7 +533,7 @@ main() {
   log "Configuration: user=$REQUIRED_USER, verbose=$VERBOSE_LOGGING"
   
   require_root
-  detect_debian
+  detect_os
   install_base
   fix_aarch64_path
   install_docker
