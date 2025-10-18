@@ -598,8 +598,79 @@ EOF
   fi
 }
 
+configure_timezone() {
+  log "[7/9] Setting timezone to Asia/Dhaka..."
+  
+  # Ensure tzdata package is installed
+  if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+    if ! check_package_installed "tzdata"; then
+      verbose_log "Installing tzdata package..."
+      update_package_cache
+      install_packages "tzdata"
+    else
+      verbose_log "tzdata package already installed"
+    fi
+  elif [[ "$PACKAGE_MANAGER" == "apk" ]]; then
+    if ! check_package_installed "tzdata"; then
+      verbose_log "Installing tzdata package..."
+      update_package_cache
+      install_packages "tzdata"
+    else
+      verbose_log "tzdata package already installed"
+    fi
+  fi
+  
+  # Set timezone using timedatectl if available (systemd systems)
+  if command -v timedatectl >/dev/null 2>&1; then
+    verbose_log "Using timedatectl to set timezone..."
+    if timedatectl set-timezone Asia/Dhaka 2>/dev/null; then
+      log "Timezone set to Asia/Dhaka using timedatectl"
+    else
+      log "Warning: timedatectl failed, falling back to manual configuration"
+    fi
+  else
+    verbose_log "timedatectl not available, using manual timezone configuration..."
+  fi
+  
+  # Manual timezone configuration (fallback or for non-systemd systems)
+  local timezone_set=false
+  
+  # Set /etc/timezone
+  if [[ -f /usr/share/zoneinfo/Asia/Dhaka ]]; then
+    verbose_log "Setting /etc/timezone..."
+    echo "Asia/Dhaka" > /etc/timezone
+    
+    verbose_log "Updating /etc/localtime..."
+    rm -f /etc/localtime
+    ln -sf /usr/share/zoneinfo/Asia/Dhaka /etc/localtime
+    
+    timezone_set=true
+  else
+    error_log "Asia/Dhaka timezone data not found in /usr/share/zoneinfo/"
+    return 1
+  fi
+  
+  # Verify timezone setting
+  local current_tz
+  if command -v timedatectl >/dev/null 2>&1; then
+    current_tz=$(timedatectl show --property=Timezone --value 2>/dev/null || echo "unknown")
+  else
+    current_tz=$(date +%Z 2>/dev/null || echo "unknown")
+  fi
+  
+  verbose_log "Current timezone: $current_tz"
+  verbose_log "Current time: $(date)"
+  
+  if [[ "$timezone_set" == "true" ]]; then
+    log "Timezone successfully configured to Asia/Dhaka"
+  else
+    error_log "Failed to set timezone to Asia/Dhaka"
+    return 1
+  fi
+}
+
 configure_grub() {
-  log "[7/9] Configuring GRUB timeout..."
+  log "[8/9] Configuring GRUB timeout..."
   if [[ -f /etc/default/grub ]]; then
     local grub_modified=false
     
@@ -645,7 +716,7 @@ configure_grub() {
 }
 
 final_summary() {
-  log "[8/9] Final checks and summary..."
+  log "[9/10] Final checks and summary..."
   local host_lc; host_lc="$(hostname -s | tr '[:upper:]' '[:lower:]')"
   local setup_duration=$(($(date +%s) - SCRIPT_START_TIME))
   
@@ -669,6 +740,7 @@ final_summary() {
   echo " [OK] SSH hardened to key-only authentication. Root login disabled"
   echo " [OK] SSH access restricted to user '$REQUIRED_USER' only"
   echo " [OK] Host '$host_lc': SSH key configured for authorized access"
+  echo " [OK] Timezone configured to Asia/Dhaka"
   
   if [[ -f /etc/default/grub ]]; then
     echo " [OK] GRUB timeout optimized (${GRUB_TIMEOUT}s, style: $GRUB_TIMEOUT_STYLE)"
@@ -726,6 +798,7 @@ main() {
   install_key
   configure_user_profile
   harden_sshd
+  configure_timezone
   configure_grub
   final_summary
   
