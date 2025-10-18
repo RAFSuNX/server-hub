@@ -218,13 +218,20 @@ enable_service() {
   service_manager="$(get_service_manager)"
   
   if [[ "$service_manager" == "systemd" ]]; then
-    systemctl enable "$service"
-    systemctl start "$service"
+    if systemctl enable "$service" 2>/dev/null && systemctl start "$service" 2>/dev/null; then
+      return 0
+    else
+      return 1
+    fi
   elif [[ "$service_manager" == "openrc" ]]; then
-    rc-update add "$service" default
-    rc-service "$service" start
+    if rc-update add "$service" default 2>/dev/null && rc-service "$service" start 2>/dev/null; then
+      return 0
+    else
+      return 1
+    fi
   else
     log "Warning: Unknown service manager, cannot enable service $service"
+    return 1
   fi
 }
 
@@ -484,8 +491,39 @@ EOF
     done
   fi
 
+  # Enable SSH service if available
   verbose_log "Enabling and starting SSH service..."
-  enable_service ssh || enable_service sshd
+  local service_manager
+  service_manager="$(get_service_manager)"
+  
+  local ssh_service_enabled=false
+  if [[ "$service_manager" == "systemd" ]]; then
+    # Try different SSH service names in systemd
+    for service_name in ssh sshd openssh; do
+      if systemctl list-unit-files "${service_name}.service" >/dev/null 2>&1; then
+        verbose_log "Found SSH service: ${service_name}.service"
+        if enable_service "$service_name"; then
+          ssh_service_enabled=true
+          break
+        fi
+      fi
+    done
+  elif [[ "$service_manager" == "openrc" ]]; then
+    # Try different SSH service names in OpenRC
+    for service_name in ssh sshd openssh; do
+      if rc-service --exists "$service_name" 2>/dev/null; then
+        verbose_log "Found SSH service: $service_name"
+        if enable_service "$service_name"; then
+          ssh_service_enabled=true
+          break
+        fi
+      fi
+    done
+  fi
+  
+  if [[ "$ssh_service_enabled" == "false" ]]; then
+    log "Warning: SSH service not found or could not be enabled. SSH may need manual configuration."
+  fi
 }
 
 configure_grub() {
