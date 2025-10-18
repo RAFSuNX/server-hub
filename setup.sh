@@ -148,7 +148,7 @@ install_packages() {
 install_base() {
   log "[1/9] Installing base packages..."
   verbose_log "Updating package cache..."
-  update_package_cache()
+  update_package_cache
 
   # Define packages based on OS family
   local packages=()
