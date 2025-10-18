@@ -594,53 +594,66 @@ final_summary() {
   local host_lc; host_lc="$(hostname -s | tr '[:upper:]' '[:lower:]')"
   local setup_duration=$(($(date +%s) - SCRIPT_START_TIME))
   
-  log ""
-  log "=== SETUP COMPLETED SUCCESSFULLY ==="
-  log "Setup duration: ${setup_duration} seconds"
-  log "Summary:"
-  log " ✓ Base tools installed and SSH enabled on boot"
-  log " ✓ Docker installed and enabled. User '$REQUIRED_USER' added to docker group"
-  log " ✓ User '$REQUIRED_USER' configured with passwordless sudo access"
-  log " ✓ SSH hardened to key-only authentication. Root login disabled"
-  log " ✓ SSH access restricted to user '$REQUIRED_USER' only"
-  log " ✓ Host '$host_lc': SSH key configured for authorized access"
+  # Clear terminal for clean final report
+  clear
+  
+  # Display clean final report
+  echo ""
+  echo "================================================================================"
+  echo "                        SERVER-HUB SETUP COMPLETED SUCCESSFULLY"
+  echo "================================================================================"
+  echo ""
+  echo "Setup Duration: ${setup_duration} seconds"
+  echo "Hostname: $host_lc"
+  echo "Date: $(date)"
+  echo ""
+  echo "CONFIGURATION SUMMARY:"
+  echo " [OK] Base tools installed and SSH enabled on boot"
+  echo " [OK] Docker installed and enabled. User '$REQUIRED_USER' added to docker group"
+  echo " [OK] User '$REQUIRED_USER' configured with passwordless sudo access"
+  echo " [OK] SSH hardened to key-only authentication. Root login disabled"
+  echo " [OK] SSH access restricted to user '$REQUIRED_USER' only"
+  echo " [OK] Host '$host_lc': SSH key configured for authorized access"
   
   if [[ -f /etc/default/grub ]]; then
-    log " ✓ GRUB timeout optimized (${GRUB_TIMEOUT}s, style: $GRUB_TIMEOUT_STYLE)"
+    echo " [OK] GRUB timeout optimized (${GRUB_TIMEOUT}s, style: $GRUB_TIMEOUT_STYLE)"
   fi
   
   local arch; arch="$(uname -m | tr '[:upper:]' '[:lower:]')"
   if [[ "$arch" == "aarch64" || "$arch" == "arm64" ]]; then
-    log " ✓ aarch64: Administrative paths configured for user profile"
+    echo " [OK] aarch64: Administrative paths configured for user profile"
   fi
   
-  log " ✓ Setup log saved to: $LOG_FILE"
-}
-
-note_usage() {
-  log "[9/9] Important usage notes:"
-  log ""
-  log "SECURITY:"
-  log " • SSH is now configured for key-only authentication"
-  log " • Root login is disabled"
-  log " • Only user '$REQUIRED_USER' can SSH to this system"
-  log ""
-  log "DOCKER USAGE:"
-  log " • Root can use Docker immediately: 'sudo docker ps'"
-  log " • For '$REQUIRED_USER' to use Docker without sudo:"
-  log "   1. Log out completely from this system"
-  log "   2. Log back in via SSH"
-  log "   3. Then 'docker ps' will work without sudo"
-  log "   (Group membership changes require fresh login session)"
-  log ""
-  log "SSH FORWARDING:"
-  log " • TCP forwarding is disabled by default for security"
-  log " • To enable if needed: edit /etc/ssh/sshd_config.d/99-hardening.conf"
-  log " • Set 'AllowTcpForwarding yes' and restart SSH service"
-  log ""
-  log "LOGS:"
-  log " • Setup log: $LOG_FILE"
-  log " • SSH config backup: /etc/ssh/sshd_config.bak"
+  echo " [OK] Setup log saved to: $LOG_FILE"
+  echo ""
+  echo "IMPORTANT NOTES:"
+  echo ""
+  echo "SECURITY:"
+  echo " • SSH is now configured for key-only authentication"
+  echo " • Root login is disabled"
+  echo " • Only user '$REQUIRED_USER' can SSH to this system"
+  echo ""
+  echo "DOCKER USAGE:"
+  echo " • Root can use Docker immediately: 'sudo docker ps'"
+  echo " • For '$REQUIRED_USER' to use Docker without sudo:"
+  echo "   1. Log out completely from this system"
+  echo "   2. Log back in via SSH"
+  echo "   3. Then 'docker ps' will work without sudo"
+  echo "   (Group membership changes require fresh login session)"
+  echo ""
+  echo "SSH FORWARDING:"
+  echo " • TCP forwarding is disabled by default for security"
+  echo " • To enable if needed: edit /etc/ssh/sshd_config.d/99-hardening.conf"
+  echo " • Set 'AllowTcpForwarding yes' and restart SSH service"
+  echo ""
+  echo "LOGS:"
+  echo " • Setup log: $LOG_FILE"
+  echo " • SSH config backup: /etc/ssh/sshd_config.bak"
+  echo ""
+  echo "================================================================================"
+  echo "                            SETUP COMPLETED SUCCESSFULLY"
+  echo "================================================================================"
+  echo ""
 }
 
 main() {
@@ -660,7 +673,6 @@ main() {
   harden_sshd
   configure_grub
   final_summary
-  note_usage
   
   log "=== Setup script completed successfully ==="
 }
