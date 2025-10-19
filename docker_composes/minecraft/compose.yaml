@@ -1,0 +1,50 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server:latest
+    hostname: minecraft
+    container_name: minecraft
+    restart: unless-stopped
+    # ports:
+    #   - "25565:25565"
+    #   - "25575:25575"
+    environment:
+      - TYPE=PAPER
+      - VERSION=LATEST
+      - EULA=TRUE
+      - ONLINE_MODE=${MINECRAFT_ONLINE_MODE:-TRUE}
+      - SERVER_NAME=${MINECRAFT_SERVER_NAME:-My Minecraft Server}
+      - MOTD=${MINECRAFT_MOTD:-Welcome to my Minecraft server!}
+      - DIFFICULTY=${MINECRAFT_DIFFICULTY:-normal}
+      - MODE=${MINECRAFT_MODE:-survival}
+      - MAX_PLAYERS=${MINECRAFT_MAX_PLAYERS:-50}
+      - VIEW_DISTANCE=${MINECRAFT_VIEW_DISTANCE:-24}
+      - MEMORY=${MINECRAFT_MEMORY:-6G}
+      - MAX_MEMORY=${MINECRAFT_MEMORY:-6G}
+      - LEVEL=${MINECRAFT_WORLD_NAME:-world}
+      - SEED=${MINECRAFT_SEED:-}
+      - ALLOW_NETHER=TRUE
+      - ENABLE_COMMAND_BLOCK=TRUE
+      - SPAWN_PROTECTION=${MINECRAFT_SPAWN_PROTECTION:-16}
+      - PVP=${MINECRAFT_PVP:-TRUE}
+      - HARDCORE=FALSE
+      - SNOOPER_ENABLED=FALSE
+      - OPS=${MINECRAFT_OPS:-}
+      - ENABLE_RCON=TRUE
+      - RCON_PASSWORD=${MINECRAFT_RCON_PASSWORD:-minecraft}
+      - RCON_PORT=25575
+    volumes:
+      - ${HOME}/dockera/minecraft:/data
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: '2.0'
+        reservations:
+          memory: 6G
+          cpus: '1.0'
+    networks:
+      - public
+
+networks:
+  public:
+    external: true
