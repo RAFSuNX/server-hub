@@ -12,8 +12,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ${HOME}/dockerc/pelican/data:/pelican-data
-      - ${HOME}/dockerc/pelican/logs:/var/www/html/storage/logs
+      - ${HOME}/dockera/pelican/data:/pelican-data
+      - ${HOME}/dockera/pelican/logs:/var/www/html/storage/logs
       # Uncomment the line below if you want to customize the Caddyfile
       # - ./Caddyfile:/etc/caddy/Caddyfile
     environment:
@@ -65,7 +65,7 @@ services:
   #     MYSQL_USER: "${PELICAN_MYSQL_USER:-pelican}"
   #     MYSQL_PASSWORD: "${PELICAN_MYSQL_PASSWORD:-your_secure_password}"
   #   volumes:
-  #     - ${HOME}/dockerc/pelican/mysql:/var/lib/mysql
+  #     - ${HOME}/dockera/pelican/mysql:/var/lib/mysql
 
 volumes:
   pelican-redis-data:
