@@ -17,7 +17,7 @@ services:
       - ARIA2_USER=${ARIANG_USER}
       - ARIA2_PWD=${ARIANG_PASSWORD}
     volumes:
-      - ${HOME}/a_media:/data
+      - ${HOME}/mediac:/data
     networks:
       - public
     # ports:
