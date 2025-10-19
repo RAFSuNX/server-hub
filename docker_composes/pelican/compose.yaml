@@ -4,6 +4,7 @@ services:
     hostname: pelican
     container_name: pelican
     restart: unless-stopped
+    user: "${UPUID}:${UPGID}"
     networks:
       - public
     # ports:
