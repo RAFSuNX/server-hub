@@ -121,16 +121,56 @@ for system in "${!DISCOVERED_SYSTEMS[@]}"; do
 
     # Copy SSH key to remote system
     log_info "Copying SSH key to ${system}..."
-    log_info "You may be prompted for the password for $(whoami)@${system}"
 
-    if ssh-copy-id -o ConnectTimeout=10 -o StrictHostKeyChecking=no "${system}" 2>/dev/null; then
-        log_info "Successfully set up passwordless SSH to ${system}"
+    # First, test if we can connect at all and check what authentication methods are available
+    ssh_test_output=$(ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no -o BatchMode=yes "${system}" "exit" 2>&1)
+
+    # Check if only publickey auth is allowed
+    if echo "$ssh_test_output" | grep -q "Permission denied (publickey)"; then
+        log_warn "${system} only allows public key authentication (no password)"
+        log_info ""
+        log_info "═══════════════════════════════════════════════════════════"
+        log_info "  MANUAL ACTION REQUIRED FOR ${system}"
+        log_info "═══════════════════════════════════════════════════════════"
+        log_info ""
+        log_info "Please add this public key to ${system}:"
+        log_info ""
+        echo -e "${YELLOW}$(cat ~/.ssh/id_rsa.pub)${NC}"
+        log_info ""
+        log_info "Run these commands on ${system}:"
+        log_info "  1. ssh $(whoami)@${system}  # (or access it directly)"
+        log_info "  2. mkdir -p ~/.ssh && chmod 700 ~/.ssh"
+        log_info "  3. nano ~/.ssh/authorized_keys  # (paste the key above)"
+        log_info "  4. chmod 600 ~/.ssh/authorized_keys"
+        log_info ""
+        log_info "Or as a one-liner on ${system}:"
+        log_info "  mkdir -p ~/.ssh && chmod 700 ~/.ssh && nano ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+        log_info ""
+        echo -ne "${GREEN}[INFO]${NC} Press ENTER after you've added the key to ${system}..."
+        read -r
+        log_info "Verifying connection to ${system}..."
+
+        if ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no "${system}" "exit" 2>/dev/null; then
+            log_info "Successfully verified passwordless SSH to ${system}!"
+        else
+            log_error "Still cannot connect to ${system}. Please verify:"
+            log_error "  1. The public key was added correctly"
+            log_error "  2. Permissions are correct (600 for authorized_keys, 700 for .ssh)"
+            log_error "  3. The user $(whoami) exists on ${system}"
+        fi
     else
-        log_error "Failed to setup SSH to ${system}. Please ensure:"
-        log_error "  1. The system is reachable"
-        log_error "  2. SSH service is running on ${system}"
-        log_error "  3. You have the correct password"
-        log_error "  4. The user $(whoami) exists on ${system}"
+        # Try password-based ssh-copy-id
+        log_info "You may be prompted for the password for $(whoami)@${system}"
+
+        if ssh-copy-id -o ConnectTimeout=10 -o StrictHostKeyChecking=no "${system}" 2>/dev/null; then
+            log_info "Successfully set up passwordless SSH to ${system}"
+        else
+            log_error "Failed to setup SSH to ${system}. Please ensure:"
+            log_error "  1. The system is reachable"
+            log_error "  2. SSH service is running on ${system}"
+            log_error "  3. You have the correct password"
+            log_error "  4. The user $(whoami) exists on ${system}"
+        fi
     fi
 done
 
