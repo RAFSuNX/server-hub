@@ -1,0 +1,25 @@
+services:
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    hostname: code-server
+    container_name: code-server
+    restart: unless-stopped
+    user: "${UPUID}:${UPGID}"
+    environment:
+      - PUID=${UPUID}
+      - PGID=${UPGID}
+      - TZ=${TZ}
+      - PASSWORD=${CODE_SERVER_PASSWORD:-password}
+      - SUDO_PASSWORD=${CODE_SERVER_SUDO_PASSWORD:-password}
+      - DEFAULT_WORKSPACE=/config/workspace
+      - PWA_APPNAME=code-server
+    volumes:
+      - ${HOME}/dockerc/code-server/config:/config
+    networks:
+      - public
+    # ports:
+    #   - 8443:8443
+
+networks:
+  public:
+    external: true
