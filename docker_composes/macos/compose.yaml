@@ -1,0 +1,33 @@
+services:
+  macos:
+    image: dockurr/macos:latest
+    hostname: macos
+    container_name: macos
+    restart: unless-stopped
+    environment:
+      - VERSION=${MACOS_VERSION:-14}
+      - DISK_SIZE=${MACOS_DISK_SIZE:-64G}
+      - RAM_SIZE=${MACOS_RAM_SIZE:-4G}
+      - CPU_CORES=${MACOS_CPU_CORES:-2}
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - macos-storage:/storage
+    networks:
+      - public
+    ports:
+      - 8006:8006
+      - 5900:5900/tcp
+      - 5900:5900/udp
+    stop_grace_period: 2m
+
+volumes:
+  macos-storage:
+    driver: local
+
+networks:
+  public:
+    external: true
