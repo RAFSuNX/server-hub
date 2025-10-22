@@ -1,0 +1,20 @@
+services:
+  transfersh:
+    image: dutchcoders/transfer.sh:latest-noroot
+    hostname: transfersh
+    container_name: transfersh
+    restart: unless-stopped
+    command: --provider local --basedir /uploads --temp-path /tmp --purge-days 7
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${HOME}/dockerc/transfersh/uploads:/uploads
+      - ${HOME}/dockerc/transfersh/temp:/tmp
+    networks:
+      - public
+    # ports:
+    #   - 8080:8080
+
+networks:
+  public:
+    external: true
