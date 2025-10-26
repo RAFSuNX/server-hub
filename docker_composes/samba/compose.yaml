@@ -10,7 +10,7 @@ services:
       - PASS=${SAMBA_PASSWORD}
       - UID=${UPUID}
       - GID=${UPGID}
-      - RW=true
+      - RW=false
     volumes:
       - ${HOME}:/storage
     networks:
