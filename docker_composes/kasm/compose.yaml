@@ -17,9 +17,9 @@ services:
       - /run/udev/data:/run/udev/data
     networks:
       - public
-    ports:
-      - 3000:3000
-      - 443:443
+    # ports:
+    #   - 3000:3000
+    #   - 443:443
     # Note: Kasm requires privileged mode for Docker-in-Docker functionality
     # Initial setup runs on port 3000, web interface on port 443
     # Configure Persistent Profile Path in Kasm to: /profiles/{image_id}/{username}/

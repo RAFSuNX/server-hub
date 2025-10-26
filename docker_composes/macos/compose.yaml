@@ -18,10 +18,10 @@ services:
       - macos-storage:/storage
     networks:
       - public
-    ports:
-      - 8006:8006
-      - 5900:5900/tcp
-      - 5900:5900/udp
+    # ports:
+    #   - 8006:8006
+    #   - 5900:5900/tcp
+    #   - 5900:5900/udp
     stop_grace_period: 2m
 
 volumes:
