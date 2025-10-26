@@ -45,6 +45,32 @@ services:
     # ports:
     #   - 7878:7878
 
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    hostname: jellyfin
+    container_name: jellyfin
+    restart: unless-stopped
+    environment:
+      - PUID=${UPUID}
+      - PGID=${UPGID}
+      - TZ=${TZ}
+    volumes:
+      # Jellyfin config
+      - ${HOME}/dockerc/mediamanager/jellyfin:/config
+
+      # Mount entire media folder (includes SSHFS mounts)
+      # Access all media libraries: /media/mediaa and /media/mediac
+      - ${HOME}/media:/media
+
+    networks:
+      public:
+        ipv4_address: 10.6.0.100
+    # ports:
+    #   - 8096:8096  # Web UI
+    #   - 8920:8920  # HTTPS (optional)
+    #   - 7359:7359/udp  # Network discovery (optional)
+    #   - 1900:1900/udp  # DLNA discovery (optional)
+
 networks:
   public:
     external: true
