@@ -71,6 +71,9 @@ services:
         target: /config/cache/transcodes
         tmpfs:
           size: 4G
+          uid: ${UPUID}
+          gid: ${UPGID}
+          mode: 0755
 
     # Increased limits to support mobile transcoding
     deploy:
