@@ -1,0 +1,37 @@
+services:
+  tinymediamanager:
+    image: tinymediamanager/tinymediamanager:latest
+    hostname: tinymediamanager
+    container_name: tinymediamanager
+    restart: unless-stopped
+    environment:
+      # User/Group Configuration
+      - USER_ID=${UPUID}
+      - GROUP_ID=${UPGID}
+      - TZ=${TZ}
+
+      # Locale Settings
+      - LC_ALL=en_US.UTF-8
+      - LANG=en_US.UTF-8
+      - LC_TIME=${TMM_LC_TIME:-}
+
+      # Access Settings
+      - PASSWORD=${TMM_PASSWORD:-changeme}
+      - ALLOW_DIRECT_VNC=${TMM_ALLOW_VNC:-true}
+
+    volumes:
+      # Application data (config, cache, logs, backups)
+      - ${HOME}/dockerc/tinymediamanager:/data
+
+      # Media library access (entire media folder with SSHFS mounts)
+      - ${HOME}/media:/media
+
+    networks:
+      - public
+    # ports:
+    #   - 4000:4000  # Web interface (noVNC)
+    #   - 5900:5900  # VNC direct access
+
+networks:
+  public:
+    external: true
