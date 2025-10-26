@@ -49,7 +49,7 @@ services:
       - ${HOME}/dockerc/filebot:/config
 
       # Mount entire media folder (includes SSHFS mounts)
-      - ${HOME}/media:/media
+      - ${HOME}/media:/storage
 
     # Note: /media/mediaa and /media/mediac are accessible inside container at /media/
     # Configure AMC to watch /media/mediaa and /media/mediac
