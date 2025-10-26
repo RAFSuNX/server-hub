@@ -9,18 +9,12 @@ services:
       - PGID=${UPGID}
       - TZ=${TZ}
     volumes:
-      # Sonarr config
       - ${HOME}/dockerc/mediamanager/sonarr:/config
-
-      # Mount entire media folder (includes SSHFS mounts)
-      # Access TV shows at: /media/mediaa/tvshows and /media/mediac/tvshows
-      # Downloads at: /media/mediaa/downloads and /media/mediac/downloads
       - ${HOME}/media:/media
-
     networks:
       - public
     # ports:
-    #   - 8989:8989
+    #   - "8989:8989"
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -32,18 +26,12 @@ services:
       - PGID=${UPGID}
       - TZ=${TZ}
     volumes:
-      # Radarr config
       - ${HOME}/dockerc/mediamanager/radarr:/config
-
-      # Mount entire media folder (includes SSHFS mounts)
-      # Access movies at: /media/mediaa/movies and /media/mediac/movies
-      # Downloads at: /media/mediaa/downloads and /media/mediac/downloads
       - ${HOME}/media:/media
-
     networks:
       - public
     # ports:
-    #   - 7878:7878
+    #   - "7878:7878"
 
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
@@ -54,26 +42,14 @@ services:
       - PUID=${UPUID}
       - PGID=${UPGID}
       - TZ=${TZ}
-      # Published server URL (for remote access)
       - JELLYFIN_PublishedServerUrl=${JELLYFIN_URL:-http://10.6.0.100:8096}
-      # FFmpeg probe settings for Android app stability
       - JELLYFIN_FFmpeg__probesize=50000000
       - JELLYFIN_FFmpeg__analyzeduration=50000000
-
     volumes:
-      # Jellyfin config
       - ${HOME}/dockerc/mediamanager/jellyfin:/config
-
-      # Mount entire media folder (includes SSHFS mounts)
-      # Access all media libraries: /media/mediaa and /media/mediac
       - ${HOME}/media:/media
-
-    # Transcode cache in RAM for mobile device compatibility
-    # Larger tmpfs for CPU transcoding (ARM can be slower)
     tmpfs:
       - /transcode:size=8G,mode=1777
-
-    # Increased limits to support CPU transcoding on ARM
     deploy:
       resources:
         limits:
@@ -81,21 +57,18 @@ services:
           memory: 12G
         reservations:
           memory: 2G
-
-    # Increase network buffer and timeouts for cloud WebSocket stability
     sysctls:
       - net.ipv4.tcp_keepalive_time=120
       - net.ipv4.tcp_keepalive_intvl=30
       - net.ipv4.tcp_keepalive_probes=3
-
     networks:
       public:
         ipv4_address: 10.6.0.100
     # ports:
-    #   - 8096:8096  # Web UI
-    #   - 8920:8920  # HTTPS (optional)
-    #   - 7359:7359/udp  # Network discovery (optional)
-    #   - 1900:1900/udp  # DLNA discovery (optional)
+    #   - "8096:8096"
+    #   - "8920:8920"
+    #   - "7359:7359/udp"
+    #   - "1900:1900/udp"
 
 networks:
   public:

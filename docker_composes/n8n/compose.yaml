@@ -9,12 +9,12 @@ services:
       - N8N_PROTOCOL=${N8N_PROTOCOL}
       - WEBHOOK_URL=${N8N_WEBHOOK_URL}
       - GENERIC_TIMEZONE=${TZ}
-    # ports:
-    #   - "5678:5678"
     volumes:
       - ${HOME}/dockerc/n8n/data:/home/node/.n8n
     networks:
       - public
+    # ports:
+    #   - "5678:5678"
 
 networks:
   public:

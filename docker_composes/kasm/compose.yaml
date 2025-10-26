@@ -3,8 +3,8 @@ services:
     image: lscr.io/linuxserver/kasm:latest
     hostname: kasm
     container_name: kasm
-    privileged: true
     restart: unless-stopped
+    privileged: true
     environment:
       - KASM_PORT=443
       - DOCKER_HUB_USERNAME=${DOCKER_HUB_USERNAME}

@@ -12,7 +12,6 @@ services:
       - GID=${UPGID}
       - RW=true
     volumes:
-      # Share home directory
       - ${HOME}:/storage
     networks:
       public:

@@ -5,18 +5,10 @@ services:
     container_name: pelican
     restart: unless-stopped
     user: "${UPUID}:${UPGID}"
-    networks:
-      - public
-    # ports:
-    #   - "80:80"
-    #   - "443:443"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    volumes:
-      - ${HOME}/dockera/pelican/data:/pelican-data
-      - ${HOME}/dockera/pelican/logs:/var/www/html/storage/logs
-      # Uncomment the line below if you want to customize the Caddyfile
-      # - ./Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - redis
     environment:
       XDG_DATA_HOME: /pelican-data
       # Replace with your actual domain or IP
@@ -37,8 +29,16 @@ services:
       # DB_DATABASE: pelican
       # DB_USERNAME: pelican
       # DB_PASSWORD: your_secure_password
-    depends_on:
-      - redis
+    volumes:
+      - ${HOME}/dockera/pelican/data:/pelican-data
+      - ${HOME}/dockera/pelican/logs:/var/www/html/storage/logs
+      # Uncomment the line below if you want to customize the Caddyfile
+      # - ./Caddyfile:/etc/caddy/Caddyfile
+    networks:
+      - public
+    # ports:
+    #   - "80:80"
+    #   - "443:443"
 
   # Redis Cache
   redis:
@@ -46,11 +46,11 @@ services:
     hostname: pelican-redis
     container_name: pelican-redis
     restart: unless-stopped
-    networks:
-      - public
+    command: redis-server --appendonly yes
     volumes:
       - pelican-redis-data:/data
-    command: redis-server --appendonly yes
+    networks:
+      - public
 
   # Optional: MySQL Database (uncomment if you want to use MySQL instead of SQLite)
   # mysql:

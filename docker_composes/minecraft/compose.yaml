@@ -4,9 +4,6 @@ services:
     hostname: minecraft
     container_name: minecraft
     restart: unless-stopped
-    # ports:
-    #   - "25565:25565"
-    #   - "25575:25575"
     environment:
       - TYPE=PAPER
       - VERSION=LATEST
@@ -44,6 +41,9 @@ services:
           cpus: '1.0'
     networks:
       - public
+    # ports:
+    #   - "25565:25565"
+    #   - "25575:25575"
 
 networks:
   public:

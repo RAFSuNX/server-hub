@@ -4,15 +4,15 @@ services:
     hostname: searxng
     container_name: searxng
     restart: unless-stopped
+    environment:
+      - SEARXNG_BASE_URL=${SEARXNG_BASE_URL}
+    volumes:
+      - ${HOME}/dockerc/searxng:/etc/searxng:rw
+      - searxng-data:/var/cache/searxng:rw
     networks:
       - public
     # ports:
     #   - "8080:8080"
-    volumes:
-      - ${HOME}/dockerc/searxng:/etc/searxng:rw
-      - searxng-data:/var/cache/searxng:rw
-    environment:
-      - SEARXNG_BASE_URL=${SEARXNG_BASE_URL}
     logging:
       driver: "json-file"
       options:
