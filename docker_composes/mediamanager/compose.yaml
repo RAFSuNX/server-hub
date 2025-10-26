@@ -12,14 +12,10 @@ services:
       # Sonarr config
       - ${HOME}/dockerc/mediamanager/sonarr:/config
 
-      # Media library structure
-      # TV shows libraries
-      - ${HOME}/media/mediaa/tvshows:/media/mediaa/tvshows
-      - ${HOME}/media/mediac/tvshows:/media/mediac/tvshows
-
-      # Downloads folders (for completed downloads)
-      - ${HOME}/media/mediaa/downloads:/media/mediaa/downloads
-      - ${HOME}/media/mediac/downloads:/media/mediac/downloads
+      # Mount entire media folder (includes SSHFS mounts)
+      # Access TV shows at: /media/mediaa/tvshows and /media/mediac/tvshows
+      # Downloads at: /media/mediaa/downloads and /media/mediac/downloads
+      - ${HOME}/media:/media
 
     networks:
       - public
@@ -39,14 +35,10 @@ services:
       # Radarr config
       - ${HOME}/dockerc/mediamanager/radarr:/config
 
-      # Media library structure
-      # Movies libraries
-      - ${HOME}/media/mediaa/movies:/media/mediaa/movies
-      - ${HOME}/media/mediac/movies:/media/mediac/movies
-
-      # Downloads folders (for completed downloads)
-      - ${HOME}/media/mediaa/downloads:/media/mediaa/downloads
-      - ${HOME}/media/mediac/downloads:/media/mediac/downloads
+      # Mount entire media folder (includes SSHFS mounts)
+      # Access movies at: /media/mediaa/movies and /media/mediac/movies
+      # Downloads at: /media/mediaa/downloads and /media/mediac/downloads
+      - ${HOME}/media:/media
 
     networks:
       - public
