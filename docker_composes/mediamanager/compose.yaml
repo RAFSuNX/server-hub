@@ -65,13 +65,20 @@ services:
       # Access all media libraries: /media/mediaa and /media/mediac
       - ${HOME}/media:/media
 
-    # Lightweight resource limits for Direct Play mode
+      # Transcode cache in RAM for mobile device compatibility
+      # Needed when mobile clients require format conversion
+      - type: tmpfs
+        target: /config/cache/transcodes
+        tmpfs:
+          size: 4G
+
+    # Increased limits to support mobile transcoding
     deploy:
       resources:
         limits:
-          memory: 4G
+          memory: 8G
         reservations:
-          memory: 512M
+          memory: 1G
 
     networks:
       public:
