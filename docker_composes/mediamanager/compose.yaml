@@ -65,23 +65,10 @@ services:
       # Access all media libraries: /media/mediaa and /media/mediac
       - ${HOME}/media:/media
 
-      # Transcode cache in RAM for mobile device compatibility
-      # Needed when mobile clients require format conversion
-      # Mount to /transcode-ram then symlink from /config/cache/transcodes
-      - type: tmpfs
-        target: /transcode-ram
-        tmpfs:
-          size: 4G
-
-    # Override entrypoint to fix tmpfs permissions and create symlink
-    entrypoint: >
-      /bin/bash -c "
-      chown ${UPUID}:${UPGID} /transcode-ram &&
-      mkdir -p /config/cache &&
-      rm -rf /config/cache/transcodes &&
-      ln -sf /transcode-ram /config/cache/transcodes &&
-      exec /init
-      "
+    # Transcode cache in RAM for mobile device compatibility
+    # Needed when mobile clients require format conversion
+    tmpfs:
+      - /transcode:size=4G,mode=1777
 
     # Increased limits to support mobile transcoding
     deploy:
