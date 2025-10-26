@@ -56,6 +56,9 @@ services:
       - TZ=${TZ}
       # Published server URL (for remote access)
       - JELLYFIN_PublishedServerUrl=${JELLYFIN_URL:-http://10.6.0.100:8096}
+      # Transcoding optimizations for Android app stability
+      - JELLYFIN_FFmpeg__probesize=50000000
+      - JELLYFIN_FFmpeg__analyzeduration=50000000
 
     volumes:
       # Jellyfin config
