@@ -56,7 +56,7 @@ services:
       - TZ=${TZ}
       # Published server URL (for remote access)
       - JELLYFIN_PublishedServerUrl=${JELLYFIN_URL:-http://10.6.0.100:8096}
-      # Transcoding optimizations for Android app stability
+      # FFmpeg probe settings for Android app stability
       - JELLYFIN_FFmpeg__probesize=50000000
       - JELLYFIN_FFmpeg__analyzeduration=50000000
 
@@ -69,17 +69,24 @@ services:
       - ${HOME}/media:/media
 
     # Transcode cache in RAM for mobile device compatibility
-    # Needed when mobile clients require format conversion
+    # Larger tmpfs for CPU transcoding (ARM can be slower)
     tmpfs:
-      - /transcode:size=4G,mode=1777
+      - /transcode:size=8G,mode=1777
 
-    # Increased limits to support mobile transcoding
+    # Increased limits to support CPU transcoding on ARM
     deploy:
       resources:
         limits:
-          memory: 8G
+          cpus: '0'  # Use all available CPU cores
+          memory: 12G
         reservations:
-          memory: 1G
+          memory: 2G
+
+    # Increase network buffer and timeouts for cloud WebSocket stability
+    sysctls:
+      - net.ipv4.tcp_keepalive_time=120
+      - net.ipv4.tcp_keepalive_intvl=30
+      - net.ipv4.tcp_keepalive_probes=3
 
     networks:
       public:
