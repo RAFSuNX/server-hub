@@ -1,0 +1,25 @@
+services:
+  samba:
+    image: dockurr/samba:latest
+    hostname: samba
+    container_name: samba
+    restart: unless-stopped
+    environment:
+      - NAME=home
+      - USER=${SAMBA_USER:-samba}
+      - PASS=${SAMBA_PASSWORD}
+      - UID=${UPUID}
+      - GID=${UPGID}
+      - RW=true
+    volumes:
+      # Share home directory
+      - ${HOME}:/storage
+    networks:
+      public:
+        ipv4_address: 10.6.0.110
+    ports:
+      - "445:445"
+
+networks:
+  public:
+    external: true
