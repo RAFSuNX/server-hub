@@ -17,8 +17,8 @@ services:
     networks:
       public:
         ipv4_address: 10.6.0.110
-    ports:
-      - "445:445"
+    # ports:
+    #   - "445:445"
 
 networks:
   public:
