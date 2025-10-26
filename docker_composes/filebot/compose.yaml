@@ -43,12 +43,17 @@ services:
 
     volumes:
       # Application config and logs
-      - ${HOME}/dockerc/filebot/config:/config
+      - ${HOME}/dockerc/filebot:/config
 
-      # Media locations - customize these paths as needed
-      - ${HOME}/dockerc/filebot/watch:/watch
-      - ${HOME}/dockerc/filebot/output:/output
-      - ${HOME}/dockerc/filebot/storage:/storage
+      # AMC Watch folders (input - will be scanned automatically)
+      - ${HOME}/media/mediaa:/watch/mediaa
+      - ${HOME}/media/mediac:/watch/mediac
+
+      # AMC Output folder (organized media destination)
+      - ${HOME}/media:/output
+
+      # Storage for manual GUI access to media library
+      - ${HOME}/media:/storage
 
     networks:
       - public
