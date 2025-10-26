@@ -31,6 +31,8 @@ services:
       - AMC_ACTION=${FILEBOT_AMC_ACTION:-test}
       - AMC_INTERVAL=${FILEBOT_AMC_INTERVAL:-1800}
       - AMC_INPUT_STABLE_TIME=${FILEBOT_AMC_STABLE_TIME:-10}
+      - AMC_INPUT_DIR=/media/mediaa:/media/mediac
+      - AMC_OUTPUT_DIR=/media
       - AMC_MATCH_MODE=${FILEBOT_AMC_MATCH_MODE:-opportunistic}
       - AMC_ARTWORK=${FILEBOT_AMC_ARTWORK:-n}
       - AMC_LANG=${FILEBOT_AMC_LANG:-English}
@@ -46,15 +48,12 @@ services:
       # Application config and logs
       - ${HOME}/dockerc/filebot:/config
 
-      # AMC Watch folders (input - will be scanned automatically)
-      - ${HOME}/media/mediaa:/watch/mediaa
-      - ${HOME}/media/mediac:/watch/mediac
+      # Mount entire media folder (includes SSHFS mounts)
+      - ${HOME}/media:/media
 
-      # AMC Output folder (organized media destination)
-      - ${HOME}/media:/output
-
-      # Storage for manual GUI access to media library
-      - ${HOME}/media:/storage
+    # Note: /media/mediaa and /media/mediac are accessible inside container at /media/
+    # Configure AMC to watch /media/mediaa and /media/mediac
+    # Output will go to /media/
 
     networks:
       - public
