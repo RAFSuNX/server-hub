@@ -54,6 +54,9 @@ services:
       - PUID=${UPUID}
       - PGID=${UPGID}
       - TZ=${TZ}
+      # Published server URL (for remote access)
+      - JELLYFIN_PublishedServerUrl=${JELLYFIN_URL:-http://10.6.0.100:8096}
+
     volumes:
       # Jellyfin config
       - ${HOME}/dockerc/mediamanager/jellyfin:/config
@@ -61,6 +64,29 @@ services:
       # Mount entire media folder (includes SSHFS mounts)
       # Access all media libraries: /media/mediaa and /media/mediac
       - ${HOME}/media:/media
+
+      # Transcode cache directory
+      - ${HOME}/dockerc/mediamanager/jellyfin-cache:/config/cache
+
+    # Hardware acceleration for ARM64 (renderD128 device)
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+      - /dev/dri/card0:/dev/dri/card0
+
+    # Add render group for hardware acceleration access
+    group_add:
+      - "105"  # render group for /dev/dri access
+
+    # Increase shared memory for transcoding performance
+    shm_size: 1gb
+
+    # Resource limits (you have 24GB RAM)
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 1G
 
     networks:
       public:
