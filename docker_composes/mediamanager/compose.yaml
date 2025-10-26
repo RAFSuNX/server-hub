@@ -1,0 +1,58 @@
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    hostname: sonarr
+    container_name: sonarr
+    restart: unless-stopped
+    environment:
+      - PUID=${UPUID}
+      - PGID=${UPGID}
+      - TZ=${TZ}
+    volumes:
+      # Sonarr config
+      - ${HOME}/dockerc/mediamanager/sonarr:/config
+
+      # Media library structure
+      # TV shows libraries
+      - ${HOME}/media/mediaa/tvshows:/media/mediaa/tvshows
+      - ${HOME}/media/mediac/tvshows:/media/mediac/tvshows
+
+      # Downloads folders (for completed downloads)
+      - ${HOME}/media/mediaa/downloads:/media/mediaa/downloads
+      - ${HOME}/media/mediac/downloads:/media/mediac/downloads
+
+    networks:
+      - public
+    # ports:
+    #   - 8989:8989
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    hostname: radarr
+    container_name: radarr
+    restart: unless-stopped
+    environment:
+      - PUID=${UPUID}
+      - PGID=${UPGID}
+      - TZ=${TZ}
+    volumes:
+      # Radarr config
+      - ${HOME}/dockerc/mediamanager/radarr:/config
+
+      # Media library structure
+      # Movies libraries
+      - ${HOME}/media/mediaa/movies:/media/mediaa/movies
+      - ${HOME}/media/mediac/movies:/media/mediac/movies
+
+      # Downloads folders (for completed downloads)
+      - ${HOME}/media/mediaa/downloads:/media/mediaa/downloads
+      - ${HOME}/media/mediac/downloads:/media/mediac/downloads
+
+    networks:
+      - public
+    # ports:
+    #   - 7878:7878
+
+networks:
+  public:
+    external: true
