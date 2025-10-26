@@ -23,7 +23,9 @@ services:
       # Application data (config, cache, logs, backups)
       - ${HOME}/dockerc/tinymediamanager:/data
 
-      # Media library access (entire media folder with SSHFS mounts)
+      # Media library structure:
+      # Inside container: /media/mediaa and /media/mediac
+      # Each contains: downloads/, movies/, tvshows/
       - ${HOME}/media:/media
 
     networks:
