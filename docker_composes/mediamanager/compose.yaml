@@ -70,6 +70,50 @@ services:
     #   - "7359:7359/udp"
     #   - "1900:1900/udp"
 
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    hostname: gluetun
+    container_name: gluetun
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
+      - VPN_ENDPOINT_IP=${VPN_ENDPOINT_IP}
+      - VPN_ENDPOINT_PORT=${VPN_ENDPOINT_PORT}
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - WIREGUARD_PRESHARED_KEY=${WIREGUARD_PRESHARED_KEY:-}
+      - WIREGUARD_PUBLIC_KEY=${WIREGUARD_PUBLIC_KEY}
+      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
+      - DNS_ADDRESS=${DNS_ADDRESS:-1.1.1.1}
+      - FIREWALL_VPN_INPUT_PORTS=8080
+      - FIREWALL_INPUT_PORTS=8080
+      - TZ=${TZ}
+    networks:
+      - public
+    # ports:
+    #   - "8080:8080"  # qBittorrent WebUI
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    hostname: qbittorrent
+    container_name: qbittorrent
+    restart: unless-stopped
+    network_mode: "service:gluetun"  # Use Gluetun's network - VPN kill switch
+    environment:
+      - PUID=${UPUID}
+      - PGID=${UPGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+    volumes:
+      - ${HOME}/dockerc/mediamanager/qbittorrent:/config
+      - ${HOME}/media/mediac/downloads:/downloads
+    depends_on:
+      - gluetun
+
 networks:
   public:
     external: true
