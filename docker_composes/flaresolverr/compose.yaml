@@ -11,8 +11,8 @@ services:
       - TZ=${TZ}
     networks:
       - public
-    # ports:
-    #   - "8191:8191"
+    ports:
+      - "8191:8191"
 
 networks:
   public:
