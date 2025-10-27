@@ -99,7 +99,6 @@ services:
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
-    hostname: qbittorrent
     container_name: qbittorrent
     restart: unless-stopped
     network_mode: "service:gluetun"  # Use Gluetun's network - VPN kill switch
