@@ -33,6 +33,22 @@ services:
     # ports:
     #   - "7878:7878"
 
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    hostname: prowlarr
+    container_name: prowlarr
+    restart: unless-stopped
+    environment:
+      - PUID=${UPUID}
+      - PGID=${UPGID}
+      - TZ=${TZ}
+    volumes:
+      - ${HOME}/dockerc/mediamanager/prowlarr:/config
+    networks:
+      - public
+    # ports:
+    #   - "9696:9696"
+
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     hostname: jellyfin
