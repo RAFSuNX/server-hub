@@ -1,0 +1,7 @@
+# Environment files with sensitive data
+.env
+*.env
+!.env.example
+
+# Ignore any local config overrides
+docker-compose.override.yml

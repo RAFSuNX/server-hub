@@ -1,0 +1,253 @@
+services:
+  grafana:
+    image: grafana/grafana:latest
+    hostname: grafana
+    container_name: grafana
+    restart: unless-stopped
+    user: "${UPUID}:${UPGID}"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_DOMAIN=${GRAFANA_DOMAIN}
+      - GF_SERVER_ROOT_URL=https://${GRAFANA_DOMAIN}
+      - GF_SECURITY_COOKIE_SECURE=true
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-piechart-panel
+    volumes:
+      - ${HOME}/dockerc/monitoring/grafana:/var/lib/grafana
+    configs:
+      - source: grafana-datasources
+        target: /etc/grafana/provisioning/datasources/datasources.yml
+      - source: grafana-dashboards
+        target: /etc/grafana/provisioning/dashboards/dashboards.yml
+    networks:
+      - public
+    # ports:
+    #   - "3000:3000"
+
+  prometheus:
+    image: prom/prometheus:latest
+    hostname: prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    user: "${UPUID}:${UPGID}"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    volumes:
+      - ${HOME}/dockerc/monitoring/prometheus:/prometheus
+    configs:
+      - source: prometheus-config
+        target: /etc/prometheus/prometheus.yml
+    extra_hosts:
+      - "systema:${SYSTEMA_IP:-100.85.121.65}"
+    networks:
+      - public
+    # ports:
+    #   - "9090:9090"
+
+  loki:
+    image: grafana/loki:latest
+    hostname: loki
+    container_name: loki
+    restart: unless-stopped
+    user: "${UPUID}:${UPGID}"
+    command: -config.file=/etc/loki/loki.yml
+    volumes:
+      - ${HOME}/dockerc/monitoring/loki:/loki
+    configs:
+      - source: loki-config
+        target: /etc/loki/loki.yml
+    networks:
+      - public
+    ports:
+      - "3100:3100"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    hostname: cadvisor
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - public
+    # ports:
+    #   - "8080:8080"
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    hostname: node-exporter
+    container_name: node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - public
+    # ports:
+    #   - "9100:9100"
+
+networks:
+  public:
+    external: true
+
+configs:
+  prometheus-config:
+    content: |
+      global:
+        scrape_interval: 15s
+        evaluation_interval: 15s
+        external_labels:
+          monitor: 'docker-monitor'
+
+      scrape_configs:
+        # Prometheus itself
+        - job_name: 'prometheus'
+          static_configs:
+            - targets: ['prometheus:9090']
+              labels:
+                host: 'systemc'
+
+        # systemc (local) - Container metrics
+        - job_name: 'systemc-containers'
+          static_configs:
+            - targets: ['cadvisor:8080']
+              labels:
+                host: 'systemc'
+
+        # systemc (local) - Host metrics
+        - job_name: 'systemc-host'
+          static_configs:
+            - targets: ['node-exporter:9100']
+              labels:
+                host: 'systemc'
+
+        # systema (remote via Tailscale) - Container metrics
+        - job_name: 'systema-containers'
+          static_configs:
+            - targets: ['systema:8080']
+              labels:
+                host: 'systema'
+
+        # systema (remote via Tailscale) - Host metrics
+        - job_name: 'systema-host'
+          static_configs:
+            - targets: ['systema:9100']
+              labels:
+                host: 'systema'
+
+  loki-config:
+    content: |
+      auth_enabled: false
+
+      server:
+        http_listen_port: 3100
+        grpc_listen_port: 9096
+
+      common:
+        path_prefix: /loki
+        storage:
+          filesystem:
+            chunks_directory: /loki/chunks
+            rules_directory: /loki/rules
+        replication_factor: 1
+        ring:
+          instance_addr: 127.0.0.1
+          kvstore:
+            store: inmemory
+
+      schema_config:
+        configs:
+          - from: 2020-10-24
+            store: boltdb-shipper
+            object_store: filesystem
+            schema: v11
+            index:
+              prefix: index_
+              period: 24h
+
+      storage_config:
+        boltdb_shipper:
+          active_index_directory: /loki/boltdb-shipper-active
+          cache_location: /loki/boltdb-shipper-cache
+          cache_ttl: 24h
+          shared_store: filesystem
+        filesystem:
+          directory: /loki/chunks
+
+      limits_config:
+        reject_old_samples: true
+        reject_old_samples_max_age: 168h
+        ingestion_rate_mb: 16
+        ingestion_burst_size_mb: 32
+
+      chunk_store_config:
+        max_look_back_period: 720h
+
+      table_manager:
+        retention_deletes_enabled: true
+        retention_period: 720h
+
+      compactor:
+        working_directory: /loki/compactor
+        shared_store: filesystem
+        compaction_interval: 10m
+        retention_enabled: true
+        retention_delete_delay: 2h
+        retention_delete_worker_count: 150
+
+  grafana-datasources:
+    content: |
+      apiVersion: 1
+
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://prometheus:9090
+          isDefault: true
+          editable: true
+          jsonData:
+            timeInterval: "15s"
+
+        - name: Loki
+          type: loki
+          access: proxy
+          url: http://loki:3100
+          editable: true
+          jsonData:
+            maxLines: 1000
+
+  grafana-dashboards:
+    content: |
+      apiVersion: 1
+
+      providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          updateIntervalSeconds: 10
+          allowUiUpdates: true
+          options:
+            path: /etc/grafana/provisioning/dashboards/json

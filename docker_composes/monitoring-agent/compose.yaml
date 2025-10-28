@@ -1,0 +1,108 @@
+services:
+  cadvisor-agent:
+    image: gcr.io/cadvisor/cadvisor:latest
+    hostname: cadvisor-agent
+    container_name: cadvisor-agent
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - public
+    ports:
+      - "8080:8080"
+
+  node-exporter-agent:
+    image: prom/node-exporter:latest
+    hostname: node-exporter-agent
+    container_name: node-exporter-agent
+    restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - public
+    ports:
+      - "9100:9100"
+
+  promtail:
+    image: grafana/promtail:latest
+    hostname: promtail
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    configs:
+      - source: promtail-config
+        target: /etc/promtail/promtail.yml
+    command: -config.file=/etc/promtail/promtail.yml
+    extra_hosts:
+      - "systemc:${SYSTEMC_IP:-100.67.201.33}"
+    networks:
+      - public
+
+networks:
+  public:
+    external: true
+
+configs:
+  promtail-config:
+    content: |
+      server:
+        http_listen_port: 9080
+        grpc_listen_port: 0
+
+      positions:
+        filename: /tmp/positions.yaml
+
+      clients:
+        # Loki on systemc via Tailscale
+        - url: http://systemc:3100/loki/api/v1/push
+
+      scrape_configs:
+        # Docker container logs
+        - job_name: docker
+          docker_sd_configs:
+            - host: unix:///var/run/docker.sock
+              refresh_interval: 5s
+          relabel_configs:
+            # Extract container name
+            - source_labels: ['__meta_docker_container_name']
+              regex: '/(.*)'
+              target_label: 'container'
+
+            # Extract container image
+            - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+              target_label: 'compose_service'
+
+            # Extract compose project
+            - source_labels: ['__meta_docker_container_label_com_docker_compose_project']
+              target_label: 'compose_project'
+
+            # Add hostname label - systema
+            - replacement: 'systema'
+              target_label: 'host'
+
+        # System logs
+        - job_name: system
+          static_configs:
+            - targets:
+                - localhost
+              labels:
+                job: varlogs
+                host: systema
+                __path__: /var/log/*.log
