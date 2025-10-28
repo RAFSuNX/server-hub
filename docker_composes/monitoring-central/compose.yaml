@@ -106,6 +106,22 @@ services:
     # ports:
     #   - "9100:9100"
 
+  promtail:
+    image: grafana/promtail:latest
+    hostname: promtail
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    configs:
+      - source: promtail-config
+        target: /etc/promtail/promtail.yml
+    command: -config.file=/etc/promtail/promtail.yml
+    networks:
+      - public
+
 networks:
   public:
     external: true
@@ -243,3 +259,50 @@ configs:
           allowUiUpdates: true
           options:
             path: /etc/grafana/provisioning/dashboards/json
+
+  promtail-config:
+    content: |
+      server:
+        http_listen_port: 9080
+        grpc_listen_port: 0
+
+      positions:
+        filename: /tmp/positions.yaml
+
+      clients:
+        # Loki is on the same server - use container name
+        - url: http://loki:3100/loki/api/v1/push
+
+      scrape_configs:
+        # Docker container logs
+        - job_name: docker
+          docker_sd_configs:
+            - host: unix:///var/run/docker.sock
+              refresh_interval: 5s
+          relabel_configs:
+            # Extract container name
+            - source_labels: ['__meta_docker_container_name']
+              regex: '/(.*)'
+              target_label: 'container'
+
+            # Extract container image
+            - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+              target_label: 'compose_service'
+
+            # Extract compose project
+            - source_labels: ['__meta_docker_container_label_com_docker_compose_project']
+              target_label: 'compose_project'
+
+            # Add hostname label - systemc
+            - replacement: 'systemc'
+              target_label: 'host'
+
+        # System logs
+        - job_name: system
+          static_configs:
+            - targets:
+                - localhost
+              labels:
+                job: varlogs
+                host: systemc
+                __path__: /var/log/*.log
