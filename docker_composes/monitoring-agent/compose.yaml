@@ -51,7 +51,7 @@ services:
         target: /etc/promtail/promtail.yml
     command: -config.file=/etc/promtail/promtail.yml
     extra_hosts:
-      - "systemc:${SYSTEMC_IP:-100.67.201.33}"
+      - "systemc:${SYSTEMC_IP}"
     networks:
       - public
 

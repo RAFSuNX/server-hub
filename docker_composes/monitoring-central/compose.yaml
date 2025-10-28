@@ -45,7 +45,7 @@ services:
       - source: prometheus-config
         target: /etc/prometheus/prometheus.yml
     extra_hosts:
-      - "systema:${SYSTEMA_IP:-100.85.121.65}"
+      - "systema:${SYSTEMA_IP}"
     networks:
       - public
     # ports:

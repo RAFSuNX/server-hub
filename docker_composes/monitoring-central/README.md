@@ -23,7 +23,7 @@ systemc (this stack)                    systema (monitoring-agent)
 └── Node Exporter (local)
 ```
 
-Communication via **Tailscale** network (systema: 100.85.121.65, systemc: 100.67.201.33)
+Communication via **Tailscale** network
 
 ## Quick Deploy via Portainer
 
@@ -38,7 +38,7 @@ sudo chown -R 1000:1000 ~/dockerc/monitoring
 
 ### Step 2: Deploy Stack in Portainer
 
-1. Open **Portainer** on systemc (https://pt.rogx.cc or your Portainer URL)
+1. Open **Portainer** on systemc (access your Portainer UI)
 2. Select your **systemc** endpoint
 3. Go to **Stacks** → **Add stack**
 4. **Name**: `monitoring-central`
@@ -59,12 +59,14 @@ sudo chown -R 1000:1000 ~/dockerc/monitoring
    ```
    UPUID=1000
    UPGID=1000
-   HOME=/home/rafsunx
+   HOME=/home/yourusername
    GRAFANA_ADMIN_USER=admin
    GRAFANA_ADMIN_PASSWORD=ChangeMe123!
    GRAFANA_DOMAIN=grafana.yourdomain.com
-   SYSTEMA_IP=100.85.121.65
+   SYSTEMA_IP=100.x.x.x
    ```
+
+   **Note**: Get your Tailscale IPs by running `tailscale ip -4` on each server
 
 7. Click **Deploy the stack**
 

@@ -43,8 +43,10 @@ All logs are tagged with `host: systema` so you can filter by server in Grafana.
 
 5. **Environment variables** (scroll down):
    ```
-   SYSTEMC_IP=100.67.201.33
+   SYSTEMC_IP=100.x.x.x
    ```
+
+   **Note**: Get systemc's Tailscale IP by running `tailscale ip -4` on systemc
 
 6. Click **Deploy the stack**
 
@@ -167,7 +169,7 @@ No ports need to be opened in firewall - Tailscale handles the secure networking
    docker inspect promtail | grep -A5 extra_hosts
    ```
 
-   Should show `100.67.201.33`
+   Should show your systemc Tailscale IP
 
 4. **Verify Loki is running on systemc**:
    ```bash
