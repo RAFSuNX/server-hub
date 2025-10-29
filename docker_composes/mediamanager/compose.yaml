@@ -109,7 +109,8 @@ services:
       - FIREWALL_INPUT_PORTS=8080,6881
       - TZ=${TZ}
     networks:
-      - public
+      public:
+        ipv4_address: 10.6.0.101
     # ports:
     #   - "8080:8080"  # qBittorrent WebUI
 
