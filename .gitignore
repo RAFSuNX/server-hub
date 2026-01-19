@@ -1,0 +1,22 @@
+# NixOS secrets
+nixos/secrets/
+
+# Kubernetes secrets
+k8s/secrets/
+k8s/media/*-secret.yaml
+k8s/media/*-secrets.yaml
+
+# Kubeconfig
+*.kubeconfig
+kubeconfig
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
