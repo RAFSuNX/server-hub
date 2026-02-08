@@ -1,93 +1,157 @@
-# Common configuration shared across all servers
+# =============================================================================
+# Common Configuration
+# =============================================================================
+# Shared configuration applied to all servers in the fleet.
+# Includes base system settings, networking, users, and essential services.
+#
+# Author: rafsunx
+# Last Modified: 2026-02-08
+# =============================================================================
+
 { config, lib, pkgs, ... }:
 
 {
-  # Bootloader
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.systemd-boot.configurationLimit = 1;  # Small /boot partition
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.timeout = 0;  # No boot menu delay
+  # ===========================================================================
+  # Boot Configuration
+  # ===========================================================================
 
-  # DRBD 9 kernel module for Piraeus/LINSTOR storage
-  boot.extraModulePackages = with config.boot.kernelPackages; [ drbd ];
-  boot.blacklistedKernelModules = [ "drbd" ];
-  boot.kernelModules = [ "drbd9" ];
+  boot = {
+    # Bootloader settings
+    loader = {
+      systemd-boot = {
+        enable = true;
+        configurationLimit = 1;  # Limit boot entries (small /boot partition)
+      };
+      efi.canTouchEfiVariables = true;
+      timeout = 0;  # No boot menu delay
+    };
+
+    # DRBD 9 kernel module for Piraeus/LINSTOR distributed storage
+    extraModulePackages = with config.boot.kernelPackages; [ drbd ];
+    blacklistedKernelModules = [ "drbd" ];
+    kernelModules = [ "drbd9" ];
+
+    extraModprobeConfig = ''
+      options drbd usermode_helper=/run/current-system/sw/bin/true
+    '';
+  };
+
+  # DRBD device node
   systemd.tmpfiles.rules = [
     "c /dev/drbd-control 0600 root disk 147 0 -"
   ];
-  boot.extraModprobeConfig = ''
-    options drbd usermode_helper=/run/current-system/sw/bin/true
-  '';
 
-  # Symlink /lib/modules for Piraeus/LINSTOR (NixOS uses different path)
+  # Symlink /lib/modules for Piraeus/LINSTOR compatibility
+  # NixOS uses different path than standard FHS
   system.activationScripts.libModulesSymlink = ''
     mkdir -p /lib
     ln -sfn /run/current-system/kernel-modules/lib/modules /lib/modules
   '';
 
-  # Networking
-  networking.networkmanager.enable = true;
+  # ===========================================================================
+  # Networking Configuration
+  # ===========================================================================
 
-  # Tailscale IP mappings
-  networking.hosts = {
-    "100.108.186.15" = [ "systema" ];
-    "100.127.141.103" = [ "systemb" ];
-    "100.65.5.39" = [ "systemc" ];
+  networking = {
+    # Enable NetworkManager for network configuration
+    networkmanager.enable = true;
+
+    # Tailscale mesh VPN hostname resolution
+    hosts = {
+      "100.108.186.15" = [ "systema" ];
+      "100.127.141.103" = [ "systemb" ];
+      "100.65.5.39" = [ "systemc" ];
+    };
   };
 
-  # Timezone
-  time.timeZone = "Asia/Dhaka";
+  # ===========================================================================
+  # User Configuration
+  # ===========================================================================
 
-  # User configuration
   users.users.rafsunx = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keys = [
-      # Keys are defined per-host in hosts/<hostname>/default.nix
+      # SSH keys are defined per-host in hosts/<hostname>/default.nix
     ];
   };
 
-  # Passwordless sudo for wheel group
+  # Passwordless sudo for wheel group members
   security.sudo.wheelNeedsPassword = false;
 
-  # System packages
+  # ===========================================================================
+  # Services Configuration
+  # ===========================================================================
+
+  services = {
+    # OpenSSH server
+    openssh.enable = true;
+
+    # VNStat network usage monitoring
+    vnstat.enable = true;
+
+    # Tailscale mesh VPN
+    tailscale = {
+      enable = true;
+      authKeyFile = "/etc/nixos/secrets/tailscale_authkey";
+      extraUpFlags = [
+        "--advertise-exit-node"
+        "--hostname=${config.networking.hostName}"
+      ];
+    };
+  };
+
+  # ===========================================================================
+  # System Packages
+  # ===========================================================================
+
   environment.systemPackages = with pkgs; [
+    # Text editors
     nano
+
+    # Network utilities
     curl
+
+    # Version control
     git
+
+    # System monitoring
     htop
-    drbd  # DRBD utilities for Piraeus/LINSTOR
     vnstat
+
+    # Storage (DRBD utilities for Piraeus/LINSTOR)
+    drbd
   ];
 
-  # SSH
-  services.openssh.enable = true;
+  # ===========================================================================
+  # Nix Configuration
+  # ===========================================================================
 
-  # VNStat network usage monitoring
-  services.vnstat.enable = true;
+  nix = {
+    # Nix daemon settings
+    settings = {
+      experimental-features = [ "nix-command" "flakes" ];
+      auto-optimise-store = true;
+    };
 
-  # Tailscale VPN
-  services.tailscale = {
-    enable = true;
-    authKeyFile = "/etc/nixos/secrets/tailscale_authkey";
-    extraUpFlags = [
-      "--advertise-exit-node"
-      "--hostname=${config.networking.hostName}"
-    ];
+    # Automatic garbage collection
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 7d";
+    };
   };
 
-  # Nix settings
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
-  };
+  # ===========================================================================
+  # System Settings
+  # ===========================================================================
 
-  # Garbage collection
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
-  };
+  # Timezone
+  time.timeZone = "Asia/Dhaka";
 
+  # NixOS release version
+  # DO NOT CHANGE - this value determines the NixOS release from which the
+  # default settings for stateful data, like file locations and database
+  # versions, were taken.
   system.stateVersion = "25.11";
 }

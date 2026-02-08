@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minecraft-server
+  namespace: games
+  labels:
+    app: minecraft-server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: minecraft-server
+  template:
+    metadata:
+      labels:
+        app: minecraft-server
+    spec:
+      containers:
+        - name: minecraft
+          image: itzg/minecraft-server:latest
+          ports:
+            - containerPort: 25565
+              name: minecraft
+          env:
+            - name: EULA
+              value: "TRUE"
+            - name: TYPE
+              value: "PAPER"
+            - name: VERSION
+              value: "1.21.4"
+            - name: MEMORY
+              value: "8G"
+            - name: MOTD
+              value: "kube server"
+            - name: DIFFICULTY
+              value: "peaceful"
+            - name: MAX_PLAYERS
+              value: "5"
+            - name: ONLINE_MODE
+              value: "FALSE"
+            - name: ALLOW_FLIGHT
+              value: "TRUE"
+          resources:
+            requests:
+              memory: "8Gi"
+              cpu: "1000m"
+            limits:
+              memory: "8Gi"
+              cpu: "2000m"
+          volumeMounts:
+            - name: minecraft-data
+              mountPath: /data
+      volumes:
+        - name: minecraft-data
+          persistentVolumeClaim:
+            claimName: minecraft-pvc
