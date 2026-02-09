@@ -31,6 +31,16 @@ spec:
               value: "100"
             - name: TZ
               value: "UTC"
+            - name: CUSTOM_USER
+              valueFrom:
+                secretKeyRef:
+                  name: tools-auth
+                  key: username
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tools-auth
+                  key: password
           resources:
             requests:
               memory: "512Mi"
