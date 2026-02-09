@@ -31,6 +31,10 @@ spec:
               value: "100"
             - name: TZ
               value: "UTC"
+            - name: RPC_PORT
+              value: "6800"
+            - name: LISTEN_PORT
+              value: "6888"
             - name: RPC_SECRET
               valueFrom:
                 secretKeyRef:
