@@ -19,27 +19,35 @@ spec:
         app: ariang
     spec:
       containers:
-        - name: aria2
-          image: p3terx/aria2-pro:latest
+        - name: aria2-ui
+          image: wahyd4/aria2-ui:latest
           ports:
-            - containerPort: 6800
-              name: rpc
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
           env:
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "100"
-            - name: TZ
-              value: "UTC"
-            - name: RPC_PORT
-              value: "6800"
-            - name: LISTEN_PORT
-              value: "6888"
             - name: RPC_SECRET
               valueFrom:
                 secretKeyRef:
                   name: tools-auth
                   key: password
+            - name: ENABLE_AUTH
+              value: "true"
+            - name: ARIA2_USER
+              valueFrom:
+                secretKeyRef:
+                  name: tools-auth
+                  key: username
+            - name: ARIA2_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: tools-auth
+                  key: password
+            - name: ENABLE_FILEBROWSER
+              value: "false"
+            - name: ENABLE_RCLONE
+              value: "false"
           resources:
             requests:
               memory: "2Gi"
@@ -48,26 +56,9 @@ spec:
               memory: "8Gi"
               cpu: "4000m"
           volumeMounts:
-            - name: config
-              mountPath: /config
             - name: downloads
-              mountPath: /downloads
-        - name: ariang-ui
-          image: p3terx/ariang:latest
-          ports:
-            - containerPort: 6880
-              name: http
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "128Mi"
-              cpu: "200m"
+              mountPath: /data
       volumes:
-        - name: config
-          persistentVolumeClaim:
-            claimName: ariang-config
         - name: downloads
           hostPath:
             path: /mnt/storage/Downloads
