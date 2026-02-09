@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ariang
+  namespace: tools
+spec:
+  type: ClusterIP
+  selector:
+    app: ariang
+  ports:
+    - port: 6800
+      targetPort: 6800
+      protocol: TCP
+      name: rpc
+    - port: 6888
+      targetPort: 6888
+      protocol: TCP
+      name: http

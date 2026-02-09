@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ariang
+  namespace: tools
+  labels:
+    app: ariang
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: ariang
+  template:
+    metadata:
+      labels:
+        app: ariang
+    spec:
+      containers:
+        - name: ariang
+          image: p3terx/aria2-pro:latest
+          ports:
+            - containerPort: 6800
+              name: rpc
+            - containerPort: 6888
+              name: http
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "100"
+            - name: TZ
+              value: "UTC"
+            - name: RPC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tools-auth
+                  key: password
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+            limits:
+              memory: "8Gi"
+              cpu: "4000m"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: downloads
+              mountPath: /downloads
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: ariang-config
+        - name: downloads
+          hostPath:
+            path: /mnt/storage/Downloads
+            type: Directory
