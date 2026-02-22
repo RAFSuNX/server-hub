@@ -83,12 +83,33 @@
   # Services Configuration
   # ===========================================================================
 
+  # Egress bandwidth guard (Oracle free tier: 10 TB/month outbound)
+  services.bandwidthGuard = {
+    enable    = true;
+    interface = "enp0s6";
+    limitGB   = 10000; # 10 TB
+  };
+
   services = {
     # OpenSSH server
-    openssh.enable = true;
+    openssh = {
+      enable = true;
+      settings = {
+        PasswordAuthentication = false;
+        PermitRootLogin = "no";
+        MaxAuthTries = 3;
+        LoginGraceTime = 20;
+      };
+    };
 
     # VNStat network usage monitoring
     vnstat.enable = true;
+
+    # Limit journal size to 500MB to prevent log accumulation
+    journald.extraConfig = ''
+      SystemMaxUse=500M
+      RuntimeMaxUse=500M
+    '';
 
     # Tailscale mesh VPN
     tailscale = {
