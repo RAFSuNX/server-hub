@@ -36,6 +36,20 @@
     '';
   };
 
+  # Enable UDP GRO forwarding on physical interface for Tailscale throughput
+  # Per Tailscale KB/1320 - requires Tailscale 1.54+ and kernel 6.2+
+  systemd.services.tailscale-udp-gro = {
+    description = "Enable UDP GRO forwarding for Tailscale performance";
+    after       = [ "network-online.target" ];
+    wants       = [ "network-online.target" ];
+    wantedBy    = [ "multi-user.target" ];
+    serviceConfig = {
+      Type            = "oneshot";
+      RemainAfterExit = true;
+      ExecStart       = "${pkgs.ethtool}/bin/ethtool -K enp0s6 rx-udp-gro-forwarding on rx-gro-list off";
+    };
+  };
+
   # DRBD device node
   systemd.tmpfiles.rules = [
     "c /dev/drbd-control 0600 root disk 147 0 -"
