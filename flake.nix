@@ -44,6 +44,7 @@
         ./modules/security.nix
         ./modules/k3s.nix
         ./modules/glusterfs.nix
+        ./modules/bandwidth-guard.nix
 
         # Host-specific configuration
         ./hosts/${hostname}/default.nix
