@@ -28,6 +28,9 @@
   # SSH authorized keys for this host
   users.users.rafsunx.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIFtPMG/Nk6mgBsXXzy7ESVLD5t44hMVD7KOZ16EAWq rafsunx@systemc"
+    # Server-to-server access
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII/HGagyQ0lj2CQ8OUzvairkp1LCbMs0/rdJUeOARF8/ rafsunx@systema"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJkgLUgPnDJLYt5PPsw7/kNeC2iYA/FxuuoIkBTbEo9B rafsunx@systemb"
   ];
 
   # ===========================================================================
