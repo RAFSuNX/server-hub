@@ -11,6 +11,8 @@ spec:
   selector:
     matchLabels:
       app: kite
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -36,6 +38,16 @@ spec:
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 5
+          env:
+            - name: KITE_ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kite-secret
+                  key: KITE_ENCRYPT_KEY
+            - name: DB_TYPE
+              value: sqlite
+            - name: DB_DSN
+              value: /app/data/dev.db
           resources:
             requests:
               memory: "128Mi"
