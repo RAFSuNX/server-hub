@@ -1,66 +1,57 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# NixOS Fleet Deploy Script
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-NIXOS_DIR="${SCRIPT_DIR}"
 REMOTE_DIR="/etc/nixos"
 SERVERS=("systema" "systemb" "systemc")
-SECRETS_DIR="${NIXOS_DIR}/secrets"
 
-# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+log_info()    { echo -e "${BLUE}[INFO]${NC} $1"; }
 log_success() { echo -e "${GREEN}[OK]${NC} $1"; }
-log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
-log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+log_warn()    { echo -e "${YELLOW}[WARN]${NC} $1"; }
+log_error()   { echo -e "${RED}[ERROR]${NC} $1"; }
 
 usage() {
-    echo "Usage: $0 [command] [options]"
+    echo "Usage: $0 [command] [host]"
     echo ""
     echo "Commands:"
-    echo "  deploy [host]       Deploy to all servers or specific host"
-    echo "  sync [host]         Only sync configs (no rebuild)"
-    echo "  check               Validate flake configuration"
-    echo "  status              Check server status"
-    echo "  dry-run [host]      Build config and show path without deploying"
+    echo "  deploy [host]     Deploy to all servers or specific host (parallel)"
+    echo "  sync [host]       Sync configs only, no rebuild"
+    echo "  dry-run [host]    Build config without switching"
+    echo "  cleanup [host]    GC old generations and clean temp files"
+    echo "  status            Check SSH + Tailscale status"
     echo ""
     echo "Options:"
-    echo "  --reboot            Reboot after deploy"
+    echo "  --reboot          Reboot after deploy"
     echo ""
     echo "Examples:"
-    echo "  $0 deploy                    # Deploy to all servers"
-    echo "  $0 deploy systema            # Deploy to systema only"
-    echo "  $0 dry-run                   # Check all servers"
+    echo "  $0 deploy                 # Deploy to all (parallel)"
+    echo "  $0 deploy systema         # Deploy to systema only"
+    echo "  $0 cleanup                # GC all servers"
+    echo "  $0 deploy --reboot        # Deploy + reboot all"
 }
 
 sync_to_host() {
     local host=$1
-    local tmp_dir="~/nixos-config-$$"
-    log_info "Syncing configuration to ${host}..."
+    local tmp="~/nixos-deploy-$$"
+    log_info "[${host}] Syncing configuration..."
 
-    # Copy to temp location first
-    ssh "$host" "rm -rf ${tmp_dir} && mkdir -p ${tmp_dir}/secrets"
-    scp -r "${NIXOS_DIR}/flake.nix" "${host}:${tmp_dir}/"
-    scp -r "${NIXOS_DIR}/flake.lock" "${host}:${tmp_dir}/" 2>/dev/null || true
-    scp -r "${NIXOS_DIR}/modules" "${host}:${tmp_dir}/"
-    scp -r "${NIXOS_DIR}/hosts" "${host}:${tmp_dir}/"
+    ssh "$host" "mkdir -p ${tmp}/secrets"
+    rsync -a --delete \
+        --exclude='*.sh' \
+        "${SCRIPT_DIR}/" "rafsunx@${host}:${tmp}/"
 
-    # Copy secrets if they exist
-    if [[ -d "$SECRETS_DIR" ]] && [[ -n "$(ls -A $SECRETS_DIR 2>/dev/null)" ]]; then
-        scp -r "${SECRETS_DIR}"/* "${host}:${tmp_dir}/secrets/"
-    fi
+    ssh "$host" "sudo rsync -a --delete ${tmp}/ ${REMOTE_DIR}/ && \
+        sudo chown -R root:root ${REMOTE_DIR} && \
+        sudo chmod 600 ${REMOTE_DIR}/secrets/*.age 2>/dev/null || true && \
+        rm -rf ${tmp}"
 
-    # Move to /etc/nixos with sudo
-    ssh "$host" "sudo rm -rf ${REMOTE_DIR}/* && sudo cp -r ${tmp_dir}/* ${REMOTE_DIR}/ && sudo chown -R root:root ${REMOTE_DIR} && sudo chmod 600 ${REMOTE_DIR}/secrets/* 2>/dev/null || true && rm -rf ${tmp_dir}"
-
-    log_success "Synced to ${host}"
+    log_success "[${host}] Synced"
 }
 
 deploy_to_host() {
@@ -69,119 +60,121 @@ deploy_to_host() {
 
     sync_to_host "$host"
 
-    log_info "Rebuilding NixOS on ${host}..."
-    ssh "$host" "sudo nixos-rebuild switch --flake ${REMOTE_DIR}#${host}"
-    log_success "Deployed to ${host}"
+    log_info "[${host}] Rebuilding NixOS..."
+    ssh "$host" "sudo nixos-rebuild switch --flake ${REMOTE_DIR}#${host} 2>&1 | tail -5"
+    log_success "[${host}] Deployed"
 
     if [[ "$reboot" == "true" ]]; then
-        log_info "Rebooting ${host}..."
+        log_info "[${host}] Rebooting..."
         ssh "$host" "sudo reboot" || true
     fi
 }
 
+deploy_parallel() {
+    local reboot=$1
+    shift
+    local hosts=("$@")
+    local pids=()
+
+    for host in "${hosts[@]}"; do
+        deploy_to_host "$host" "$reboot" &
+        pids+=($!)
+    done
+
+    local failed=0
+    for pid in "${pids[@]}"; do
+        wait "$pid" || { log_error "A deploy job failed (pid $pid)"; failed=1; }
+    done
+
+    [[ $failed -eq 0 ]] && log_success "All deployments complete"
+}
+
 dry_run_on_host() {
     local host=$1
-    local tmp_dir="~/nixos-config-dry-run-$$"
-    log_info "Performing a dry-run for ${host}..."
+    local tmp="~/nixos-dry-run-$$"
+    log_info "[${host}] Dry run..."
 
-    # Sync to a temporary directory
-    ssh "$host" "rm -rf ${tmp_dir} && mkdir -p ${tmp_dir}/secrets"
-    scp -r "${NIXOS_DIR}/flake.nix" "${host}:${tmp_dir}/"
-    scp -r "${NIXOS_DIR}/flake.lock" "${host}:${tmp_dir}/" 2>/dev/null || true
-    scp -r "${NIXOS_DIR}/modules" "${host}:${tmp_dir}/"
-    scp -r "${NIXOS_DIR}/hosts" "${host}:${tmp_dir}/"
-    if [[ -d "$SECRETS_DIR" ]] && [[ -n "$(ls -A $SECRETS_DIR 2>/dev/null)" ]]; then
-        scp -r "${SECRETS_DIR}"/* "${host}:${tmp_dir}/secrets/"
-    fi
+    ssh "$host" "mkdir -p ${tmp}/secrets"
+    rsync -a --exclude='*.sh' "${SCRIPT_DIR}/" "rafsunx@${host}:${tmp}/"
 
-    # Build the configuration and get the output path
-    local result_path
-    result_path=$(ssh "$host" "nixos-rebuild build --flake ${tmp_dir}#${host} --no-link")
-    
-    # Get the store path from the result
-    local store_path
-    store_path=$(echo "$result_path" | grep -o '/nix/store/.*-nixos-system-.*')
+    local current
+    current=$(ssh "$host" "readlink -f /run/current-system")
 
-    log_info "Local config for ${host} builds: ${store_path}"
+    local result
+    result=$(ssh "$host" "nixos-rebuild build --flake ${tmp}#${host} --no-link 2>/dev/null; \
+        ls -d /nix/store/*-nixos-system-${host}-* 2>/dev/null | sort | tail -1") || true
 
-    # Get the current system path
-    local current_system
-    current_system=$(ssh "$host" "readlink -f /run/current-system")
-    log_info "Current system on ${host} is: ${current_system}"
+    ssh "$host" "rm -rf ${tmp}"
 
-    if [[ "$store_path" == "$current_system" ]]; then
-        log_success "Configuration for ${host} is up to date."
+    if [[ "$result" == "$current" ]]; then
+        log_success "[${host}] Up to date: ${current}"
     else
-        log_warn "Configuration for ${host} is NOT up to date."
+        log_warn  "[${host}] Would change:"
+        log_info  "  current: ${current}"
+        log_info  "  new:     ${result}"
     fi
+}
 
-    # Clean up
-    ssh "$host" "rm -rf ${tmp_dir}"
+cleanup_host() {
+    local host=$1
+    log_info "[${host}] Running cleanup..."
+    ssh "$host" "
+        sudo nix-collect-garbage -d 2>&1 | tail -3
+        sudo rm -rf /tmp/nixos-* /tmp/nixos-deploy-* /tmp/nixos-dry-run-* 2>/dev/null || true
+        sudo journalctl --vacuum-size=50M 2>&1 | tail -2
+    "
+    log_success "[${host}] Cleaned"
 }
 
 check_status() {
     for host in "${SERVERS[@]}"; do
         if ssh -o ConnectTimeout=5 "$host" "echo ok" &>/dev/null; then
-            log_success "${host} is online"
+            local ts
+            ts=$(ssh "$host" "sudo tailscale status 2>/dev/null | grep \$(hostname)" || echo "tailscale unknown")
+            log_success "${host} online — ${ts}"
         else
-            log_error "${host} is offline"
+            log_error "${host} offline"
         fi
     done
 }
 
-check_flake() {
-    log_info "Checking flake configuration..."
-    cd "$NIXOS_DIR" && nix flake check
-    log_success "Flake configuration is valid"
-}
-
-# Parse arguments
+# Parse args
 COMMAND=${1:-}
 TARGET=${2:-}
 REBOOT=false
+for arg in "$@"; do [[ "$arg" == "--reboot" ]] && REBOOT=true; done
 
-for arg in "$@"; do
-    case $arg in
-        --reboot) REBOOT=true ;;
-    esac
-done
+# Filter out --reboot from TARGET
+[[ "$TARGET" == "--reboot" ]] && TARGET=""
 
 case "$COMMAND" in
     deploy)
-        if [[ -n "$TARGET" && "$TARGET" != "--"* ]]; then
+        if [[ -n "$TARGET" ]]; then
             deploy_to_host "$TARGET" "$REBOOT"
         else
-            for host in "${SERVERS[@]}"; do
-                deploy_to_host "$host" "$REBOOT"
-            done
+            deploy_parallel "$REBOOT" "${SERVERS[@]}"
         fi
         ;;
     sync)
-        if [[ -n "$TARGET" && "$TARGET" != "--"* ]]; then
-            sync_to_host "$TARGET"
-        else
-            for host in "${SERVERS[@]}"; do
-                sync_to_host "$host"
-            done
-        fi
+        targets=( ${TARGET:-"${SERVERS[@]}"} )
+        for h in "${targets[@]}"; do sync_to_host "$h"; done
         ;;
     dry-run)
-        if [[ -n "$TARGET" && "$TARGET" != "--"* ]]; then
-            dry_run_on_host "$TARGET"
-        else
-            for host in "${SERVERS[@]}"; do
-                dry_run_on_host "$host"
-            done
-        fi
+        targets=( ${TARGET:-"${SERVERS[@]}"} )
+        for h in "${targets[@]}"; do dry_run_on_host "$h"; done
         ;;
-    check)
-        check_flake
+    cleanup)
+        if [[ -n "$TARGET" ]]; then
+            cleanup_host "$TARGET"
+        else
+            for host in "${SERVERS[@]}"; do cleanup_host "$host" & done
+            wait && log_success "All nodes cleaned"
+        fi
         ;;
     status)
         check_status
         ;;
     *)
-        usage
-        exit 1
+        usage; exit 1
         ;;
 esac

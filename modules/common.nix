@@ -1,207 +1,91 @@
-# =============================================================================
-# Common Configuration
-# =============================================================================
-# Shared configuration applied to all servers in the fleet.
-# Includes base system settings, networking, users, and essential services.
-#
-# Author: rafsunx
-# Last Modified: 2026-02-08
-# =============================================================================
-
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, nodeIPs, ... }:
 
 {
-  # ===========================================================================
-  # Boot Configuration
-  # ===========================================================================
-
-  boot = {
-    # Bootloader settings
-    loader = {
-      systemd-boot = {
-        enable = true;
-        configurationLimit = 1;  # Limit boot entries (small /boot partition)
-      };
-      efi.canTouchEfiVariables = true;
-      timeout = 0;  # No boot menu delay
+  # Boot
+  boot.loader = {
+    systemd-boot = {
+      enable             = true;
+      configurationLimit = 1;
     };
-
-    # DRBD 9 kernel module for Piraeus/LINSTOR distributed storage
-    extraModulePackages = with config.boot.kernelPackages; [ drbd ];
-    blacklistedKernelModules = [ "drbd" ];
-    kernelModules = [ "drbd9" ];
-
-    extraModprobeConfig = ''
-      options drbd usermode_helper=/run/current-system/sw/bin/true
-    '';
+    efi.canTouchEfiVariables = true;
+    timeout = 0;
   };
 
-  # Set Tailscale MTU to 8940 to utilize Oracle Cloud's 9000 MTU jumbo frames
-  # WireGuard/IPv4 overhead is ~60 bytes, so 9000 - 60 = 8940 optimal inner MTU
-  # Tested: +47% throughput improvement on co-located nodes vs default 1280 MTU
-  systemd.services.tailscale-mtu = {
-    description = "Set Tailscale interface MTU for jumbo frame utilization";
-    after       = [ "tailscaled.service" "network-online.target" ];
-    wants       = [ "network-online.target" ];
-    wantedBy    = [ "multi-user.target" ];
-    serviceConfig = {
-      Type            = "oneshot";
-      RemainAfterExit = true;
-      ExecStart       = "${pkgs.iproute2}/bin/ip link set tailscale0 mtu 8940";
-    };
-  };
+  # Networking
+  networking.networkmanager.enable = true;
 
-  # Enable UDP GRO forwarding on physical interface for Tailscale throughput
-  # Per Tailscale KB/1320 - requires Tailscale 1.54+ and kernel 6.2+
-  systemd.services.tailscale-udp-gro = {
-    description = "Enable UDP GRO forwarding for Tailscale performance";
-    after       = [ "network-online.target" ];
-    wants       = [ "network-online.target" ];
-    wantedBy    = [ "multi-user.target" ];
-    serviceConfig = {
-      Type            = "oneshot";
-      RemainAfterExit = true;
-      ExecStart       = "${pkgs.ethtool}/bin/ethtool -K enp0s6 rx-udp-gro-forwarding on rx-gro-list off";
-    };
-  };
+  # Tailscale hostname resolution — each node maps the other two, not itself
+  networking.hosts = lib.filterAttrs
+    (_ip: names: !(builtins.elem config.networking.hostName names))
+    (lib.mapAttrs' (name: ip: lib.nameValuePair ip [ name ]) nodeIPs);
 
-  # DRBD device node
-  systemd.tmpfiles.rules = [
-    "c /dev/drbd-control 0600 root disk 147 0 -"
-  ];
+  # Secrets
+  age.secrets.tailscale_authkey.file = ../secrets/tailscale_authkey.age;
 
-  # Symlink /lib/modules for Piraeus/LINSTOR compatibility
-  # NixOS uses different path than standard FHS
-  system.activationScripts.libModulesSymlink = ''
-    mkdir -p /lib
-    ln -sfn /run/current-system/kernel-modules/lib/modules /lib/modules
-  '';
-
-  # ===========================================================================
-  # Networking Configuration
-  # ===========================================================================
-
-  networking = {
-    # Enable NetworkManager for network configuration
-    networkmanager.enable = true;
-
-    # Tailscale mesh VPN hostname resolution
-    hosts = {
-      "100.108.186.15" = [ "systema" ];
-      "100.127.141.103" = [ "systemb" ];
-      "100.65.5.39" = [ "systemc" ];
-    };
-  };
-
-  # ===========================================================================
-  # User Configuration
-  # ===========================================================================
-
+  # User — SSH authorized keys defined per-host in hosts/<hostname>/default.nix
   users.users.rafsunx = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ];
-    openssh.authorizedKeys.keys = [
-      # SSH keys are defined per-host in hosts/<hostname>/default.nix
+    extraGroups  = [ "wheel" ];
+  };
+
+  security.sudo.wheelNeedsPassword = false;
+
+  # Fail2ban — permanent ban after 3 failed SSH attempts
+  services.fail2ban = {
+    enable     = true;
+    maxretry   = 3;
+    bantime    = "-1";
+    jails.sshd.settings = {
+      enabled  = true;
+      port     = "ssh";
+      filter   = "sshd";
+      maxretry = 3;
+      bantime  = "-1";
+    };
+  };
+
+  # SSH
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin        = "no";
+      MaxAuthTries           = 3;
+      LoginGraceTime         = 20;
+    };
+  };
+
+  # Kernel modules — vxlan required for flannel VXLAN backend
+  boot.kernelModules = [ "vxlan" ];
+
+  # IP forwarding — required for Tailscale exit node and subnet routing
+  boot.kernel.sysctl = {
+    "net.ipv4.ip_forward"          = 1;
+    "net.ipv6.conf.all.forwarding" = 1;
+  };
+
+  # Tailscale
+  services.tailscale = {
+    enable      = true;
+    authKeyFile = config.age.secrets.tailscale_authkey.path;
+    extraUpFlags = [
+      "--advertise-exit-node"
+      "--hostname=${config.networking.hostName}"
     ];
   };
 
-  # Passwordless sudo for wheel group members
-  security.sudo.wheelNeedsPassword = false;
+  # vnstat — network traffic monitoring
+  services.vnstat.enable = true;
 
-  # ===========================================================================
-  # Services Configuration
-  # ===========================================================================
-
-  # Egress bandwidth guard (Oracle free tier: 10 TB/month outbound)
-  services.bandwidthGuard = {
-    enable    = true;
-    interface = "enp0s6";
-    limitGB   = 10000; # 10 TB
+  # Nix
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    auto-optimise-store   = true;
   };
 
-  services = {
-    # OpenSSH server
-    openssh = {
-      enable = true;
-      settings = {
-        PasswordAuthentication = false;
-        PermitRootLogin = "no";
-        MaxAuthTries = 3;
-        LoginGraceTime = 20;
-      };
-    };
+  environment.systemPackages = with pkgs; [ git curl vnstat ];
 
-    # VNStat network usage monitoring
-    vnstat.enable = true;
-
-    # Limit journal size to 500MB to prevent log accumulation
-    journald.extraConfig = ''
-      SystemMaxUse=500M
-      RuntimeMaxUse=500M
-    '';
-
-    # Tailscale mesh VPN
-    tailscale = {
-      enable = true;
-      authKeyFile = "/etc/nixos/secrets/tailscale_authkey";
-      extraUpFlags = [
-        "--advertise-exit-node"
-        "--hostname=${config.networking.hostName}"
-      ];
-    };
-  };
-
-  # ===========================================================================
-  # System Packages
-  # ===========================================================================
-
-  environment.systemPackages = with pkgs; [
-    # Text editors
-    nano
-
-    # Network utilities
-    curl
-
-    # Version control
-    git
-
-    # System monitoring
-    htop
-    vnstat
-
-    # Storage (DRBD utilities for Piraeus/LINSTOR)
-    drbd
-  ];
-
-  # ===========================================================================
-  # Nix Configuration
-  # ===========================================================================
-
-  nix = {
-    # Nix daemon settings
-    settings = {
-      experimental-features = [ "nix-command" "flakes" ];
-      auto-optimise-store = true;
-    };
-
-    # Automatic garbage collection
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
-    };
-  };
-
-  # ===========================================================================
-  # System Settings
-  # ===========================================================================
-
-  # Timezone
   time.timeZone = "Asia/Dhaka";
 
-  # NixOS release version
-  # DO NOT CHANGE - this value determines the NixOS release from which the
-  # default settings for stateful data, like file locations and database
-  # versions, were taken.
   system.stateVersion = "25.11";
 }
