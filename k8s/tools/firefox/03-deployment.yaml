@@ -17,6 +17,7 @@ spec:
     metadata:
       labels:
         app: firefox
+        app.kubernetes.io/name: firefox
     spec:
       containers:
         - name: firefox
@@ -46,12 +47,17 @@ spec:
               memory: "512Mi"
               cpu: "500m"
             limits:
-              memory: "2Gi"
-              cpu: "2000m"
+              memory: "8Gi"
+              cpu: "3000m"
           volumeMounts:
             - name: config
               mountPath: /config
+            - name: downloads
+              mountPath: /config/Downloads
       volumes:
         - name: config
           persistentVolumeClaim:
             claimName: firefox-config
+        - name: downloads
+          hostPath:
+            path: /mnt/storage/Downloads

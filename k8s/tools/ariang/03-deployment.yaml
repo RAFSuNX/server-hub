@@ -17,7 +17,22 @@ spec:
     metadata:
       labels:
         app: ariang
+        app.kubernetes.io/name: ariang
     spec:
+      initContainers:
+        - name: init-config
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              if [ ! -f /app/conf/aria2.conf ]; then
+                mkdir -p /app/conf
+                touch /app/conf/aria2.conf
+              fi
+          volumeMounts:
+            - name: config
+              mountPath: /app/conf
       containers:
         - name: aria2-ui
           image: wahyd4/aria2-ui:latest
@@ -56,9 +71,14 @@ spec:
               memory: "8Gi"
               cpu: "4000m"
           volumeMounts:
+            - name: config
+              mountPath: /app/conf
             - name: downloads
               mountPath: /data
       volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: ariang-config
         - name: downloads
           hostPath:
             path: /mnt/storage/Downloads

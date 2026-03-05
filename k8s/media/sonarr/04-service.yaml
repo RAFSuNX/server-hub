@@ -5,10 +5,11 @@ metadata:
   name: sonarr
   namespace: media
 spec:
+  clusterIP: 10.43.1.11
   type: ClusterIP
   selector:
     app: sonarr
   ports:
-    - port: 8989
+    - port: 80
       targetPort: 8989
       protocol: TCP

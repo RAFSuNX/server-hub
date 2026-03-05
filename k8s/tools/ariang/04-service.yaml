@@ -5,6 +5,7 @@ metadata:
   name: ariang
   namespace: tools
 spec:
+  clusterIP: 10.43.1.4
   type: ClusterIP
   selector:
     app: ariang

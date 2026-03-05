@@ -5,19 +5,20 @@ metadata:
   name: qbittorrent
   namespace: media
 spec:
+  clusterIP: 10.43.1.14
   type: ClusterIP
   selector:
     app: qbittorrent
   ports:
     - name: http
-      port: 8080
+      port: 80
       targetPort: 8080
       protocol: TCP
-    - name: tcp
+    - name: torrent-tcp
       port: 6881
       targetPort: 6881
       protocol: TCP
-    - name: udp
+    - name: torrent-udp
       port: 6881
       targetPort: 6881
       protocol: UDP

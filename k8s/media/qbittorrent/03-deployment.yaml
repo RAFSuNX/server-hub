@@ -19,6 +19,7 @@ spec:
     metadata:
       labels:
         app: qbittorrent
+        app.kubernetes.io/name: qbittorrent
     spec:
       containers:
       - env:

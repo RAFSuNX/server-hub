@@ -17,23 +17,35 @@ spec:
     metadata:
       labels:
         app: n8n
+        app.kubernetes.io/name: n8n
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: n8n
           image: n8nio/n8n:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 5678
           env:
             - name: N8N_PORT
               value: "5678"
             - name: N8N_PROTOCOL
-              value: "http"
+              value: "https"
+            - name: N8N_HOST
+              value: "n8n.rogx.cc"
+            - name: WEBHOOK_URL
+              value: "https://n8n.rogx.cc/"
             - name: GENERIC_TIMEZONE
-              value: "UTC"
+              value: "Asia/Dhaka"
+            - name: N8N_RUNNERS_ENABLED
+              value: "true"
           resources:
             requests:
               memory: "512Mi"
-              cpu: "500m"
+              cpu: "250m"
             limits:
               memory: "2Gi"
               cpu: "2000m"

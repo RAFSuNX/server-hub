@@ -6,9 +6,8 @@ metadata:
   namespace: media
 spec:
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
+  storageClassName: longhorn
   resources:
     requests:
-      storage: 500Mi
-  storageClassName: piraeus-storage
-  volumeMode: Filesystem
+      storage: 1Gi

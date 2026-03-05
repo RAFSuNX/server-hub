@@ -5,10 +5,11 @@ metadata:
   name: radarr
   namespace: media
 spec:
+  clusterIP: 10.43.1.12
   type: ClusterIP
   selector:
     app: radarr
   ports:
-    - port: 7878
+    - port: 80
       targetPort: 7878
       protocol: TCP

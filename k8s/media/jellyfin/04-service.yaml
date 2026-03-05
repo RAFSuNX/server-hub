@@ -5,12 +5,11 @@ metadata:
   name: jellyfin
   namespace: media
 spec:
-  clusterIP: 10.43.10.10
+  clusterIP: 10.43.1.10
   type: ClusterIP
   selector:
     app: jellyfin
   ports:
-    - port: 8096
+    - port: 80
       targetPort: 8096
       protocol: TCP
-      name: http

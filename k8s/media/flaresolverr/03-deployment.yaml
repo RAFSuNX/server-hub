@@ -14,15 +14,19 @@ spec:
     matchLabels:
       app: flaresolverr
   strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
+    type: Recreate
   template:
     metadata:
       labels:
         app: flaresolverr
     spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: prowlarr
+              topologyKey: kubernetes.io/hostname
       containers:
       - env:
         - name: LOG_LEVEL

@@ -14,14 +14,12 @@ spec:
     matchLabels:
       app: radarr
   strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
+    type: Recreate
   template:
     metadata:
       labels:
         app: radarr
+        app.kubernetes.io/name: radarr
     spec:
       containers:
       - env:

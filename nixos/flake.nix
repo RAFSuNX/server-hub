@@ -1,63 +1,57 @@
 # =============================================================================
-# NixOS Fleet Configuration
+# NixOS Cluster Flake
 # =============================================================================
-# Flake-based configuration for the server fleet.
+# Three-node aarch64 cluster on Oracle Cloud.
 #
-# Servers:
-#   - systema (init node)
-#   - systemb (join node)
-#   - systemc (join node)
+# Nodes:
+#   - systema  (k3s init / control-plane / etcd)
+#   - systemb  (k3s join / control-plane / etcd)
+#   - systemc  (k3s join / control-plane / etcd)
 #
-# Architecture: aarch64-linux (ARM Neoverse-N1)
-# OS: NixOS 26.05 (Yarara)
-#
-# Author: rafsunx
-# Last Modified: 2026-02-08
+# Secrets: managed with agenix, encrypted to each host's SSH host key.
 # =============================================================================
 
 {
-  description = "NixOS server fleet configuration";
-
-  # ===========================================================================
-  # Inputs
-  # ===========================================================================
+  description = "NixOS cluster — systema / systemb / systemc";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  # ===========================================================================
-  # Outputs
-  # ===========================================================================
+  outputs = { self, nixpkgs, agenix }: {
 
-  outputs = { self, nixpkgs, ... }:
-  let
-    # Target architecture for all servers
-    system = "aarch64-linux";
+    nixosConfigurations =
+      let
+        nodeIPs = {
+          systema = "100.120.228.12";
+          systemb = "100.110.116.30";
+          systemc = "100.69.17.116";
+        };
 
-    # Helper function to create a NixOS system configuration
-    mkHost = hostname: nixpkgs.lib.nixosSystem {
-      inherit system;
-      modules = [
-        # Shared modules (applied to all hosts)
-        ./modules/common.nix
-        ./modules/security.nix
-        ./modules/k3s.nix
-        ./modules/glusterfs.nix
-        ./modules/bandwidth-guard.nix
+        mkHost = hostname: nixpkgs.lib.nixosSystem {
+          system = "aarch64-linux";
+          specialArgs = { inherit nodeIPs; };
+          modules = [
+            agenix.nixosModules.default
+            ./hosts/${hostname}
+            ./modules/common.nix
+            ./modules/k3s.nix
+            ./modules/glusterfs.nix
+            ./modules/security.nix
+            ./modules/longhorn.nix
+            # ./modules/bandwidth-guard.nix # TODO
+          ];
+        };
+      in {
+        systema = mkHost "systema";
+        systemb = mkHost "systemb";
+        systemc = mkHost "systemc";
+      };
 
-        # Host-specific configuration
-        ./hosts/${hostname}/default.nix
-        ./hosts/${hostname}/hardware-configuration.nix
-      ];
-    };
-  in
-  {
-    # NixOS system configurations
-    nixosConfigurations = {
-      systema = mkHost "systema";
-      systemb = mkHost "systemb";
-      systemc = mkHost "systemc";
-    };
   };
 }

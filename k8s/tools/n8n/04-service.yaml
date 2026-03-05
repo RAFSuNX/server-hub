@@ -6,9 +6,10 @@ metadata:
   namespace: tools
 spec:
   type: ClusterIP
+  clusterIP: 10.43.1.7
   selector:
     app: n8n
   ports:
-    - port: 5678
+    - port: 80
       targetPort: 5678
       protocol: TCP

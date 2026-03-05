@@ -14,14 +14,12 @@ spec:
     matchLabels:
       app: sonarr
   strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
+    type: Recreate
   template:
     metadata:
       labels:
         app: sonarr
+        app.kubernetes.io/name: sonarr
     spec:
       containers:
       - env:

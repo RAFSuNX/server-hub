@@ -5,11 +5,12 @@ metadata:
   name: firefox
   namespace: tools
 spec:
+  clusterIP: 10.43.1.5
   type: ClusterIP
   selector:
     app: firefox
   ports:
-    - port: 3000
+    - port: 80
       targetPort: 3000
       protocol: TCP
       name: http

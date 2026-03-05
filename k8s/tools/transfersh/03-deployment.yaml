@@ -15,6 +15,7 @@ spec:
     metadata:
       labels:
         app: transfersh
+        app.kubernetes.io/name: transfersh
     spec:
       containers:
         - name: transfersh

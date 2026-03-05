@@ -17,6 +17,7 @@ spec:
     metadata:
       labels:
         app: kite
+        app.kubernetes.io/name: kite
     spec:
       serviceAccountName: kite
       containers:

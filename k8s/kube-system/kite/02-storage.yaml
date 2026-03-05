@@ -7,7 +7,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: piraeus-storage
+  storageClassName: longhorn
   resources:
     requests:
-      storage: 1Gi
+      storage: 256Mi
