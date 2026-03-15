@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: seerr
+  name: seerr
+  namespace: media
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: seerr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: seerr
+        app.kubernetes.io/name: seerr
+    spec:
+      containers:
+      - name: seerr
+        image: ghcr.io/rafsunx/seerr:v0.0.0-feat-theming-system-20260309-r5
+        imagePullPolicy: Always
+        env:
+        - name: LOG_LEVEL
+          value: info
+        - name: TZ
+          value: Asia/Dhaka
+        ports:
+        - containerPort: 5055
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 512Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        volumeMounts:
+        - mountPath: /app/config
+          name: config
+      securityContext:
+        fsGroup: 1000
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: jellyseerr-config

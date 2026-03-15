@@ -12,8 +12,8 @@ data:
     headerStyle: clean
     cardBlur: md
     background:
-      image: https://i.postimg.cc/T1QdBW0M/wallhaven-vpoem3.jpg
-      opacity: 80
+      image: https://w.wallhaven.cc/full/xe/wallhaven-xe778z.jpg
+      opacity: 60
     layout:
       Cluster:
         style: row
@@ -45,18 +45,6 @@ data:
         timezone: Asia/Dhaka
         units: metric
         cache: 5
-    - kubernetes:
-        cluster:
-          show: true
-          cpu: true
-          memory: true
-          showLabel: true
-          label: cluster
-        nodes:
-          show: true
-          cpu: true
-          memory: true
-          showLabel: true
     - search:
         provider: google
         target: _blank
@@ -163,6 +151,28 @@ data:
               url: http://radarr.media
               key: a49b84b735ab4d65ba1fc6c74979c71f
 
+        - Seerr:
+            icon: jellyseerr.png
+            href: http://10.43.1.15
+            description: Media Requests
+            namespace: media
+            app: seerr
+            widget:
+              type: customapi
+              url: http://seerr.media/api/v1/request/count
+              headers:
+                X-Api-Key: MTc3Mjc3MzUxOTM4NzVkZGVkYjAxLTIxNzAtNDIwZi1iZDIyLTg3MDBmY2VkOWZmOQ==
+              mappings:
+                - field: processing
+                  label: Processing
+                  format: number
+                - field: pending
+                  label: Pending
+                  format: number
+                - field: completed
+                  label: Available
+                  format: number
+
         - Prowlarr:
             icon: prowlarr.png
             href: http://10.43.1.13
@@ -207,6 +217,13 @@ data:
             description: Browser
             namespace: tools
             app: firefox
+
+        - n8n:
+            icon: n8n.png
+            href: http://10.43.1.7
+            description: Automation
+            namespace: tools
+            app: n8n
 
         - Alist:
             icon: alist.png
