@@ -1,0 +1,38 @@
+---
+- name: Install Docker (Debian)
+  shell: curl -fsSL https://get.docker.com | sh
+  when: ansible_os_family == "Debian"
+  become: yes
+  args:
+    creates: /usr/bin/docker
+
+- name: Install Docker + python requests (Alpine)
+  community.general.apk:
+    name:
+      - docker
+      - docker-cli-compose
+      - py3-requests
+    state: present
+  when: ansible_os_family == "Alpine"
+  become: yes
+
+- name: Add rafsunx to docker group
+  user:
+    name: rafsunx
+    groups: docker
+    append: yes
+  become: yes
+
+- name: Enable and start Docker (Debian)
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
+  when: ansible_os_family == "Debian"
+  become: yes
+
+- name: Enable and start Docker (Alpine)
+  command: rc-update add docker default
+  when: ansible_os_family == "Alpine"
+  become: yes
+  changed_when: false

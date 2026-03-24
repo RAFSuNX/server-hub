@@ -44,6 +44,7 @@
             ./modules/glusterfs.nix
             ./modules/security.nix
             ./modules/longhorn.nix
+            ./modules/rclone.nix
             # ./modules/bandwidth-guard.nix # TODO
           ];
         };

@@ -239,5 +239,12 @@ data:
             namespace: tools
             app: transfersh
 
+        - SearXNG:
+            icon: searxng.png
+            href: http://10.43.1.8
+            description: Search Engine
+            namespace: tools
+            app: searxng
+
   bookmarks.yaml: |
     []

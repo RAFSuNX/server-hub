@@ -45,6 +45,10 @@ spec:
               mountPath: /data/tvshows
             - name: movies
               mountPath: /data/movies
+            - name: gdrive-shows
+              mountPath: /data/gdrive/tvshows
+            - name: gdrive-movies
+              mountPath: /data/gdrive/movies
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -56,4 +60,12 @@ spec:
         - name: movies
           hostPath:
             path: /mnt/storage/Movies
+            type: Directory
+        - name: gdrive-shows
+          hostPath:
+            path: /mnt/gdrive/Shows
+            type: Directory
+        - name: gdrive-movies
+          hostPath:
+            path: /mnt/gdrive/Movies
             type: Directory

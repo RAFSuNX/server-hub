@@ -51,6 +51,8 @@ spec:
           name: shows
         - mountPath: /downloads
           name: downloads
+        - mountPath: /gdrive/shows
+          name: gdrive-shows
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -68,3 +70,7 @@ spec:
           path: /mnt/storage/Downloads
           type: DirectoryOrCreate
         name: downloads
+      - hostPath:
+          path: /mnt/gdrive/Shows
+          type: Directory
+        name: gdrive-shows

@@ -1,0 +1,10 @@
+{% for host in groups['servers'] %}
+{% if host != inventory_hostname %}
+Host {{ host }}
+  HostName {{ hostvars[host]['private_ip'] }}
+  User rafsunx
+  IdentityFile ~/.ssh/id_ed25519
+  StrictHostKeyChecking accept-new
+
+{% endif %}
+{% endfor %}

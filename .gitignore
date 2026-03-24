@@ -1,3 +1,6 @@
+# Environment secrets
+.env
+
 # NixOS secrets
 nixos/secrets/
 
@@ -5,10 +8,18 @@ nixos/secrets/
 k8s/secrets/
 k8s/media/*-secret.yaml
 k8s/media/*-secrets.yaml
+k8s/tools/*-secret.yaml
+k8s/tools/*-secrets.yaml
 
 # Kubeconfig
 *.kubeconfig
 kubeconfig
+
+# Ansible inventory (contains real IPs and references secrets)
+ansible/inventory/hosts.ini
+
+# Server details (contains real IPs and infrastructure info)
+data/
 
 # Editor files
 *.swp

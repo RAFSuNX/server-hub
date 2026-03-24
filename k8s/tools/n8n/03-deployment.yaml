@@ -41,7 +41,7 @@ spec:
             - name: GENERIC_TIMEZONE
               value: "Asia/Dhaka"
             - name: N8N_RUNNERS_ENABLED
-              value: "true"
+              value: "false"
           resources:
             requests:
               memory: "512Mi"
