@@ -37,11 +37,11 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: "1"
-            memory: 1Gi
+            cpu: "2"
+            memory: 3Gi
           requests:
             cpu: 100m
-            memory: 256Mi
+            memory: 512Mi
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
@@ -53,6 +53,8 @@ spec:
           name: downloads
         - mountPath: /gdrive/movies
           name: gdrive-movies
+        - mountPath: /hza/movies
+          name: hza-movies
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -74,3 +76,7 @@ spec:
           path: /mnt/gdrive/Movies
           type: Directory
         name: gdrive-movies
+      - hostPath:
+          path: /mnt/hza/Movies
+          type: Directory
+        name: hza-movies
