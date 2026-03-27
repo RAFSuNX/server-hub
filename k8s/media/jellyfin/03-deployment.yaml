@@ -49,6 +49,10 @@ spec:
               mountPath: /data/gdrive/tvshows
             - name: gdrive-movies
               mountPath: /data/gdrive/movies
+            - name: hza-shows
+              mountPath: /data/hza/tvshows
+            - name: hza-movies
+              mountPath: /data/hza/movies
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -68,4 +72,12 @@ spec:
         - name: gdrive-movies
           hostPath:
             path: /mnt/gdrive/Movies
+            type: Directory
+        - name: hza-shows
+          hostPath:
+            path: /mnt/hza/Shows
+            type: Directory
+        - name: hza-movies
+          hostPath:
+            path: /mnt/hza/Movies
             type: Directory
