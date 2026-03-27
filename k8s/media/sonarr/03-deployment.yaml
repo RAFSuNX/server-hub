@@ -53,6 +53,8 @@ spec:
           name: downloads
         - mountPath: /gdrive/shows
           name: gdrive-shows
+        - mountPath: /hza/shows
+          name: hza-shows
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -74,3 +76,7 @@ spec:
           path: /mnt/gdrive/Shows
           type: Directory
         name: gdrive-shows
+      - hostPath:
+          path: /mnt/hza/Shows
+          type: Directory
+        name: hza-shows
