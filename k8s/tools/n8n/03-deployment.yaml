@@ -43,12 +43,18 @@ spec:
             - name: N8N_RUNNERS_ENABLED
               value: "false"
           resources:
+
             requests:
-              memory: "512Mi"
-              cpu: "250m"
+
+              cpu: "100m"
+
+              memory: "256Mi"
+
             limits:
-              memory: "2Gi"
-              cpu: "2000m"
+
+              cpu: "1000m"
+
+              memory: "1Gi"
           volumeMounts:
             - name: n8n-data
               mountPath: /home/node/.n8n

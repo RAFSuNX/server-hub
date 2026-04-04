@@ -10,9 +10,9 @@ data:
     theme: dark
     color: slate
     headerStyle: clean
-    cardBlur: md
+    cardBlur: xl
     background:
-      image: https://w.wallhaven.cc/full/xe/wallhaven-xe778z.jpg
+      image: https://w.wallhaven.cc/full/ly/wallhaven-ly8dzp.jpg
       opacity: 60
     layout:
       Cluster:
@@ -84,7 +84,6 @@ data:
                     suffix: " GB"
                     options:
                       maximumFractionDigits: 1
-
         - Infrastructure:
             widget:
               type: prometheusmetric
@@ -213,7 +212,7 @@ data:
 
         - Firefox:
             icon: firefox.png
-            href: http://10.43.1.5
+            href: https://10.43.1.5
             description: Browser
             namespace: tools
             app: firefox

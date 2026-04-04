@@ -7,7 +7,7 @@ High-level architecture documentation for the 3-node homelab cluster.
 ### Hardware
 - 3x ARM servers (Neoverse-N1, 24GB RAM, 200GB disk each)
 - Geographic distribution: Different data centers
-- OS: NixOS 26.05 (declarative configuration)
+- OS: NixOS 25.11 (declarative configuration)
 
 ### Core Components
 ```
@@ -54,13 +54,13 @@ High-level architecture documentation for the 3-node homelab cluster.
 
 ### Two-tier Storage Strategy
 
-#### Tier 1: Critical Data (LINSTOR/DRBD)
-- **Replication**: 3x synchronous across all nodes
-- **Technology**: DRBD9 (Distributed Replicated Block Device)
+#### Tier 1: Critical Data (Longhorn)
+- **Replication**: 3 replicas across nodes (per volume policy)
+- **Technology**: Longhorn distributed block storage (CSI)
 - **Use case**: Databases, config data, application state
 - **Characteristics**:
-  - High durability (survives 2 node failures)
-  - I/O overhead due to synchronous replication
+  - Durable replicated volumes with Kubernetes-native management
+  - Supports snapshots and backup workflows
   - ~30GB total usage
 
 #### Tier 2: Media Storage (GlusterFS)
@@ -87,9 +87,9 @@ Application Write
        ▼                 ▼                 ▼
  ┌─────────┐       ┌─────────┐       ┌─────────┐
  │ systema │◄─────►│ systemb │◄─────►│ systemc │
- │  DRBD   │       │  DRBD   │       │  DRBD   │
+ │Longhorn │       │Longhorn │       │Longhorn │
  └─────────┘       └─────────┘       └─────────┘
-    (sync)            (sync)            (sync)
+  (replica)         (replica)         (replica)
 ```
 
 ## High Availability
@@ -103,12 +103,12 @@ Application Write
 - **Pod distribution**: Spread across nodes with anti-affinity rules
 - **CoreDNS**: 3 replicas (1 per node)
 - **Metrics server**: 2 replicas
-- **LINSTOR controller**: 1 replica (planned HA upgrade)
+- **Longhorn manager**: DaemonSet across all nodes
 
 ### Failure Scenarios
 - **1 node down**: Cluster operational, etcd maintains quorum
 - **2 nodes down**: Cluster degraded, some services unavailable
-- **Storage**: DRBD survives 2-node failure, data remains accessible
+- **Storage**: Replicated volumes typically survive single-node failure (depends on replica placement)
 
 ## Management
 
@@ -122,6 +122,9 @@ nixos/
 │   ├── common.nix      # Base system config
 │   ├── k3s.nix         # Kubernetes setup
 │   ├── glusterfs.nix   # Media storage
+│   ├── longhorn.nix    # Longhorn host requirements
+│   ├── rclone.nix      # Cloud mounts
+│   ├── hza-smb.nix     # SMB mounts
 │   └── security.nix    # Firewall, fail2ban
 └── hosts/              # Per-server config
     ├── systema/
@@ -162,7 +165,7 @@ k8s/
    ```bash
    kubectl get pods -A           # Check all pods
    kubectl top nodes             # Resource usage
-   linstor resource list         # Storage status
+   kubectl -n longhorn-system get pods  # Longhorn status
    ```
 
 ## Data Flow
@@ -173,12 +176,13 @@ App Write Request
     ↓
 Kubernetes PVC
     ↓
-LINSTOR CSI Driver
+Longhorn CSI Driver
     ↓
-DRBD Primary Node ──┬──► DRBD Secondary (systemb)
-                    └──► DRBD Secondary (systemc)
+Longhorn volume engine on active node
     ↓
-Acknowledge (after all 3 writes complete)
+Synchronous replicas on other nodes
+    ↓
+Acknowledge (per volume replica policy)
 ```
 
 ### Read Operation (Media)
@@ -219,7 +223,7 @@ kubectl get nodes
 kubectl top nodes
 
 # Storage health
-linstor resource list
+kubectl -n longhorn-system get pods
 df -h /mnt/storage
 
 # Network health
@@ -256,8 +260,8 @@ Safe server reboot sequence:
 - Perfect for edge/homelab scenarios
 - Full Kubernetes API compatibility
 
-### Why DRBD + GlusterFS?
-- **DRBD**: Strong consistency for critical data
+### Why Longhorn + GlusterFS?
+- **Longhorn**: Kubernetes-native replicated block storage
 - **GlusterFS**: Capacity optimization for media
 - Right tool for each use case
 

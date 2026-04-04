@@ -12,6 +12,19 @@
     "d /mnt/hza 0775 root users - -"
   ];
 
+  # Systemd mount unit hardening to prevent auth storms
+  systemd.services."mnt-hza" = {
+    unitConfig = {
+      # Limit restart frequency to prevent auth storms
+      StartLimitIntervalSec = 300;    # 5 minute window
+      StartLimitBurst = 3;             # Max 3 restart attempts
+    };
+    serviceConfig = {
+      # Wait between restart attempts
+      RestartSec = 30;                 # Wait 30s before retry
+    };
+  };
+
   # SMB/CIFS mount configuration for Hetzner Storage Box
   fileSystems."/mnt/hza" = {
     device = "//u566879.your-storagebox.de/backup";
@@ -33,8 +46,10 @@
       "nofail"                     # Don't fail boot if mount fails
       "x-systemd.automount"        # Auto-mount on access
       "x-systemd.idle-timeout=300" # Unmount after 5 min idle
-      "x-systemd.mount-timeout=30" # 30s mount timeout
+      "x-systemd.mount-timeout=60" # 60s mount timeout (was 30s)
       "_netdev"                    # Network filesystem
+      "echo_interval=120"          # TCP keepalive every 2min
+      "nostrictsync"               # Better performance, allow async writes
     ];
   };
 }

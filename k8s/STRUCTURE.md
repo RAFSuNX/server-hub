@@ -62,27 +62,49 @@ k8s/
 │   │   ├── 02-storage.yaml
 │   │   ├── 03-deployment.yaml
 │   │   └── 04-service.yaml
-│   └── sonarr/
+│   ├── seerr/
+│   │   ├── 02-storage.yaml
+│   │   ├── 03-deployment.yaml
+│   │   └── 04-service.yaml
+│   ├── sonarr/
+│   │   ├── 02-storage.yaml
+│   │   ├── 03-deployment.yaml
+│   │   └── 04-service.yaml
+│   └── transmission/
 │       ├── 02-storage.yaml
 │       ├── 03-deployment.yaml
 │       └── 04-service.yaml
 ├── networking/
 │   └── cloudflared/
 │       └── 03-daemonset.yaml
-├── storage/
-│   └── piraeus/
-│       ├── 01-linstor-cluster.yaml
-│       ├── 02-satellite-config.yaml
-│       └── 03-storageclass.yaml
+├── secrets/
+│   └── *.yaml (gitignored local-only secrets)
 └── tools/
+    ├── alist/
+    │   ├── 01-storage.yaml
+    │   ├── 02-deployment.yaml
+    │   └── 03-service.yaml
+    ├── ariang/
+    │   ├── 02-storage.yaml
+    │   ├── 03-deployment.yaml
+    │   └── 04-service.yaml
     ├── firefox/
     │   ├── 02-storage.yaml
+    │   ├── 03-deployment.yaml
+    │   └── 04-service.yaml
+    ├── homepage/
+    │   ├── 01-rbac.yaml
+    │   ├── 02-configmap.yaml
     │   ├── 03-deployment.yaml
     │   └── 04-service.yaml
     ├── n8n/
     │   ├── 02-storage.yaml
     │   ├── 03-deployment.yaml
     │   └── 04-service.yaml
+    ├── searxng/
+    │   ├── 01-configmap.yaml
+    │   ├── 02-deployment.yaml
+    │   └── 03-service.yaml
     └── transfersh/
         ├── 03-deployment.yaml
         └── 04-service.yaml

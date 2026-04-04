@@ -64,12 +64,18 @@ spec:
             - name: ENABLE_RCLONE
               value: "false"
           resources:
+
             requests:
+
+              cpu: "1000m"
+
               memory: "2Gi"
-              cpu: "500m"
+
             limits:
-              memory: "8Gi"
+
               cpu: "4000m"
+
+              memory: "8Gi"
           volumeMounts:
             - name: config
               mountPath: /app/conf

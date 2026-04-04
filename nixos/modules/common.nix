@@ -55,13 +55,29 @@
     };
   };
 
-  # Kernel modules — vxlan required for flannel VXLAN backend
-  boot.kernelModules = [ "vxlan" ];
+  # Kernel modules — vxlan required for flannel VXLAN backend, tcp_bbr for congestion control
+  boot.kernelModules = [ "vxlan" "tcp_bbr" ];
 
   # IP forwarding — required for Tailscale exit node and subnet routing
+  # Network performance optimizations for high-bandwidth Tailscale connections
   boot.kernel.sysctl = {
     "net.ipv4.ip_forward"          = 1;
     "net.ipv6.conf.all.forwarding" = 1;
+
+    # TCP buffer sizes (increased from defaults for better throughput)
+    "net.core.rmem_max"     = 134217728;  # 128 MB
+    "net.core.wmem_max"     = 134217728;  # 128 MB
+    "net.ipv4.tcp_rmem"     = "4096 87380 67108864";  # min default max (64 MB)
+    "net.ipv4.tcp_wmem"     = "4096 65536 67108864";  # min default max (64 MB)
+
+    # BBR congestion control for better performance
+    "net.ipv4.tcp_congestion_control" = "bbr";
+    "net.core.default_qdisc"          = "fq";
+
+    # Additional TCP optimizations
+    "net.ipv4.tcp_fastopen"           = 3;
+    "net.ipv4.tcp_mtu_probing"        = 1;
+    "net.ipv4.tcp_slow_start_after_idle" = 0;
   };
 
   # Tailscale
@@ -71,7 +87,24 @@
     extraUpFlags = [
       "--advertise-exit-node"
       "--hostname=${config.networking.hostName}"
+      "--netfilter-mode=off"  # Disable netfilter for maximum performance
     ];
+  };
+
+  # Tailscale MTU and netfilter optimization via systemd service
+  systemd.services.tailscale-mtu = {
+    description = "Set Tailscale MTU to 7000 and disable netfilter";
+    after = [ "tailscaled.service" "sys-devices-virtual-net-tailscale0.device" ];
+    wants = [ "sys-devices-virtual-net-tailscale0.device" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = pkgs.writeShellScript "set-tailscale-opts" ''
+        ${pkgs.iproute2}/bin/ip link set tailscale0 mtu 7000
+        ${pkgs.tailscale}/bin/tailscale set --netfilter-mode=off
+      '';
+    };
   };
 
   # vnstat — network traffic monitoring
@@ -83,7 +116,7 @@
     auto-optimise-store   = true;
   };
 
-  environment.systemPackages = with pkgs; [ git curl vnstat ];
+  environment.systemPackages = with pkgs; [ git curl vnstat iperf3 ffmpeg-full ];
 
   time.timeZone = "Asia/Dhaka";
 

@@ -84,12 +84,18 @@ spec:
           name: udp
           protocol: UDP
         resources:
-          limits:
-            cpu: 500m
-            memory: 256Mi
+
           requests:
-            cpu: 100m
-            memory: 128Mi
+
+            cpu: "500m"
+
+            memory: "768Mi"
+
+          limits:
+
+            cpu: "2000m"
+
+            memory: "4Gi"
         securityContext:
           capabilities:
             add:
@@ -112,12 +118,18 @@ spec:
         imagePullPolicy: Always
         name: qbittorrent
         resources:
-          limits:
-            cpu: "2"
-            memory: 2Gi
+
           requests:
-            cpu: 250m
-            memory: 512Mi
+
+            cpu: "500m"
+
+            memory: "768Mi"
+
+          limits:
+
+            cpu: "2000m"
+
+            memory: "4Gi"
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:

@@ -34,12 +34,18 @@ spec:
         - name: WARP_WATCHDOG
           value: "1"
         resources:
-          limits:
-            cpu: 500m
-            memory: 256Mi
+
           requests:
-            cpu: 100m
-            memory: 128Mi
+
+            cpu: "500m"
+
+            memory: "768Mi"
+
+          limits:
+
+            cpu: "2000m"
+
+            memory: "4Gi"
         securityContext:
           capabilities:
             add: ["NET_ADMIN", "MKNOD"]
@@ -86,12 +92,18 @@ spec:
           name: torrent-udp
           protocol: UDP
         resources:
-          limits:
-            cpu: "2"
-            memory: 2Gi
+
           requests:
-            cpu: 250m
-            memory: 512Mi
+
+            cpu: "500m"
+
+            memory: "768Mi"
+
+          limits:
+
+            cpu: "2000m"
+
+            memory: "4Gi"
         securityContext:
           capabilities:
             add: ["NET_RAW"]

@@ -50,12 +50,18 @@ spec:
             - name: DB_DSN
               value: /app/data/dev.db
           resources:
+
             requests:
-              memory: "128Mi"
+
               cpu: "100m"
+
+              memory: "256Mi"
+
             limits:
-              memory: "512Mi"
+
               cpu: "1000m"
+
+              memory: "1Gi"
           volumeMounts:
             - name: data
               mountPath: /app/data

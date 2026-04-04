@@ -41,12 +41,18 @@ spec:
             - name: hza
               mountPath: /mnt/hza
           resources:
+
             requests:
+
+              cpu: "50m"
+
               memory: "128Mi"
-              cpu: "100m"
+
             limits:
-              memory: "512Mi"
+
               cpu: "500m"
+
+              memory: "512Mi"
       volumes:
         - name: config
           persistentVolumeClaim:

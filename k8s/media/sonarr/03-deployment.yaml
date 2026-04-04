@@ -36,12 +36,18 @@ spec:
         - containerPort: 8989
           protocol: TCP
         resources:
-          limits:
-            cpu: "1"
-            memory: 1Gi
+
           requests:
-            cpu: 100m
-            memory: 256Mi
+
+            cpu: "200m"
+
+            memory: "512Mi"
+
+          limits:
+
+            cpu: "2000m"
+
+            memory: "3Gi"
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
