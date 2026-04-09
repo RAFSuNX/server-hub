@@ -36,7 +36,7 @@ spec:
             - name: logs
               mountPath: /app/config/logs
             - name: backgrounds
-              mountPath: /app/public/backgrounds
+              mountPath: /app/public/images
           resources:
             requests:
               cpu: "50m"
