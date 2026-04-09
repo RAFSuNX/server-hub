@@ -116,7 +116,7 @@
     auto-optimise-store   = true;
   };
 
-  environment.systemPackages = with pkgs; [ git curl vnstat iperf3 ffmpeg-full ];
+  environment.systemPackages = with pkgs; [ git curl vnstat iperf3 ffmpeg-full tmux ];
 
   time.timeZone = "Asia/Dhaka";
 

@@ -8,11 +8,15 @@ let
   allNodes = [ "systema" "systemb" "systemc" ];
   tlsSans  = lib.concatMap (n: [ "--tls-san=${n}" ]) allNodes;
 
+  # Custom Flannel config with MTU 5000 (for Tailscale MTU 7000)
+  flannelConfPath = ../config/flannel-conf.json;
+
   commonFlags = [
     "--disable=traefik"
     "--disable=servicelb"
     "--disable-cloud-controller"
     "--flannel-iface=tailscale0"
+    "--flannel-conf=${flannelConfPath}"
     "--node-ip=${nodeIPs.${hostname}}"
   ] ++ tlsSans;
 in
