@@ -12,6 +12,9 @@ data:
         cardBlur: xl
         background:
           image: https://files.catbox.moe/qcdk74.jpg
+          blur: sm
+          saturate: 50
+          brightness: 50
           opacity: 100
         layout:
           Cluster:
@@ -254,7 +257,18 @@ data:
                 app: searxng
     bookmarks.yaml: |
         []
-    custom.css: ""
+    custom.css: |
+        #background {
+          position: fixed !important;
+          top: 0;
+          left: 0;
+          width: 100% !important;
+          height: 100% !important;
+          z-index: 0;
+          background-size: cover !important;
+          background-position: center !important;
+          background-repeat: no-repeat !important;
+        }
     custom.js: ""
     proxmox.yaml: '{}'
     docker.yaml: |
