@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - alist/01-storage.yaml
+  - alist/02-deployment.yaml
+  - alist/03-service.yaml
+  - ariang/02-storage.yaml
+  - ariang/03-deployment.yaml
+  - ariang/04-service.yaml
+  - firefox/02-storage.yaml
+  - firefox/03-deployment.yaml
+  - firefox/04-service.yaml
+  - homepage/01-rbac.yaml
+  - homepage/02-configmap.yaml
+  - homepage/03-deployment.yaml
+  - homepage/04-service.yaml
+  - n8n/02-storage.yaml
+  - n8n/03-deployment.yaml
+  - n8n/04-service.yaml
+  - searxng/01-configmap.yaml
+  - searxng/02-deployment.yaml
+  - searxng/03-service.yaml
+  - transfersh/03-deployment.yaml
+  - transfersh/04-service.yaml

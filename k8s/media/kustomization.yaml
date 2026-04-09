@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - flaresolverr/03-deployment.yaml
+  - flaresolverr/04-service.yaml
+  - jellyfin/02-storage.yaml
+  - jellyfin/03-deployment.yaml
+  - jellyfin/04-service.yaml
+  - prowlarr/02-storage.yaml
+  - prowlarr/03-deployment.yaml
+  - prowlarr/04-service.yaml
+  - qbittorrent/02-storage.yaml
+  - qbittorrent/03-deployment.yaml
+  - qbittorrent/04-service.yaml
+  - qbittorrent-warp/01-secret.yaml
+  - qbittorrent-warp/02-storage.yaml
+  - qbittorrent-warp/03-deployment.yaml
+  - qbittorrent-warp/04-service.yaml
+  - radarr/02-storage.yaml
+  - radarr/03-deployment.yaml
+  - radarr/04-service.yaml
+  - seerr/02-storage.yaml
+  - seerr/03-deployment.yaml
+  - seerr/04-service.yaml
+  - sonarr/02-storage.yaml
+  - sonarr/03-deployment.yaml
+  - sonarr/04-service.yaml

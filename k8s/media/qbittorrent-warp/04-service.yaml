@@ -2,23 +2,23 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: transmission
+  name: qbittorrent-warp
   namespace: media
 spec:
   clusterIP: 10.43.1.16
   type: ClusterIP
   selector:
-    app: transmission
+    app: qbittorrent-warp
   ports:
     - name: http
       port: 80
-      targetPort: 9091
+      targetPort: 8080
       protocol: TCP
     - name: torrent-tcp
-      port: 51413
-      targetPort: 51413
+      port: 6881
+      targetPort: 6881
       protocol: TCP
     - name: torrent-udp
-      port: 51413
-      targetPort: 51413
+      port: 6881
+      targetPort: 6881
       protocol: UDP
