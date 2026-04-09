@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sigserver
+  namespace: default
+  labels:
+    app: sigserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sigserver
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: sigserver
+    spec:
+      containers:
+        - name: sigserver
+          image: ghcr.io/rafsunx/sigserver:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: DISK_TOTAL_GB
+              valueFrom:
+                secretKeyRef:
+                  name: sigserver-secret
+                  key: disk_total_gb
+                  optional: true
+          volumeMounts:
+            - mountPath: /proc
+              name: proc
+              readOnly: true
+            - mountPath: /sys
+              name: sys
+              readOnly: true
+            - mountPath: /mnt/storage
+              name: storage
+              readOnly: true
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: storage
+          hostPath:
+            path: /mnt/storage
