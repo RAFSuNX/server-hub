@@ -4,27 +4,258 @@ metadata:
     name: homepage-config
     namespace: tools
 data:
-    settings.yaml: ENC[AES256_GCM,data:uUw2hF7jOPelxk7uXpeR1e0LUepWXgDbMA1kvXN570tMidx3SXnVMsN9TXx/sgKbDFcHEuNkJBelkqyS1MhyQjhdSrbkjnkUhxbdXD3D/FXe2Ml563b5Gbb75C8nRNf5GRmYuT0D1p32zlRps38Loe6fUhX76hRkq7VZ0jn+6b9yIL63+1mpKfLE9/ZXpB+yE171PgNgHRs7of6mKOpbdMzEQ7MA88Xj7MnTQj6Bw5UQQqxGeKoXkVNyaN4JWz4SB7916ecYcJ8Q7rtwkAVBkH/Xsoovglhkc5qnS/LgObPf9f2a58BA9l53TrC4OzkkfWIfQ58scwNpabZGbFn+S7uqBOX8XJaWIhTR7QLR5RbwRXl9EnujdWr6Hw==,iv:wf5AKZqIIt4kE7gSnQuR4GXdqg2y5hGFeBJp7JkwRCg=,tag:L7jaT/3xukLL9LggvOzFVA==,type:str]
-    kubernetes.yaml: ENC[AES256_GCM,data:AGPQ68H/oMml/YOSU1I=,iv:RPjRz2ChR+TxYWytdP5M8A94X84w/yC5/74c1P2Bgr8=,tag:DYxmK+bnoCZPJEqURDjjsw==,type:str]
-    widgets.yaml: ENC[AES256_GCM,data:WmMbfCbO6ACzRCuvGIISjP5RYsdok05xHexpA2Pz24EjdXh1jSN9yYSRQPOw7IKA4x01Db56JgLiZdqTj/B76hqQTPn0qj+5yXJI/msUg1pp87nTGv1wtL9xa2jBTXQklDxYirFm22oKBRBmogB4AzPoV/w8Mwc3yJeHwhgdE05u35It8Rpx/IIURX4hpyH11W87HPCGeZDsW6kCErMetE2QeQcgmsf9SCCpwS9oX0aSpfHJGCExiiGbX6UcRc2j08ibzFoOyvDF1ol+M7lT8LZIrAzDQXcmVn4nUsngQc+9jWvfcAdmoq8bxUbMbagFmRgh58N7ebnyYAYE9zjaHrqJIP4vaIHQAiIzvul/eBpB5fodTPhMBKUnUYTG1ACoCEcNYoz0x92x4rxILKgrsXKI6Ka9+bvZKLUeo8/Z/VTfHth545gKb81pDl0rkayg7y4L2o2WwBk=,iv:bGnVcE9YmH3zdiVa26o+EmInUfmLuDqfa9LAE6uuxno=,tag:r4++rV9MWaKpuWieScvL6Q==,type:str]
-    services.yaml: ENC[AES256_GCM,data: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,iv:53elCit5I6KIJQqRYdkY6sc+dL479F3gbReGloua7CU=,tag:kHioA/MV+dLy/f1mzkfXUA==,type:str]
-    bookmarks.yaml: ENC[AES256_GCM,data:oKT3,iv:onxn5Z6I115sQQYzAR265SSfBn1BDUAWNE6OrooLy4k=,tag:hdrBv9h+iYbQLehoBkCr6g==,type:str]
+    settings.yaml: |
+        title: rogx
+        theme: dark
+        color: slate
+        headerStyle: clean
+        cardBlur: xl
+        background:
+          image: https://w.wallhaven.cc/full/ly/wallhaven-lywevp.jpg
+          opacity: 60
+        layout:
+          Cluster:
+            style: row
+            columns: 2
+          Media:
+            style: row
+            columns: 3
+          Tools:
+            style: row
+            columns: 3
+    kubernetes.yaml: |
+        mode: cluster
+    widgets.yaml: |
+        - greeting:
+            text_size: xl
+            text: Hey, Rafsun!
+        - datetime:
+            text_size: xl
+            format:
+              timeStyle: short
+              dateStyle: medium
+              hourCycle: h23
+        - openmeteo:
+            label: Dhaka
+            latitude: 23.8103
+            longitude: 90.4125
+            timezone: Asia/Dhaka
+            units: metric
+            cache: 5
+        - search:
+            provider: google
+            target: _blank
+    services.yaml: |
+        - Cluster:
+            - Performance:
+                widget:
+                  type: prometheusmetric
+                  url: http://prometheus-kube-prometheus-prometheus.default:9090
+                  metrics:
+                    - label: CPU
+                      query: round(100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100), 0.1)
+                      format:
+                        type: number
+                        suffix: " %"
+                        options:
+                          maximumFractionDigits: 1
+                    - label: Memory
+                      query: round((1 - sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes)) * 100, 0.1)
+                      format:
+                        type: number
+                        suffix: " %"
+                        options:
+                          maximumFractionDigits: 1
+                    - label: Disk
+                      query: round((1 - min(node_filesystem_avail_bytes{mountpoint="/"}) / min(node_filesystem_size_bytes{mountpoint="/"})) * 100, 0.1)
+                      format:
+                        type: number
+                        suffix: " %"
+                        options:
+                          maximumFractionDigits: 1
+                    - label: Storage
+                      query: round((sum(node_filesystem_size_bytes{mountpoint="/mnt/storage"}) - sum(node_filesystem_avail_bytes{mountpoint="/mnt/storage"})) / 1073741824, 0.1)
+                      format:
+                        type: number
+                        suffix: " GB"
+                        options:
+                          maximumFractionDigits: 1
+            - Infrastructure:
+                widget:
+                  type: prometheusmetric
+                  url: http://prometheus-kube-prometheus-prometheus.default:9090
+                  metrics:
+                    - label: Pods Running
+                      query: count(kube_pod_status_phase{phase="Running"})
+                      format:
+                        type: number
+                        options:
+                          maximumFractionDigits: 0
+                    - label: Nodes Ready
+                      query: count(kube_node_status_condition{condition="Ready",status="true"})
+                      format:
+                        type: number
+                        options:
+                          maximumFractionDigits: 0
+                    - label: Net In
+                      query: round(sum(rate(node_network_receive_bytes_total{device!~"lo|veth.*|cni.*|flannel.*"}[5m])) / 1048576, 0.01)
+                      format:
+                        type: number
+                        suffix: " MB/s"
+                        options:
+                          maximumFractionDigits: 2
+                    - label: Net Out
+                      query: round(sum(rate(node_network_transmit_bytes_total{device!~"lo|veth.*|cni.*|flannel.*"}[5m])) / 1048576, 0.01)
+                      format:
+                        type: number
+                        suffix: " MB/s"
+                        options:
+                          maximumFractionDigits: 2
+
+        - Media:
+            - Jellyfin:
+                icon: jellyfin.png
+                href: http://10.43.1.10
+                description: Media Server
+                namespace: media
+                app: jellyfin
+                widget:
+                  type: jellyfin
+                  url: http://jellyfin.media
+                  key: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
+
+            - Sonarr:
+                icon: sonarr.png
+                href: http://10.43.1.11
+                description: TV Shows
+                namespace: media
+                app: sonarr
+                widget:
+                  type: sonarr
+                  url: http://sonarr.media
+                  key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
+
+            - Radarr:
+                icon: radarr.png
+                href: http://10.43.1.12
+                description: Movies
+                namespace: media
+                app: radarr
+                widget:
+                  type: radarr
+                  url: http://radarr.media
+                  key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
+
+            - Seerr:
+                icon: jellyseerr.png
+                href: http://10.43.1.15
+                description: Media Requests
+                namespace: media
+                app: seerr
+                widget:
+                  type: customapi
+                  url: http://seerr.media/api/v1/request/count
+                  headers:
+                    X-Api-Key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
+                  mappings:
+                    - field: processing
+                      label: Processing
+                      format: number
+                    - field: pending
+                      label: Pending
+                      format: number
+                    - field: completed
+                      label: Available
+                      format: number
+
+            - Prowlarr:
+                icon: prowlarr.png
+                href: http://10.43.1.13
+                description: Indexers
+                namespace: media
+                app: prowlarr
+                widget:
+                  type: prowlarr
+                  url: http://prowlarr.media
+                  key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
+
+            - qBittorrent:
+                icon: qbittorrent.png
+                href: http://10.43.1.14
+                description: Torrents
+                namespace: media
+                app: qbittorrent
+                widget:
+                  type: qbittorrent
+                  url: http://qbittorrent.media
+                  username: "{{HOMEPAGE_VAR_QBIT_USER}}"
+                  password: "{{HOMEPAGE_VAR_QBIT_PASS}}"
+
+            - qBittorrent WARP:
+                icon: qbittorrent.png
+                href: http://10.43.1.16
+                description: Torrents (WARP)
+                namespace: media
+                app: qbittorrent-warp
+                widget:
+                  type: qbittorrent
+                  url: http://qbittorrent-warp.media
+                  username: "{{HOMEPAGE_VAR_QBIT_WARP_USER}}"
+                  password: "{{HOMEPAGE_VAR_QBIT_WARP_PASS}}"
+
+        - Tools:
+            - Kite:
+                icon: kubernetes.png
+                href: http://10.43.1.2
+                description: K8s Dashboard
+                namespace: kube-system
+                app: kite
+
+            - AriaNg:
+                icon: https://raw.githubusercontent.com/mayswind/AriaNg-Native/master/assets/AriaNg.ico
+                href: http://10.43.1.4
+                description: Download Manager
+                namespace: tools
+                app: ariang
+
+            - Firefox:
+                icon: firefox.png
+                href: https://10.43.1.5
+                description: Browser
+                namespace: tools
+                app: firefox
+
+            - n8n:
+                icon: n8n.png
+                href: http://10.43.1.7
+                description: Automation
+                namespace: tools
+                app: n8n
+
+            - Alist:
+                icon: alist.png
+                href: http://10.43.1.3
+                description: File Manager
+                namespace: tools
+                app: alist
+
+            - Transfer.sh:
+                icon: http://10.43.1.6/favicon.ico
+                href: http://10.43.1.6
+                description: File Transfer
+                namespace: tools
+                app: transfersh
+
+            - SearXNG:
+                icon: searxng.png
+                href: http://10.43.1.8
+                description: Search Engine
+                namespace: tools
+                app: searxng
+    bookmarks.yaml: |
+        []
     custom.css: ""
     custom.js: ""
-    proxmox.yaml: ENC[AES256_GCM,data:X2w=,iv:88mCJcq78JLWFWaMmSulI4vW8+IBVU8w7CwPfPrg2y8=,tag:YQ70RWPrywwINuMg6jnHTw==,type:str]
-    docker.yaml: ENC[AES256_GCM,data:cemK,iv:RUWY30wsP56ZpUbuKUgHBFeROnScZIoHdPMimnVOZ1U=,tag:Me3d0AvRCOlmdYiiW9L9jw==,type:str]
-sops:
-    age:
-        - recipient: age1yl0pwtul6ph7xyaej0pqnmd6enflx50czvh4prudl2ed4vhn8u4scve65h
-          enc: |
-            -----BEGIN AGE ENCRYPTED FILE-----
-            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB4dlZxSytLaWZmQnRyQjZl
-            bUs4dGZjTWJvcjRTOFVaUzNBWHhvNm5rc200ClhvdzgveVJnZi9zQk1LTHdqTHFJ
-            Nzc0ZzhWdEZIMkIzQ2JvTGlCeGE1eUEKLS0tIGl3M2FmcmVlL0Q2VmV5c2lvZDQy
-            Q3FjdkxSaFQ1VkR5SkwwdXZyRlBRSFUKDdNT0n8viRhIjDPwGlPYOdCLJ7OHgHLN
-            e8Hx77jNpl7xo5reyIXuLrFXan7mMwT3dtkje/X4oj49P1ZJoNB0Zg==
-            -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-04-09T07:21:07Z"
-    mac: ENC[AES256_GCM,data:KNGdsSTmWPGtzq9PmgzBIffs+xwUkm7qN41Y0eF0LMAjCPGORiC5ouUE31SLRWbrEYY3XIzahDReVWvJNwf18iKG52An/S1RP2UGHBCZSX6jvGtd8BKk11xkPYUUvVJec3BE+yg4Lv4vbU8BBeV57WFxVxlEuC/vD9/AEUzCk4c=,iv:CG0jbuzJkRPSbc44SLsmOhvX6kVf+DZFjnM6WFpRfH8=,tag:tYl8YBUYr6U6wfvViMA3Ng==,type:str]
-    encrypted_regex: ^(data|stringData)$
-    version: 3.12.1
+    proxmox.yaml: '{}'
+    docker.yaml: |
+        {}

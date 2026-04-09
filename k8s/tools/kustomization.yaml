@@ -11,6 +11,7 @@ resources:
   - firefox/03-deployment.yaml
   - firefox/04-service.yaml
   - homepage/01-rbac.yaml
+  - homepage/01-secret.yaml
   - homepage/02-configmap.yaml
   - homepage/03-deployment.yaml
   - homepage/04-service.yaml
