@@ -1,8 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - 00-games.yaml
   - 00-media.yaml
-  - 00-monitoring.yaml
   - 00-networking.yaml
   - 00-tools.yaml
