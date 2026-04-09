@@ -19,6 +19,7 @@ spec:
         app: searxng
         app.kubernetes.io/name: searxng
     spec:
+      enableServiceLinks: false
       containers:
         - name: searxng
           image: searxng/searxng:latest
