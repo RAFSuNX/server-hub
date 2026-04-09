@@ -12,7 +12,7 @@ data:
         cardBlur: xl
         background:
           image: https://files.catbox.moe/qcdk74.jpg
-          opacity: 60
+          opacity: 100
         layout:
           Cluster:
             style: row
