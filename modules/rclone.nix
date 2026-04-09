@@ -23,7 +23,7 @@
       ExecStart = ''
         ${pkgs.rclone}/bin/rclone mount \
           --config=${config.age.secrets.rclone_gdrive.path} \
-          --vfs-cache-mode=writes \
+          --vfs-cache-mode=off \
           --vfs-cache-max-size=20G \
           --vfs-cache-max-age=24h \
           --buffer-size=256M \
