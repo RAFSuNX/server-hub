@@ -11,7 +11,7 @@ data:
         headerStyle: clean
         cardBlur: xl
         background:
-          image: https://files.catbox.moe/qcdk74.jpg
+          image: /backgrounds/wallpaper.jpg
           blur: sm
           saturate: 50
           brightness: 50

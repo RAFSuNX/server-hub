@@ -10,6 +10,7 @@ resources:
   - firefox/02-storage.yaml
   - firefox/03-deployment.yaml
   - firefox/04-service.yaml
+  - homepage/00-storage.yaml
   - homepage/01-rbac.yaml
   - homepage/01-secret.yaml
   - homepage/02-configmap.yaml

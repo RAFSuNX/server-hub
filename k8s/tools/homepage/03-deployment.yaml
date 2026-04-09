@@ -35,18 +35,14 @@ spec:
               mountPath: /app/config
             - name: logs
               mountPath: /app/config/logs
+            - name: backgrounds
+              mountPath: /app/public/backgrounds
           resources:
-
             requests:
-
               cpu: "50m"
-
               memory: "128Mi"
-
             limits:
-
               cpu: "500m"
-
               memory: "512Mi"
       volumes:
         - name: config
@@ -54,3 +50,6 @@ spec:
             name: homepage-config
         - name: logs
           emptyDir: {}
+        - name: backgrounds
+          persistentVolumeClaim:
+            claimName: homepage-backgrounds
