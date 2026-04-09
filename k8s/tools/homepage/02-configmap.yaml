@@ -11,7 +11,7 @@ data:
         headerStyle: clean
         cardBlur: xl
         background:
-          image: https://w.wallhaven.cc/full/ly/wallhaven-lywevp.jpg
+          image: https://files.catbox.moe/qcdk74.jpg
           opacity: 60
         layout:
           Cluster:
