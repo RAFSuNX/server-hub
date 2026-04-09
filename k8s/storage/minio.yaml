@@ -1,132 +1,60 @@
-apiVersion: v1
-kind: Secret
-metadata:
-    name: minio-credentials
-    namespace: default
-type: Opaque
-stringData:
-    accesskey: ENC[AES256_GCM,data:3ZfgNTdYaV0=,iv:KOBzUsjFmVxsBEn43jT/N/UOPoljMxsDgXqLXguq11g=,tag:iDFjd36bQi02DTIkXPuddg==,type:str]
-    secretkey: ENC[AES256_GCM,data:P34/D4gW/cI=,iv:BJW9yn7KcUxGaHW3keh4mXwvO/fmOKcEFyZ5o8vc7JY=,tag:5N1t86WKmbGQvFKqyFFJOw==,type:str]
-sops:
-    age:
-        - recipient: age1yl0pwtul6ph7xyaej0pqnmd6enflx50czvh4prudl2ed4vhn8u4scve65h
-          enc: |
-            -----BEGIN AGE ENCRYPTED FILE-----
-            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSByV3JibmhjR3dvMzVNRU1t
-            V0hpVzRsazhBcUluR1BOMmdxWHl2bG9RSkhvCmlIOTlvVklIajdxQThDb1YrVFFK
-            T3ZuU2JRanVrQVpXWWFFMWRxQ3Rjdm8KLS0tIENud2FOTHlic2I4SW4yWXBQTTZy
-            M0VqOG5YNEhJNWFOM0RvQk42VTd3UWMK1qdDxYSAaAFytIHQVlOy+Moh8wD4agUc
-            jA0YgjtP0Pvi+SC0EbmGr+QuvClgROHSqoI5k8gb1fa++eebOEELEQ==
-            -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-04-09T04:05:34Z"
-    mac: ENC[AES256_GCM,data:MhRx56TrT5cHNEwm2UpeXf3LpzEqo5zqgYPTdxotyMkmXKh1aW9Yff7SUStVbKVXej/yIBwq/sCvmflMubHo643/EjLqkxHXh/qZYUkeXYRoEkW0sYANMFzNaMoXSjCXfVKUNjJv95o5D+Yj8WW/KjcNSPNf0KGEX9lx8sOsb+U=,iv:G9lw9cTJTC2qf63aARB5sgEKM4V03u94xmOMU33awsk=,tag:Kt/px7d69gj+paQPcySUZg==,type:str]
-    encrypted_regex: ^(data|stringData)$
-    version: 3.12.1
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: minio
-    namespace: default
+  name: minio
+  namespace: default
 spec:
-    replicas: 1
-    selector:
-        matchLabels:
-            app: minio
-    template:
-        metadata:
-            labels:
-                app: minio
-        spec:
-            nodeSelector:
-                kubernetes.io/hostname: systema
-            containers:
-                - name: minio
-                  image: minio/minio:latest
-                  args:
-                    - server
-                    - /data
-                  env:
-                    - name: MINIO_ROOT_USER
-                      valueFrom:
-                        secretKeyRef:
-                            name: minio-credentials
-                            key: accesskey
-                    - name: MINIO_ROOT_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                            name: minio-credentials
-                            key: secretkey
-                  ports:
-                    - containerPort: 9000
-                      name: api
-                  volumeMounts:
-                    - name: data
-                      mountPath: /data
-            volumes:
-                - name: data
-                  hostPath:
-                    path: /mnt/hza/minio
-                    type: Directory
-sops:
-    age:
-        - recipient: age1yl0pwtul6ph7xyaej0pqnmd6enflx50czvh4prudl2ed4vhn8u4scve65h
-          enc: |
-            -----BEGIN AGE ENCRYPTED FILE-----
-            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSByV3JibmhjR3dvMzVNRU1t
-            V0hpVzRsazhBcUluR1BOMmdxWHl2bG9RSkhvCmlIOTlvVklIajdxQThDb1YrVFFK
-            T3ZuU2JRanVrQVpXWWFFMWRxQ3Rjdm8KLS0tIENud2FOTHlic2I4SW4yWXBQTTZy
-            M0VqOG5YNEhJNWFOM0RvQk42VTd3UWMK1qdDxYSAaAFytIHQVlOy+Moh8wD4agUc
-            jA0YgjtP0Pvi+SC0EbmGr+QuvClgROHSqoI5k8gb1fa++eebOEELEQ==
-            -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-04-09T04:05:34Z"
-    mac: ENC[AES256_GCM,data:MhRx56TrT5cHNEwm2UpeXf3LpzEqo5zqgYPTdxotyMkmXKh1aW9Yff7SUStVbKVXej/yIBwq/sCvmflMubHo643/EjLqkxHXh/qZYUkeXYRoEkW0sYANMFzNaMoXSjCXfVKUNjJv95o5D+Yj8WW/KjcNSPNf0KGEX9lx8sOsb+U=,iv:G9lw9cTJTC2qf63aARB5sgEKM4V03u94xmOMU33awsk=,tag:Kt/px7d69gj+paQPcySUZg==,type:str]
-    encrypted_regex: ^(data|stringData)$
-    version: 3.12.1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: systema
+      containers:
+        - name: minio
+          image: minio/minio:latest
+          args:
+            - server
+            - /data
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: minio-credentials
+                  key: accesskey
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: minio-credentials
+                  key: secretkey
+          ports:
+            - containerPort: 9000
+              name: api
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          hostPath:
+            path: /mnt/hza/minio
+            type: Directory
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: minio
-    namespace: default
+  name: minio
+  namespace: default
 spec:
-    type: ClusterIP
-    selector:
-        app: minio
-    ports:
-        - name: api
-          port: 9000
-          targetPort: 9000
-# Service URL will be: minio.default.svc.cluster.local:9000
-# S3 endpoint: http://minio.default.svc.cluster.local:9000
-sops:
-    age:
-        - recipient: age1yl0pwtul6ph7xyaej0pqnmd6enflx50czvh4prudl2ed4vhn8u4scve65h
-          enc: |
-            -----BEGIN AGE ENCRYPTED FILE-----
-            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSByV3JibmhjR3dvMzVNRU1t
-            V0hpVzRsazhBcUluR1BOMmdxWHl2bG9RSkhvCmlIOTlvVklIajdxQThDb1YrVFFK
-            T3ZuU2JRanVrQVpXWWFFMWRxQ3Rjdm8KLS0tIENud2FOTHlic2I4SW4yWXBQTTZy
-            M0VqOG5YNEhJNWFOM0RvQk42VTd3UWMK1qdDxYSAaAFytIHQVlOy+Moh8wD4agUc
-            jA0YgjtP0Pvi+SC0EbmGr+QuvClgROHSqoI5k8gb1fa++eebOEELEQ==
-            -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-04-09T04:05:34Z"
-    mac: ENC[AES256_GCM,data:MhRx56TrT5cHNEwm2UpeXf3LpzEqo5zqgYPTdxotyMkmXKh1aW9Yff7SUStVbKVXej/yIBwq/sCvmflMubHo643/EjLqkxHXh/qZYUkeXYRoEkW0sYANMFzNaMoXSjCXfVKUNjJv95o5D+Yj8WW/KjcNSPNf0KGEX9lx8sOsb+U=,iv:G9lw9cTJTC2qf63aARB5sgEKM4V03u94xmOMU33awsk=,tag:Kt/px7d69gj+paQPcySUZg==,type:str]
-    encrypted_regex: ^(data|stringData)$
-    version: 3.12.1
----
-sops:
-    age:
-        - recipient: age1yl0pwtul6ph7xyaej0pqnmd6enflx50czvh4prudl2ed4vhn8u4scve65h
-          enc: |
-            -----BEGIN AGE ENCRYPTED FILE-----
-            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSByV3JibmhjR3dvMzVNRU1t
-            V0hpVzRsazhBcUluR1BOMmdxWHl2bG9RSkhvCmlIOTlvVklIajdxQThDb1YrVFFK
-            T3ZuU2JRanVrQVpXWWFFMWRxQ3Rjdm8KLS0tIENud2FOTHlic2I4SW4yWXBQTTZy
-            M0VqOG5YNEhJNWFOM0RvQk42VTd3UWMK1qdDxYSAaAFytIHQVlOy+Moh8wD4agUc
-            jA0YgjtP0Pvi+SC0EbmGr+QuvClgROHSqoI5k8gb1fa++eebOEELEQ==
-            -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-04-09T04:05:34Z"
-    mac: ENC[AES256_GCM,data:MhRx56TrT5cHNEwm2UpeXf3LpzEqo5zqgYPTdxotyMkmXKh1aW9Yff7SUStVbKVXej/yIBwq/sCvmflMubHo643/EjLqkxHXh/qZYUkeXYRoEkW0sYANMFzNaMoXSjCXfVKUNjJv95o5D+Yj8WW/KjcNSPNf0KGEX9lx8sOsb+U=,iv:G9lw9cTJTC2qf63aARB5sgEKM4V03u94xmOMU33awsk=,tag:Kt/px7d69gj+paQPcySUZg==,type:str]
-    encrypted_regex: ^(data|stringData)$
-    version: 3.12.1
+  type: ClusterIP
+  selector:
+    app: minio
+  ports:
+    - name: api
+      port: 9000
+      targetPort: 9000
