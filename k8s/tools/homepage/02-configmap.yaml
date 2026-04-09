@@ -10,11 +10,7 @@ data:
         color: slate
         headerStyle: clean
         cardBlur: xl
-        background:
-          image: /images/wallpaper.jpg
-          saturate: 50
-          brightness: 50
-          opacity: 100
+        background: /images/wallpaper.jpg
         layout:
           Cluster:
             style: row
