@@ -12,12 +12,18 @@ let
     mkdir -p "$STATE_DIR"
 
     # Fetch latest commit SHA from GitHub API
-    LATEST=$(${pkgs.curl}/bin/curl -sf \
-      "https://api.github.com/repos/${repo}/commits/${branch}" \
-      | ${pkgs.jq}/bin/jq -r '.sha')
+    RESPONSE=$(${pkgs.curl}/bin/curl -sf \
+      "https://api.github.com/repos/${repo}/commits/${branch}" 2>/dev/null || true)
 
-    if [ -z "$LATEST" ] || [ "$LATEST" = "null" ]; then
-      echo "gitops: failed to fetch latest commit SHA, skipping"
+    if [ -z "$RESPONSE" ]; then
+      echo "gitops: failed to reach GitHub, skipping"
+      exit 0
+    fi
+
+    LATEST=$(echo "$RESPONSE" | ${pkgs.jq}/bin/jq -r '.sha // empty')
+
+    if [ -z "$LATEST" ]; then
+      echo "gitops: failed to parse commit SHA, skipping"
       exit 0
     fi
 
