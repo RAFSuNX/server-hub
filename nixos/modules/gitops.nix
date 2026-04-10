@@ -1,10 +1,11 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 let
-  repo   = "RAFSuNX/server-hub";
-  branch = "main";
+  repo     = "RAFSuNX/server-hub";
+  branch   = "main";
+  hostname = config.networking.hostName;
 
-  script = pkgs.writeShellScript "nixos-gitops" ''
+  script = pkgs.writeShellScript "nixos-gitops-${hostname}" ''
     set -euo pipefail
 
     STATE_DIR="/var/lib/nixos-gitops"
@@ -39,7 +40,7 @@ let
     echo "gitops: running nixos-rebuild switch..."
 
     /run/current-system/sw/bin/nixos-rebuild switch \
-      --flake "github:${repo}/${branch}?dir=nixos#$(cat /proc/sys/kernel/hostname)"
+      --flake "github:${repo}/${branch}?dir=nixos#${hostname}"
 
     echo "$LATEST" > "$STATE_FILE"
     echo "gitops: successfully applied $LATEST"
