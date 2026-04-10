@@ -4,8 +4,8 @@ CLAUDE.md
 # Environment secrets
 .env
 
-# NixOS secrets
-nixos/secrets/
+# NixOS secrets (age-encrypted files are safe to commit — do NOT add nixos/secrets/ here)
+# nixos/secrets/  <- intentionally not ignored
 
 # Kubernetes secrets
 k8s/secrets/
