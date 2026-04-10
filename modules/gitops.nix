@@ -40,7 +40,7 @@ let
     echo "gitops: running nixos-rebuild switch..."
 
     /run/current-system/sw/bin/nixos-rebuild switch \
-      --flake "github:${repo}/${branch}?dir=nixos#${hostname}"
+      --flake "github:${repo}/$LATEST?dir=nixos#${hostname}"
 
     echo "$LATEST" > "$STATE_FILE"
     echo "gitops: successfully applied $LATEST"
