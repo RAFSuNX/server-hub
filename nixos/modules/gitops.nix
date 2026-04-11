@@ -2,7 +2,7 @@
 
 let
   repo     = "RAFSuNX/server-hub";
-  branch   = "main";
+  branch   = "main"; # gitops e2e test
   hostname = config.networking.hostName;
 
   script = pkgs.writeShellScript "nixos-gitops-${hostname}" ''
