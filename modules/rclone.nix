@@ -1,6 +1,5 @@
 { config, pkgs, ... }:
 
-# gitops test
 {
   age.secrets.rclone_gdrive.file    = ../secrets/rclone_gdrive.age;
 
