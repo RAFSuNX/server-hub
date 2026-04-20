@@ -24,3 +24,6 @@ resources:
   - searxng/03-service.yaml
   - transfersh/03-deployment.yaml
   - transfersh/04-service.yaml
+  - uptime-kuma/02-storage.yaml
+  - uptime-kuma/03-deployment.yaml
+  - uptime-kuma/04-service.yaml
