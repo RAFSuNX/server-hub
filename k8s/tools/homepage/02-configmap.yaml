@@ -252,6 +252,17 @@ data:
                 description: Search Engine
                 namespace: tools
                 app: searxng
+
+            - Uptime Kuma:
+                icon: uptime-kuma.png
+                href: http://10.43.1.9
+                description: Uptime Monitor
+                namespace: tools
+                app: uptime-kuma
+                widget:
+                  type: uptimekuma
+                  url: http://uptime-kuma-service.tools
+                  slug: default
     bookmarks.yaml: |
         []
     custom.css: ""
