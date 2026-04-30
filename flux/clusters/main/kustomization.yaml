@@ -9,3 +9,4 @@ resources:
   - networking.yaml
   - kube-system.yaml
   - default.yaml
+  - open360.yaml
