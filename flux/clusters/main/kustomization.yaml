@@ -10,3 +10,4 @@ resources:
   - kube-system.yaml
   - default.yaml
   - open360.yaml
+  - ai-voice.yaml

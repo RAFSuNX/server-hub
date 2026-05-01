@@ -1,0 +1,45 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: ai-voice
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: https://github.com/RAFSuNX/ai_voice_aiabd
+  ref:
+    branch: main
+  secretRef:
+    name: github-auth
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ai-voice-secrets
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/ai-voice
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: server-hub
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ai-voice
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: ai-voice-secrets
+  interval: 5m
+  path: ./k8s
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: ai-voice
