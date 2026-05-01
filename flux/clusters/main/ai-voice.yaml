@@ -8,7 +8,7 @@ spec:
   interval: 1m
   url: https://github.com/RAFSuNX/ai_voice_aiabd
   ref:
-    branch: main
+    branch: gitops
   secretRef:
     name: github-auth
 ---
