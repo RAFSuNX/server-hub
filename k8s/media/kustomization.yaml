@@ -25,3 +25,5 @@ resources:
   - sonarr/02-storage.yaml
   - sonarr/03-deployment.yaml
   - sonarr/04-service.yaml
+  - image-updater/01-rbac.yaml
+  - image-updater/02-cronjob.yaml
