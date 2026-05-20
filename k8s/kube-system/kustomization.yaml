@@ -5,3 +5,4 @@ resources:
   - kite/02-storage.yaml
   - kite/03-deployment.yaml
   - kite/04-service.yaml
+  - keel/helmrelease.yaml

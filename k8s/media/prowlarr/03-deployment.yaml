@@ -6,6 +6,10 @@ metadata:
     app: prowlarr
   name: prowlarr
   namespace: media
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+    keel.sh/pollSchedule: "@every 6h"
 spec:
   progressDeadlineSeconds: 600
   replicas: 1

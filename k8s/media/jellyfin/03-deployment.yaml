@@ -6,6 +6,10 @@ metadata:
   namespace: media
   labels:
     app: jellyfin
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+    keel.sh/pollSchedule: "@every 6h"
 spec:
   replicas: 1
   strategy:
