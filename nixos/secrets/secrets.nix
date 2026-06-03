@@ -14,8 +14,8 @@ let
   systemb = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEZdrsf03NpGCtcUICctmnv3OezOCHY29vJPxOmpkmOA";
   systemc = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBnEkSzmiJ8uYRoA7Xks7g5FLGjxVVQ2G+xhnXkIo2gn";
 
-  # Admin key (updated to current github key)
-  admin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEHuuyMPRbw8ZWxDqeTgy4DALB3QV7U2LPqQW1xVPifd";
+  # Admin key (server-hub machine)
+  admin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHgIRW/qz8hibyQfrIkYA9dviXF4T6+JPdMV0xVnK2tw";
 
   allNodes = [ systema systemb systemc admin ];
 in
