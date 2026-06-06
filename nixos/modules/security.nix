@@ -4,8 +4,8 @@
   networking.firewall = {
     enable = true;
 
-    # Public interface: SSH only
-    allowedTCPPorts = [ 22 ];
+    # SSH + node-exporter (kubelet probes) + Longhorn webhook (Flux dry-run validation)
+    allowedTCPPorts = [ 22 9100 9502 ];
 
     # Tailscale VPN fully trusted — all cluster traffic (k3s, GlusterFS, DRBD) uses Tailscale
     trustedInterfaces = [ "tailscale0" ];
@@ -48,7 +48,7 @@
 
   # Block sensitive ports from non-Tailscale interfaces using iptables
   # extraCommands runs raw iptables commands during firewall activation
-  # NOTE: node-exporter (9100) and longhorn webhook (9502) must allow cluster-internal traffic
+  # NOTE: 9100 and 9502 are allowed above for kubelet probes and Longhorn webhook
   networking.firewall.extraCommands = ''
     iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 111 -j DROP
     iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p udp --dport 111 -j DROP
@@ -67,7 +67,4 @@
     iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9500 -j DROP 2>/dev/null || true
   '';
 
-  # Allow node-exporter (9100) and Longhorn webhook (9502) from cluster pod network and localhost
-  # These are accessed by kubelet health probes and Longhorn admission controller
-  networking.firewall.allowedTCPPorts = [ 9100 9502 ];
 }
