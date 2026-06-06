@@ -4,8 +4,8 @@
   networking.firewall = {
     enable = true;
 
-    # SSH + node-exporter (kubelet probes) + Longhorn webhook (Flux dry-run validation)
-    allowedTCPPorts = [ 22 9100 9502 ];
+    # SSH only — all other ports handled via extraCommands below
+    allowedTCPPorts = [ 22 ];
 
     # Tailscale VPN fully trusted — all cluster traffic (k3s, GlusterFS, DRBD) uses Tailscale
     trustedInterfaces = [ "tailscale0" ];
@@ -48,14 +48,27 @@
 
   # Block sensitive ports from non-Tailscale interfaces using iptables
   # extraCommands runs raw iptables commands during firewall activation
-  # NOTE: 9100 and 9502 are allowed above for kubelet probes and Longhorn webhook
+  # NOTE: 9100 and 9502 allowed from cluster-internal CIDRs only (pod/service networks)
   networking.firewall.extraCommands = ''
+    # Block sensitive ports from public internet — allow only from Tailscale or cluster-internal
     iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 111 -j DROP
     iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p udp --dport 111 -j DROP
     iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 6443 -j DROP
     iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 10250 -j DROP
     iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 24007 -j DROP
     iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9500 -j DROP
+
+    # node-exporter (9100): allow from pod/service CIDRs only (kubelet health probes)
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW -s 10.42.0.0/16 -p tcp --dport 9100 -j nixos-fw-accept
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW -s 10.43.0.0/16 -p tcp --dport 9100 -j nixos-fw-accept
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW -s 100.64.0.0/10 -p tcp --dport 9100 -j nixos-fw-accept
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9100 -j DROP
+
+    # Longhorn webhook (9502): allow from pod/service CIDRs only (Longhorn admission controller)
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW -s 10.42.0.0/16 -p tcp --dport 9502 -j nixos-fw-accept
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW -s 10.43.0.0/16 -p tcp --dport 9502 -j nixos-fw-accept
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW -s 100.64.0.0/10 -p tcp --dport 9502 -j nixos-fw-accept
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9502 -j DROP
   '';
 
   networking.firewall.extraStopCommands = ''
@@ -65,6 +78,14 @@
     iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 10250 -j DROP 2>/dev/null || true
     iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 24007 -j DROP 2>/dev/null || true
     iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9500 -j DROP 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW -s 10.42.0.0/16 -p tcp --dport 9100 -j nixos-fw-accept 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW -s 10.43.0.0/16 -p tcp --dport 9100 -j nixos-fw-accept 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW -s 100.64.0.0/10 -p tcp --dport 9100 -j nixos-fw-accept 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9100 -j DROP 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW -s 10.42.0.0/16 -p tcp --dport 9502 -j nixos-fw-accept 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW -s 10.43.0.0/16 -p tcp --dport 9502 -j nixos-fw-accept 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW -s 100.64.0.0/10 -p tcp --dport 9502 -j nixos-fw-accept 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9502 -j DROP 2>/dev/null || true
   '';
 
 }
