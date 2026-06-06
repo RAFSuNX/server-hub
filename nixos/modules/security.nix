@@ -46,24 +46,15 @@
     "kernel.sysrq" = 0;
   };
 
-  # Restrict rpcbind to Tailscale interface only (required by GlusterFS)
-  # Binding to specific interface not supported directly — use firewall to block public access
+  # Block sensitive ports from non-Tailscale interfaces
+  # extraInputRules uses iptables match syntax (appended to nixos-fw chain)
   networking.firewall.extraInputRules = ''
-    # Block port 111 (rpcbind) from non-Tailscale interfaces
-    iifname != "tailscale0" tcp dport 111 drop
-    iifname != "tailscale0" udp dport 111 drop
-
-    # Block k3s API server from non-Tailscale interfaces
-    iifname != "tailscale0" tcp dport 6443 drop
-
-    # Block kubelet from non-Tailscale interfaces
-    iifname != "tailscale0" tcp dport 10250 drop
-
-    # Block node-exporter metrics from non-Tailscale interfaces
-    iifname != "tailscale0" tcp dport 9100 drop
-
-    # Block Longhorn ports from non-Tailscale interfaces
-    iifname != "tailscale0" tcp dport 24007 drop
-    iifname != "tailscale0" tcp dport 9500 drop
+    -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 111 -j DROP
+    -m conntrack --ctstate NEW ! -i tailscale0 -p udp --dport 111 -j DROP
+    -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 6443 -j DROP
+    -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 10250 -j DROP
+    -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9100 -j DROP
+    -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 24007 -j DROP
+    -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9500 -j DROP
   '';
 }
