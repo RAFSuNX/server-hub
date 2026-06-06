@@ -46,15 +46,25 @@
     "kernel.sysrq" = 0;
   };
 
-  # Block sensitive ports from non-Tailscale interfaces
-  # extraInputRules uses iptables match syntax (appended to nixos-fw chain)
-  networking.firewall.extraInputRules = ''
-    -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 111 -j DROP
-    -m conntrack --ctstate NEW ! -i tailscale0 -p udp --dport 111 -j DROP
-    -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 6443 -j DROP
-    -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 10250 -j DROP
-    -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9100 -j DROP
-    -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 24007 -j DROP
-    -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9500 -j DROP
+  # Block sensitive ports from non-Tailscale interfaces using iptables
+  # extraCommands runs raw iptables commands during firewall activation
+  networking.firewall.extraCommands = ''
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 111 -j DROP
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p udp --dport 111 -j DROP
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 6443 -j DROP
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 10250 -j DROP
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9100 -j DROP
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 24007 -j DROP
+    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9500 -j DROP
+  '';
+
+  networking.firewall.extraStopCommands = ''
+    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 111 -j DROP 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p udp --dport 111 -j DROP 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 6443 -j DROP 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 10250 -j DROP 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9100 -j DROP 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 24007 -j DROP 2>/dev/null || true
+    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9500 -j DROP 2>/dev/null || true
   '';
 }
