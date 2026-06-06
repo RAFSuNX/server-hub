@@ -46,6 +46,24 @@
     "kernel.sysrq" = 0;
   };
 
-  # Disable rpcbind — not needed, closes port 111
-  services.rpcbind.enable = lib.mkDefault false;
+  # Restrict rpcbind to Tailscale interface only (required by GlusterFS)
+  # Binding to specific interface not supported directly — use firewall to block public access
+  networking.firewall.extraInputRules = ''
+    # Block port 111 (rpcbind) from non-Tailscale interfaces
+    iifname != "tailscale0" tcp dport 111 drop
+    iifname != "tailscale0" udp dport 111 drop
+
+    # Block k3s API server from non-Tailscale interfaces
+    iifname != "tailscale0" tcp dport 6443 drop
+
+    # Block kubelet from non-Tailscale interfaces
+    iifname != "tailscale0" tcp dport 10250 drop
+
+    # Block node-exporter metrics from non-Tailscale interfaces
+    iifname != "tailscale0" tcp dport 9100 drop
+
+    # Block Longhorn ports from non-Tailscale interfaces
+    iifname != "tailscale0" tcp dport 24007 drop
+    iifname != "tailscale0" tcp dport 9500 drop
+  '';
 }
