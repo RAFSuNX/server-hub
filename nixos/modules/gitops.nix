@@ -65,6 +65,11 @@ in
       StandardOutput = "journal";
       StandardError  = "journal";
     };
+
+    # Prevent deadlock: switch-to-configuration must not try to restart
+    # nixos-gitops while nixos-gitops itself is running a rebuild.
+    stopIfChanged    = false;
+    restartIfChanged = false;
   };
 
   systemd.timers.nixos-gitops = {
