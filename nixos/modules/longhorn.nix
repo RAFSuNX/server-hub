@@ -7,7 +7,7 @@
     name   = "iqn.2016-09.com.longhorn:${config.networking.hostName}";
   };
 
-  boot.kernelModules = [ "iscsi_tcp" ];
+  boot.kernelModules = [ "iscsi_tcp" "dm_crypt" ];
 
   environment.systemPackages = with pkgs; [ nfs-utils ];
 
