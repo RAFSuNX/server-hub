@@ -37,6 +37,13 @@ let
     fi
 
     echo "gitops: new commit $LATEST (was: ''${CURRENT:-none})"
+
+    # Clear any stale transient unit left by a previously interrupted nixos-rebuild
+    systemctl kill nixos-rebuild-switch-to-configuration.service 2>/dev/null || true
+    systemctl reset-failed nixos-rebuild-switch-to-configuration.service 2>/dev/null || true
+    rm -f /run/systemd/transient/nixos-rebuild-switch-to-configuration.service
+    systemctl daemon-reload
+
     echo "gitops: running nixos-rebuild switch..."
 
     /run/current-system/sw/bin/nixos-rebuild switch \
