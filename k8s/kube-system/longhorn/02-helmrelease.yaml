@@ -24,8 +24,7 @@ spec:
       defaultClassReplicaCount: 3
     longhornUI:
       replicas: 0
-    webhooks:
-      conversion:
-        enabled: false
-      admission:
-        enabled: false
+    longhornAdmissionWebhook:
+      replicas: 0
+    longhornConversionWebhook:
+      replicas: 0
