@@ -31,8 +31,6 @@ spec:
           value: UTC
         - name: WEBUI_PORT
           value: "8080"
-        - name: WARP_LICENSE_KEY
-          value: "8T06DF3A-74vT6Kd9-M89T0bn2"
         image: ghcr.io/rafsunx/qbittorrent-warp:latest
         imagePullPolicy: Always
         name: qbittorrent-warp

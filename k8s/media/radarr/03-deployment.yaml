@@ -58,8 +58,6 @@ spec:
           name: movies
         - mountPath: /downloads
           name: downloads
-        - mountPath: /gdrive/movies
-          name: gdrive-movies
         - mountPath: /hza/movies
           name: hza-movies
       dnsPolicy: ClusterFirst
@@ -79,10 +77,6 @@ spec:
           path: /mnt/storage/Downloads
           type: DirectoryOrCreate
         name: downloads
-      - hostPath:
-          path: /mnt/gdrive/Movies
-          type: Directory
-        name: gdrive-movies
       - hostPath:
           path: /mnt/hza/Movies
           type: Directory

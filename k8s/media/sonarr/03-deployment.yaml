@@ -58,8 +58,6 @@ spec:
           name: shows
         - mountPath: /downloads
           name: downloads
-        - mountPath: /gdrive/shows
-          name: gdrive-shows
         - mountPath: /hza/shows
           name: hza-shows
       dnsPolicy: ClusterFirst
@@ -79,10 +77,6 @@ spec:
           path: /mnt/storage/Downloads
           type: DirectoryOrCreate
         name: downloads
-      - hostPath:
-          path: /mnt/gdrive/Shows
-          type: Directory
-        name: gdrive-shows
       - hostPath:
           path: /mnt/hza/Shows
           type: Directory

@@ -9,6 +9,7 @@ resources:
   - prowlarr/02-storage.yaml
   - prowlarr/03-deployment.yaml
   - prowlarr/04-service.yaml
+  - qbittorrent/01-secret.yaml
   - qbittorrent/02-storage.yaml
   - qbittorrent/03-deployment.yaml
   - qbittorrent/04-service.yaml

@@ -52,10 +52,6 @@ spec:
               mountPath: /data/tvshows
             - name: movies
               mountPath: /data/movies
-            - name: gdrive-shows
-              mountPath: /data/gdrive/tvshows
-            - name: gdrive-movies
-              mountPath: /data/gdrive/movies
             - name: hza-shows
               mountPath: /data/hza/tvshows
             - name: hza-movies
@@ -71,14 +67,6 @@ spec:
         - name: movies
           hostPath:
             path: /mnt/storage/Movies
-            type: Directory
-        - name: gdrive-shows
-          hostPath:
-            path: /mnt/gdrive/Shows
-            type: Directory
-        - name: gdrive-movies
-          hostPath:
-            path: /mnt/gdrive/Movies
             type: Directory
         - name: hza-shows
           hostPath:
