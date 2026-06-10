@@ -1,0 +1,99 @@
+---
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ server_timezone }}"
+
+- name: Remove insecure packages
+  ansible.builtin.apt:
+    name: "{{ base_packages_remove }}"
+    state: absent
+    purge: true
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name: "{{ base_packages_install }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Configure passwordless sudo for rafsunx
+  ansible.builtin.template:
+    src: sudoers.j2
+    dest: /etc/sudoers.d/rafsunx
+    owner: root
+    group: root
+    mode: "0440"
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Apply kernel hardening via sysctl
+  ansible.builtin.template:
+    src: sysctl-hardening.conf.j2
+    dest: /etc/sysctl.d/99-hardening.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload sysctl
+
+- name: Disable unused kernel modules
+  ansible.builtin.template:
+    src: modprobe-disable.conf.j2
+    dest: /etc/modprobe.d/99-disable-unused.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Harden /tmp - noexec, nosuid, nodev
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/tmp.mount
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [Unit]
+      Description=Temporary Directory /tmp
+      ConditionPathIsSymbolicLink=!/tmp
+      DefaultDependencies=no
+      Conflicts=umount.target
+      Before=local-fs.target umount.target
+      After=swap.target
+
+      [Mount]
+      What=tmpfs
+      Where=/tmp
+      Type=tmpfs
+      Options=mode=1777,strictatime,noexec,nodev,nosuid,size=512M
+
+      [Install]
+      WantedBy=local-fs.target
+  notify: reload systemd and remount tmp
+
+- name: Enable hardened /tmp mount on next reboot
+  ansible.builtin.systemd:
+    name: tmp.mount
+    enabled: true
+    daemon_reload: true
+  when: not ansible_check_mode
+
+- name: Add cluster node hostnames to /etc/hosts
+  ansible.builtin.blockinfile:
+    path: /etc/hosts
+    marker: "# {mark} OciSystem cluster nodes"
+    block: |
+      100.75.192.102 systema
+      100.73.23.127  systemb
+      100.76.99.35   systemc
+
+- name: Configure unattended security upgrades
+  ansible.builtin.template:
+    src: unattended-upgrades.conf.j2
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Enable unattended-upgrades service
+  ansible.builtin.systemd:
+    name: unattended-upgrades
+    enabled: true
+    state: started
+  when: not ansible_check_mode

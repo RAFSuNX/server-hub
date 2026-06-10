@@ -1,0 +1,27 @@
+# OciSystem - k3s init node config
+# Applied by Ansible. Do not edit manually.
+
+cluster-init: true
+token: "{{ k3s_token }}"
+
+advertise-address: "{{ tailscale_node_ip }}"
+node-ip: "{{ tailscale_node_ip }}"
+flannel-iface: tailscale0
+
+tls-san:
+  - "{{ hostvars['systema']['tailscale_node_ip'] | default('100.75.192.102') }}"
+  - "{{ hostvars['systemb']['tailscale_node_ip'] | default('100.73.23.127') }}"
+  - "{{ hostvars['systemc']['tailscale_node_ip'] | default('100.76.99.35') }}"
+  - systema
+  - systemb
+  - systemc
+
+cluster-cidr: "{{ k3s_cluster_cidr }}"
+service-cidr: "{{ k3s_service_cidr }}"
+
+disable:
+{% for item in k3s_disable %}
+  - {{ item }}
+{% endfor %}
+
+write-kubeconfig-mode: "0644"

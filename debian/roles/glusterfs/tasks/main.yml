@@ -1,0 +1,94 @@
+---
+- name: Install GlusterFS server and client
+  ansible.builtin.apt:
+    name:
+      - glusterfs-server
+      - glusterfs-client
+    state: present
+    update_cache: true
+
+- name: Enable and start glusterd
+  ansible.builtin.systemd:
+    name: glusterd
+    enabled: true
+    state: started
+
+- name: Create brick directory
+  ansible.builtin.file:
+    path: "{{ glusterfs_brick_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create storage mount directory
+  ansible.builtin.file:
+    path: "{{ glusterfs_mount_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Probe all peers (init node only)
+  ansible.builtin.command: gluster peer probe {{ item }}
+  loop: "{{ glusterfs_peers }}"
+  when: inventory_hostname == glusterfs_init_node
+  changed_when: true
+  failed_when: false
+
+- name: Wait for peers to connect
+  ansible.builtin.command: gluster peer status
+  register: peer_status
+  until: "'Connected' in peer_status.stdout"
+  retries: 12
+  delay: 5
+  changed_when: false
+  when: inventory_hostname == glusterfs_init_node
+
+- name: Create distributed GlusterFS volume (init node only)
+  ansible.builtin.command: >
+    gluster volume create {{ glusterfs_volume_name }}
+    transport tcp
+    systema:{{ glusterfs_brick_path }}
+    systemb:{{ glusterfs_brick_path }}
+    systemc:{{ glusterfs_brick_path }}
+    force
+  when: inventory_hostname == glusterfs_init_node
+  register: volume_create
+  failed_when:
+    - volume_create.rc != 0
+    - "'already exists' not in volume_create.stderr"
+  changed_when: "'already exists' not in volume_create.stderr"
+
+- name: Start GlusterFS volume (init node only)
+  ansible.builtin.command: gluster volume start {{ glusterfs_volume_name }} force
+  when: inventory_hostname == glusterfs_init_node
+  register: volume_start
+  failed_when:
+    - volume_start.rc != 0
+    - "'already started' not in volume_start.stderr"
+  changed_when: "'already started' not in volume_start.stderr"
+
+- name: Enable volume quota (init node only)
+  ansible.builtin.command: gluster volume quota {{ glusterfs_volume_name }} enable
+  when: inventory_hostname == glusterfs_init_node
+  register: quota_enable
+  failed_when:
+    - quota_enable.rc != 0
+    - "'already enabled' not in quota_enable.stderr"
+  changed_when: "'already enabled' not in quota_enable.stderr"
+
+- name: Set per-node brick size limit via quota (init node only)
+  ansible.builtin.command: >
+    gluster volume quota {{ glusterfs_volume_name }}
+    limit-usage / {{ glusterfs_total_quota }}
+  when: inventory_hostname == glusterfs_init_node
+  changed_when: true
+
+- name: Mount GlusterFS volume on all nodes
+  ansible.posix.mount:
+    path: "{{ glusterfs_mount_path }}"
+    src: "localhost:/{{ glusterfs_volume_name }}"
+    fstype: glusterfs
+    opts: defaults,_netdev,backupvolfile-server=systema
+    state: mounted

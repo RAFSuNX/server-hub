@@ -18,8 +18,9 @@ k8s/tools/*-secrets.yaml
 *.kubeconfig
 kubeconfig
 
-# Ansible inventory (contains real IPs and references secrets)
-ansible/inventory/hosts.ini
+# Ansible vault password (never commit)
+debian/.vault-pass
+.vault-pass
 
 # Server details (contains real IPs and infrastructure info)
 data/
@@ -34,3 +35,4 @@ data/
 # OS files
 .DS_Store
 Thumbs.db
+talos/

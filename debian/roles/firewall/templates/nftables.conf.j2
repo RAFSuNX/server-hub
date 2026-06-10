@@ -1,0 +1,38 @@
+#!/usr/sbin/nft -f
+# OciSystem - nftables firewall
+# Applied by Ansible. Do not edit manually.
+# k3s runs entirely over Tailscale - public interface has SSH only.
+
+flush ruleset
+
+table inet filter {
+
+    chain input {
+        type filter hook input priority filter; policy drop;
+
+        # Loopback - always allow
+        iifname "lo" accept
+
+        # Tailscale - fully trusted, all k3s/cluster traffic flows here
+        iifname "tailscale0" accept
+
+        # Allow return traffic for outbound connections
+        ct state established,related accept
+        ct state invalid drop
+
+        # SSH on public interface only
+        tcp dport {{ ssh_port }} accept
+
+        # ICMP - specific safe types only (no type 5 redirect)
+        icmp type { echo-request, echo-reply, destination-unreachable, time-exceeded } accept
+    }
+
+    chain forward {
+        type filter hook forward priority filter; policy accept;
+        # k3s manages pod routing rules in this chain via iptables-nft
+    }
+
+    chain output {
+        type filter hook output priority filter; policy accept;
+    }
+}

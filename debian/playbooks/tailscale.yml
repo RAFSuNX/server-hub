@@ -1,0 +1,9 @@
+---
+# Install and connect Tailscale on all nodes.
+# Auth key is never stored in repo - pass at runtime:
+#   ansible-playbook playbooks/tailscale.yml -e "tailscale_auth_key=tskey-auth-..."
+- name: Tailscale
+  hosts: ocisystem
+  become: true
+  roles:
+    - tailscale

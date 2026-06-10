@@ -1,0 +1,39 @@
+---
+- name: Ensure sshd_config.d directory exists
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Apply SSH hardening config
+  ansible.builtin.template:
+    src: sshd_hardening.conf.j2
+    dest: /etc/ssh/sshd_config.d/99-hardening.conf
+    owner: root
+    group: root
+    mode: "0600"
+  notify: validate and restart sshd
+
+- name: Ensure main sshd_config includes config.d
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^Include /etc/ssh/sshd_config.d'
+    line: 'Include /etc/ssh/sshd_config.d/*.conf'
+    state: present
+  notify: validate and restart sshd
+
+- name: Flush handlers to restart sshd now before firewall applies
+  ansible.builtin.meta: flush_handlers
+
+- name: Check sshd is listening on correct port
+  ansible.builtin.command: ss -tlnp
+  register: ss_output
+  changed_when: false
+
+- name: Restart sshd if not listening on port {{ ssh_port }}
+  ansible.builtin.systemd:
+    name: ssh
+    state: restarted
+  when: (":" + (ssh_port | string)) not in ss_output.stdout

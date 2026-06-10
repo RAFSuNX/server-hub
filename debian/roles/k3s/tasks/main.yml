@@ -1,0 +1,90 @@
+---
+- name: Get node Tailscale IP
+  ansible.builtin.command: tailscale ip -4
+  register: ts_ip_raw
+  changed_when: false
+
+- name: Set tailscale_node_ip fact
+  ansible.builtin.set_fact:
+    tailscale_node_ip: "{{ ts_ip_raw.stdout | trim }}"
+
+- name: Create k3s config directory
+  ansible.builtin.file:
+    path: /etc/rancher/k3s
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Deploy k3s config (init node)
+  ansible.builtin.template:
+    src: k3s-config-init.yaml.j2
+    dest: /etc/rancher/k3s/config.yaml
+    owner: root
+    group: root
+    mode: "0640"
+  when: inventory_hostname == k3s_init_node
+
+- name: Deploy k3s config (join nodes)
+  ansible.builtin.template:
+    src: k3s-config-join.yaml.j2
+    dest: /etc/rancher/k3s/config.yaml
+    owner: root
+    group: root
+    mode: "0640"
+  when: inventory_hostname != k3s_init_node
+
+- name: Check if k3s is already installed at correct version
+  ansible.builtin.command: k3s --version
+  register: k3s_installed_version
+  changed_when: false
+  failed_when: false
+
+- name: Download k3s install script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /var/tmp/k3s-install.sh
+    mode: "0700"
+  when: k3s_version not in (k3s_installed_version.stdout | default(''))
+
+- name: Install k3s
+  ansible.builtin.command: /var/tmp/k3s-install.sh
+  environment:
+    INSTALL_K3S_VERSION: "{{ k3s_version }}"
+    INSTALL_K3S_EXEC: "server"
+  when: k3s_version not in (k3s_installed_version.stdout | default(''))
+  notify: restart k3s
+
+- name: Enable and start k3s
+  ansible.builtin.systemd:
+    name: k3s
+    enabled: true
+    state: started
+
+- name: Wait for node to be ready
+  ansible.builtin.command: k3s kubectl get node {{ inventory_hostname }}
+  register: node_ready
+  until: "'Ready' in node_ready.stdout"
+  retries: 30
+  delay: 10
+  changed_when: false
+  when: inventory_hostname == k3s_init_node
+
+- name: Ensure .kube dir exists
+  ansible.builtin.file:
+    path: ~{{ ansible_user }}/.kube
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0700"
+  when: inventory_hostname == k3s_init_node
+
+- name: Copy kubeconfig for rafsunx
+  ansible.builtin.copy:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: ~{{ ansible_user }}/.kube/config
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0600"
+    remote_src: true
+  when: inventory_hostname == k3s_init_node

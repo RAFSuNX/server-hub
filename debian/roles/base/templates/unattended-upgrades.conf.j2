@@ -1,0 +1,26 @@
+// OciSystem - unattended security upgrades
+// Applied by Ansible. Do not edit manually.
+
+Unattended-Upgrade::Allowed-Origins {
+    "${distro_id}:${distro_codename}-security";
+    "${distro_id}ESMApps:${distro_codename}-apps-security";
+    "${distro_id}ESM:${distro_codename}-infra-security";
+};
+
+// Security patches only - not all updates
+Unattended-Upgrade::Package-Blacklist {};
+
+// Remove unused dependencies after upgrade
+Unattended-Upgrade::Remove-Unused-Dependencies "true";
+Unattended-Upgrade::Remove-New-Unused-Dependencies "true";
+
+// NO auto-reboot - k3s nodes must be drained before reboot
+Unattended-Upgrade::Automatic-Reboot "false";
+
+// Email on errors (set to your address or remove)
+// Unattended-Upgrade::Mail "ashek.hasan@aiavatar.work";
+// Unattended-Upgrade::MailReport "on-change";
+
+// Verbose logging
+Unattended-Upgrade::Verbose "false";
+Unattended-Upgrade::Debug "false";

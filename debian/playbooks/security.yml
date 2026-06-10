@@ -1,0 +1,10 @@
+---
+# Security baseline - idempotent, safe to re-run anytime
+- name: Security baseline
+  hosts: ocisystem
+  become: true
+  roles:
+    - base
+    - ssh
+    - firewall
+    - fail2ban

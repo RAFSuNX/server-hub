@@ -1,0 +1,23 @@
+---
+base_packages_remove:
+  - telnet
+  - rsh-client
+  - ftp
+  - nis
+  - talk
+  - rsh-server
+  - xinetd
+
+base_packages_install:
+  - curl
+  - git
+  - htop
+  - rsync
+  - ca-certificates
+  - apt-transport-https
+  - gnupg
+  - unattended-upgrades
+  - apt-listchanges
+  - lsof
+  - net-tools
+  - dnsutils

@@ -1,0 +1,18 @@
+# OciSystem - fail2ban config
+# Applied by Ansible. Do not edit manually.
+
+[DEFAULT]
+bantime  = {{ fail2ban_bantime }}
+findtime = {{ fail2ban_findtime }}
+maxretry = {{ fail2ban_maxretry }}
+banaction = nftables-multiport
+banaction_allports = nftables-allports
+backend = systemd
+
+[sshd]
+enabled  = true
+port     = {{ ssh_port }}
+logpath  = %(sshd_log)s
+maxretry = {{ fail2ban_maxretry }}
+bantime  = {{ fail2ban_bantime }}
+findtime = {{ fail2ban_findtime }}

@@ -1,0 +1,17 @@
+---
+# k3s HA cluster - 3 control-plane nodes, embedded etcd, all traffic over Tailscale
+
+# Phase 1 - init node (systema bootstraps the etcd cluster)
+- name: k3s init node
+  hosts: systema
+  become: true
+  roles:
+    - k3s
+
+# Phase 2 - join nodes (systemb and systemc join after systema is ready)
+- name: k3s join nodes
+  hosts: systemb,systemc
+  become: true
+  serial: 1
+  roles:
+    - k3s
