@@ -7,3 +7,8 @@ resources:
   - longhorn/03-storageclass.yaml
   - sealed-secrets/01-helmrepo.yaml
   - sealed-secrets/02-helmrelease.yaml
+  - kite/01-rbac.yaml
+  - kite/00-secret.yaml
+  - kite/02-storage.yaml
+  - kite/03-deployment.yaml
+  - kite/04-service.yaml
