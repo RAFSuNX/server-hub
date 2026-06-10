@@ -16,14 +16,14 @@ spec:
     spec:
       containers:
         - name: cloudflared
-          image: cloudflare/cloudflared:latest
+          image: cloudflare/cloudflared:2025.5.0
           command: ["cloudflared"]
           args:
             - tunnel
             - --no-autoupdate
             - run
             - --protocol
-            - http2
+            - quic
             - --token
             - $(TUNNEL_TOKEN)
           env:
