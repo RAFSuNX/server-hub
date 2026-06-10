@@ -41,5 +41,13 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "500m"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
