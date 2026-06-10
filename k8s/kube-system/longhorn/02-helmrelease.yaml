@@ -15,13 +15,13 @@ spec:
         namespace: longhorn-system
   values:
     defaultSettings:
-      defaultReplicaCount: 2
+      defaultReplicaCount: 3
       storageMinimalAvailablePercentage: 10
       backupstorePollInterval: 0
       backupTarget: ""
     persistence:
       defaultClass: true
-      defaultClassReplicaCount: 2
+      defaultClassReplicaCount: 3
     longhornUI:
       replicas: 0
     webhooks:
