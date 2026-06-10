@@ -81,3 +81,9 @@ fs.protected_symlinks = 1
 ##
 # Prevent mapping memory at address 0 (null pointer exploit mitigation)
 vm.mmap_min_addr = 65536
+
+##
+## UDP buffer sizes - required for QUIC (Cloudflare tunnel)
+##
+net.core.rmem_max = 7500000
+net.core.wmem_max = 7500000
