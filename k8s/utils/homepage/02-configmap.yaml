@@ -153,20 +153,9 @@ data:
                 namespace: media
                 app: seerr
                 widget:
-                  type: customapi
-                  url: http://seerr.media/api/v1/request/count
-                  headers:
-                    X-Api-Key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
-                  mappings:
-                    - field: processing
-                      label: Processing
-                      format: number
-                    - field: pending
-                      label: Pending
-                      format: number
-                    - field: completed
-                      label: Available
-                      format: number
+                  type: jellyseerr
+                  url: http://seerr.media
+                  key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
 
             - Prowlarr:
                 icon: prowlarr.png
