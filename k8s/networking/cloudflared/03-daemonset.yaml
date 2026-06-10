@@ -14,8 +14,6 @@ spec:
       labels:
         app: cloudflared
     spec:
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: cloudflared
           image: cloudflare/cloudflared:2025.5.0
