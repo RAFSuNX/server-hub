@@ -74,7 +74,7 @@ data:
                         options:
                           maximumFractionDigits: 1
                     - label: Storage
-                      query: round((sum(node_filesystem_size_bytes{mountpoint="/mnt/storage"}) - sum(node_filesystem_avail_bytes{mountpoint="/mnt/storage"})) / 1073741824, 0.1)
+                      query: round((sum(node_filesystem_size_bytes{mountpoint="/host/root/mnt/storage"}) - sum(node_filesystem_avail_bytes{mountpoint="/host/root/mnt/storage"})) / 1073741824, 0.1)
                       format:
                         type: number
                         suffix: " GB"
