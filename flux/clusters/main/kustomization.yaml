@@ -4,3 +4,4 @@ resources:
   - flux-system
   - namespaces.yaml
   - kube-system.yaml
+  - networking.yaml
