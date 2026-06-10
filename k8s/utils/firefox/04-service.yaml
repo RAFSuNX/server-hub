@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: firefox
+  namespace: utils
+spec:
+  clusterIP: 10.43.1.5
+  type: ClusterIP
+  selector:
+    app: firefox
+  ports:
+    - port: 443
+      targetPort: 3001
+      protocol: TCP
+      name: https

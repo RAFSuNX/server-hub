@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - 00-media.yaml
   - 00-networking.yaml
-  - 00-tools.yaml
+  - 00-utils.yaml

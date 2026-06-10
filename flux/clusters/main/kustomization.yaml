@@ -6,3 +6,4 @@ resources:
   - kube-system.yaml
   - networking.yaml
   - media.yaml
+  - utils.yaml

@@ -1,0 +1,91 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ariang
+  namespace: utils
+  labels:
+    app: ariang
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: ariang
+  template:
+    metadata:
+      labels:
+        app: ariang
+        app.kubernetes.io/name: ariang
+    spec:
+      initContainers:
+        - name: init-config
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              if [ ! -f /app/conf/aria2.conf ]; then
+                mkdir -p /app/conf
+                touch /app/conf/aria2.conf
+              fi
+          volumeMounts:
+            - name: config
+              mountPath: /app/conf
+      containers:
+        - name: aria2-ui
+          image: wahyd4/aria2-ui:latest
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
+          env:
+            - name: RPC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tools-auth
+                  key: password
+            - name: ENABLE_AUTH
+              value: "true"
+            - name: ARIA2_USER
+              valueFrom:
+                secretKeyRef:
+                  name: tools-auth
+                  key: username
+            - name: ARIA2_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: tools-auth
+                  key: password
+            - name: ENABLE_FILEBROWSER
+              value: "false"
+            - name: ENABLE_RCLONE
+              value: "false"
+          resources:
+
+            requests:
+
+              cpu: "1000m"
+
+              memory: "2Gi"
+
+            limits:
+
+              cpu: "4000m"
+
+              memory: "8Gi"
+          volumeMounts:
+            - name: config
+              mountPath: /app/conf
+            - name: downloads
+              mountPath: /data
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: ariang-config
+        - name: downloads
+          hostPath:
+            path: /mnt/storage/Downloads
+            type: Directory
