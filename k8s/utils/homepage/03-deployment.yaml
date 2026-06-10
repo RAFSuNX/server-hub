@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: homepage
-  namespace: tools
+  namespace: utils
   labels:
     app: homepage
 spec:
