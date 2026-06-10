@@ -42,10 +42,11 @@ spec:
               memory: "128Mi"
               cpu: "500m"
           securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
             capabilities:
-              add:
-                - NET_ADMIN
               drop:
                 - ALL
       restartPolicy: Always

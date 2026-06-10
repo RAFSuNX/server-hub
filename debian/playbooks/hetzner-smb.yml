@@ -1,0 +1,6 @@
+---
+- name: Mount Hetzner storage box on all nodes
+  hosts: ocisystem
+  become: true
+  roles:
+    - hetzner-smb
