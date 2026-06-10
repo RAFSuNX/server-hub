@@ -13,8 +13,21 @@ table inet filter {
         # Loopback - always allow
         iifname "lo" accept
 
-        # Tailscale - fully trusted, all k3s/cluster traffic flows here
+        # Tailscale - fully trusted
         iifname "tailscale0" accept
+
+        # k8s pod network (flannel)
+        iifname "flannel.1" accept
+        iifname "cni0" accept
+
+        # Internal CIDRs - all cluster traffic unrestricted
+        ip saddr 10.42.0.0/16 accept
+        ip saddr 10.43.0.0/16 accept
+        ip saddr 100.64.0.0/10 accept
+        ip saddr 100.0.0.0/8 accept
+
+        # Cloudflare WARP
+        ip saddr 172.16.0.0/12 accept
 
         # Allow return traffic for outbound connections
         ct state established,related accept
