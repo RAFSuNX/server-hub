@@ -36,8 +36,6 @@ spec:
               mountPath: /opt/alist/data
             - name: storage
               mountPath: /mnt/storage
-            - name: gdrive
-              mountPath: /mnt/gdrive
             - name: hza
               mountPath: /mnt/hza
           resources:
@@ -60,10 +58,6 @@ spec:
         - name: storage
           hostPath:
             path: /mnt/storage
-            type: Directory
-        - name: gdrive
-          hostPath:
-            path: /mnt/gdrive
             type: Directory
         - name: hza
           hostPath:

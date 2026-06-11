@@ -7,3 +7,15 @@ resources:
   - homepage/02-configmap.yaml
   - homepage/03-deployment.yaml
   - homepage/04-service.yaml
+  - alist/01-storage.yaml
+  - alist/02-deployment.yaml
+  - alist/03-service.yaml
+  - firefox/01-secret.yaml
+  - firefox/02-storage.yaml
+  - firefox/03-deployment.yaml
+  - firefox/04-service.yaml
+  - transfersh/03-deployment.yaml
+  - transfersh/04-service.yaml
+  - searxng/01-configmap.yaml
+  - searxng/02-deployment.yaml
+  - searxng/03-service.yaml
