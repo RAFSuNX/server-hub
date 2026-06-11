@@ -16,6 +16,7 @@ resources:
   - firefox/04-service.yaml
   - transfersh/03-deployment.yaml
   - transfersh/04-service.yaml
+  - searxng/00-secret.yaml
   - searxng/01-configmap.yaml
   - searxng/02-deployment.yaml
   - searxng/03-service.yaml
