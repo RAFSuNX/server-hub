@@ -30,7 +30,7 @@ k8s/
 │   ├── 00-media.yaml
 │   ├── 00-monitoring.yaml
 │   ├── 00-networking.yaml
-│   └── 00-tools.yaml
+│   └── 00-utils.yaml
 ├── games/
 │   └── minecraft/
 │       ├── 02-storage.yaml

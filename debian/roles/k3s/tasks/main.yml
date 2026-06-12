@@ -46,6 +46,7 @@
     dest: /var/tmp/k3s-install.sh
     mode: "0700"
   when: k3s_version not in (k3s_installed_version.stdout | default(''))
+  # install script verifies k3s binary checksum internally via INSTALL_K3S_VERSION pin
 
 - name: Install k3s
   ansible.builtin.command: /var/tmp/k3s-install.sh
