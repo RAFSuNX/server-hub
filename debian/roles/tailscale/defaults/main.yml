@@ -1,4 +1,4 @@
 ---
 tailscale_auth_key: "{{ vault_tailscale_auth_key }}"
-tailscale_advertise_exit_node: false
+tailscale_advertise_exit_node: true
 tailscale_accept_routes: true
