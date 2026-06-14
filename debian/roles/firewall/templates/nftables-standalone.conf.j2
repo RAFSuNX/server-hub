@@ -1,6 +1,7 @@
 #!/usr/sbin/nft -f
 # Standalone server - nftables firewall
 # Applied by Ansible. Do not edit manually.
+# Docker iptables disabled in daemon.json — forwarding managed here.
 
 flush ruleset
 
@@ -9,28 +10,41 @@ table inet filter {
     chain input {
         type filter hook input priority filter; policy drop;
 
-        # Loopback - always allow
         iifname "lo" accept
-
-        # Tailscale - fully trusted
         iifname "tailscale0" accept
 
-        # Allow return traffic for outbound connections
         ct state established,related accept
         ct state invalid drop
 
-        # SSH on public interface only
         tcp dport {{ ssh_port }} accept
 
-        # ICMP - specific safe types only (no type 5 redirect)
         icmp type { echo-request, echo-reply, destination-unreachable, time-exceeded } accept
     }
 
     chain forward {
         type filter hook forward priority filter; policy drop;
+
+        # Docker containers → internet (outbound)
+        iifname "docker0" oifname != "docker0" accept
+
+        # Return traffic back to containers
+        iifname != "docker0" oifname "docker0" ct state established,related accept
+
+        # Tailscale → docker and back (for internal access via VPN)
+        iifname "tailscale0" oifname "docker0" accept
+        iifname "docker0" oifname "tailscale0" accept
     }
 
     chain output {
         type filter hook output priority filter; policy accept;
+    }
+}
+
+table ip nat {
+    chain postrouting {
+        type nat hook postrouting priority srcnat; policy accept;
+
+        # Masquerade docker container traffic going out to internet
+        oifname != "docker0" ip saddr 172.17.0.0/16 masquerade
     }
 }

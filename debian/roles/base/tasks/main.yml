@@ -84,6 +84,25 @@
       100.76.99.35   systemc
   when: "'ocisystem' in group_names"
 
+- name: Check if Docker is installed
+  ansible.builtin.stat:
+    path: /usr/bin/docker
+  register: docker_binary
+
+- name: Disable Docker iptables manipulation
+  ansible.builtin.copy:
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      {
+        "iptables": false,
+        "ip6tables": false
+      }
+  when: docker_binary.stat.exists
+  notify: restart docker
+
 - name: Configure DNS resolvers
   ansible.builtin.template:
     src: resolv.conf.j2
