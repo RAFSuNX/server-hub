@@ -1,1 +1,2 @@
-rafsunx ALL=(ALL) NOPASSWD: ALL
+{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL
+Defaults:{{ ansible_user }} !requiretty

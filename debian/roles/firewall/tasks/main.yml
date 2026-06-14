@@ -14,7 +14,7 @@
 
 - name: Deploy nftables config
   ansible.builtin.template:
-    src: nftables.conf.j2
+    src: "{{ 'nftables-standalone.conf.j2' if 'standalone' in group_names else 'nftables.conf.j2' }}"
     dest: /etc/nftables.conf
     owner: root
     group: root

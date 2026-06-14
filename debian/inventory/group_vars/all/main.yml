@@ -3,4 +3,4 @@ ansible_become: true
 ansible_become_method: sudo
 ansible_become_pass: ""
 ansible_python_interpreter: /usr/bin/python3
-ansible_remote_tmp: $HOME/.ansible/tmp
+ansible_remote_tmp: ~/.ansible/tmp

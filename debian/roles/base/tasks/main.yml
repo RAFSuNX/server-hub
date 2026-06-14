@@ -16,10 +16,10 @@
     update_cache: true
     cache_valid_time: 3600
 
-- name: Configure passwordless sudo for rafsunx
+- name: Configure passwordless sudo for {{ ansible_user }}
   ansible.builtin.template:
     src: sudoers.j2
-    dest: /etc/sudoers.d/rafsunx
+    dest: /etc/sudoers.d/{{ ansible_user }}
     owner: root
     group: root
     mode: "0440"
@@ -82,6 +82,15 @@
       100.75.192.102 systema
       100.73.23.127  systemb
       100.76.99.35   systemc
+  when: "'ocisystem' in group_names"
+
+- name: Configure DNS resolvers
+  ansible.builtin.template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: "0644"
 
 - name: Configure unattended security upgrades
   ansible.builtin.template:
