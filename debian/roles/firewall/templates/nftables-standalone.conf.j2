@@ -24,15 +24,15 @@ table inet filter {
     chain forward {
         type filter hook forward priority filter; policy drop;
 
-        # Docker containers → internet (outbound)
-        iifname "docker0" oifname != "docker0" accept
+        # Docker containers → internet (matches all bridge networks 172.16-31.x.x)
+        ip saddr 172.16.0.0/12 accept
 
-        # Return traffic back to containers
-        iifname != "docker0" oifname "docker0" ct state established,related accept
+        # Return traffic back to any container subnet
+        ip daddr 172.16.0.0/12 ct state established,related accept
 
-        # Tailscale → docker and back (for internal access via VPN)
-        iifname "tailscale0" oifname "docker0" accept
-        iifname "docker0" oifname "tailscale0" accept
+        # Tailscale → container subnets and back
+        iifname "tailscale0" ip daddr 172.16.0.0/12 accept
+        ip saddr 172.16.0.0/12 oifname "tailscale0" accept
     }
 
     chain output {
@@ -44,7 +44,7 @@ table ip nat {
     chain postrouting {
         type nat hook postrouting priority srcnat; policy accept;
 
-        # Masquerade docker container traffic going out to internet
-        oifname != "docker0" ip saddr 172.17.0.0/16 masquerade
+        # Masquerade all Docker bridge subnets (172.16.0.0/12 covers docker0 + custom networks)
+        ip saddr 172.16.0.0/12 masquerade
     }
 }
