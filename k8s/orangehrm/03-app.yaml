@@ -35,7 +35,7 @@ spec:
           command: ['sh', '-c', 'until nc -z mysql.orangehrm.svc.cluster.local 3306; do sleep 3; done']
       containers:
         - name: orangehrm
-          image: orangehrm/orangehrm:5.8.1
+          image: ghcr.io/rafsunx/orangehrm:5.8.1
           ports:
             - containerPort: 80
           env:
