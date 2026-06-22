@@ -33,7 +33,7 @@ spec:
           command: ['sh', '-c', 'until nc -z redis-cache.hrms.svc.cluster.local 6379; do echo waiting for redis; sleep 2; done']
       containers:
         - name: setup
-          image: ghcr.io/rafsunx/frappe-hrms:latest
+          image: ghcr.io/rafsunx/erpnext-hrms:v16
           resources:
             requests:
               cpu: "100m"
@@ -122,7 +122,7 @@ spec:
               mountPath: /sites
       containers:
         - name: backend
-          image: ghcr.io/rafsunx/frappe-hrms:latest
+          image: ghcr.io/rafsunx/erpnext-hrms:v16
           env:
             - name: GUNICORN_WORKERS
               value: "4"
@@ -180,7 +180,7 @@ spec:
               mountPath: /sites
       containers:
         - name: websocket
-          image: ghcr.io/rafsunx/frappe-hrms:latest
+          image: ghcr.io/rafsunx/erpnext-hrms:v16
           command: ["node", "/home/frappe/frappe-bench/apps/frappe/socketio.js"]
           ports:
             - containerPort: 9000
@@ -236,7 +236,7 @@ spec:
               mountPath: /sites
       containers:
         - name: worker
-          image: ghcr.io/rafsunx/frappe-hrms:latest
+          image: ghcr.io/rafsunx/erpnext-hrms:v16
           command: ["bench", "worker", "--queue", "short,default"]
           volumeMounts:
             - name: sites
@@ -277,7 +277,7 @@ spec:
               mountPath: /sites
       containers:
         - name: worker
-          image: ghcr.io/rafsunx/frappe-hrms:latest
+          image: ghcr.io/rafsunx/erpnext-hrms:v16
           command: ["bench", "worker", "--queue", "long,default,short"]
           volumeMounts:
             - name: sites
@@ -319,7 +319,7 @@ spec:
               mountPath: /sites
       containers:
         - name: scheduler
-          image: ghcr.io/rafsunx/frappe-hrms:latest
+          image: ghcr.io/rafsunx/erpnext-hrms:v16
           command: ["bench", "schedule"]
           volumeMounts:
             - name: sites
@@ -361,7 +361,7 @@ spec:
               mountPath: /sites
       containers:
         - name: frontend
-          image: ghcr.io/rafsunx/frappe-hrms:latest
+          image: ghcr.io/rafsunx/erpnext-hrms:v16
           command: ["nginx-entrypoint.sh"]
           env:
             - name: BACKEND
