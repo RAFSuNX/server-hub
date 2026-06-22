@@ -107,6 +107,13 @@ spec:
       labels:
         app: frappe-backend
     spec:
+      initContainers:
+        - name: wait-for-site
+          image: busybox
+          command: ['sh', '-c', 'until [ -f /sites/hrms.rogx.cc/site_config.json ]; do echo "waiting for site setup..."; sleep 5; done']
+          volumeMounts:
+            - name: sites
+              mountPath: /sites
       containers:
         - name: backend
           image: frappe/erpnext:v16.23.1
@@ -158,6 +165,13 @@ spec:
       labels:
         app: frappe-websocket
     spec:
+      initContainers:
+        - name: wait-for-site
+          image: busybox
+          command: ['sh', '-c', 'until [ -f /sites/hrms.rogx.cc/site_config.json ]; do echo "waiting for site setup..."; sleep 5; done']
+          volumeMounts:
+            - name: sites
+              mountPath: /sites
       containers:
         - name: websocket
           image: frappe/erpnext:v16.23.1
@@ -207,6 +221,13 @@ spec:
       labels:
         app: frappe-queue-short
     spec:
+      initContainers:
+        - name: wait-for-site
+          image: busybox
+          command: ['sh', '-c', 'until [ -f /sites/hrms.rogx.cc/site_config.json ]; do echo "waiting for site setup..."; sleep 5; done']
+          volumeMounts:
+            - name: sites
+              mountPath: /sites
       containers:
         - name: worker
           image: frappe/erpnext:v16.23.1
@@ -241,6 +262,13 @@ spec:
       labels:
         app: frappe-queue-long
     spec:
+      initContainers:
+        - name: wait-for-site
+          image: busybox
+          command: ['sh', '-c', 'until [ -f /sites/hrms.rogx.cc/site_config.json ]; do echo "waiting for site setup..."; sleep 5; done']
+          volumeMounts:
+            - name: sites
+              mountPath: /sites
       containers:
         - name: worker
           image: frappe/erpnext:v16.23.1
@@ -276,6 +304,13 @@ spec:
       labels:
         app: frappe-scheduler
     spec:
+      initContainers:
+        - name: wait-for-site
+          image: busybox
+          command: ['sh', '-c', 'until [ -f /sites/hrms.rogx.cc/site_config.json ]; do echo "waiting for site setup..."; sleep 5; done']
+          volumeMounts:
+            - name: sites
+              mountPath: /sites
       containers:
         - name: scheduler
           image: frappe/erpnext:v16.23.1
@@ -311,6 +346,13 @@ spec:
       labels:
         app: frappe-frontend
     spec:
+      initContainers:
+        - name: wait-for-site
+          image: busybox
+          command: ['sh', '-c', 'until [ -f /sites/hrms.rogx.cc/site_config.json ]; do echo "waiting for site setup..."; sleep 5; done']
+          volumeMounts:
+            - name: sites
+              mountPath: /sites
       containers:
         - name: frontend
           image: frappe/erpnext:v16.23.1
