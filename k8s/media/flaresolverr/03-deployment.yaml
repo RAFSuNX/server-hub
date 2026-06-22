@@ -43,17 +43,11 @@ spec:
         - containerPort: 8191
           protocol: TCP
         resources:
-
           requests:
-
-            cpu: "200m"
-
-            memory: "512Mi"
-
+            cpu: "10m"
+            memory: "256Mi"
           limits:
-
             cpu: "2000m"
-
             memory: "3Gi"
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File

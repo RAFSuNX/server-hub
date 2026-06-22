@@ -87,7 +87,7 @@ spec:
 
           requests:
 
-            cpu: "500m"
+            cpu: "20m"
 
             memory: "768Mi"
 
@@ -121,7 +121,7 @@ spec:
 
           requests:
 
-            cpu: "500m"
+            cpu: "20m"
 
             memory: "768Mi"
 
