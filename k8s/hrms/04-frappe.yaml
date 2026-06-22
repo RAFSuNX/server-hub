@@ -15,11 +15,7 @@ metadata:
   namespace: hrms
 spec:
   interval: 1h
-  dependsOn:
-    - name: mariadb
-      namespace: hrms
-    - name: redis
-      namespace: hrms
+  timeout: 20m
   chart:
     spec:
       chart: erpnext
@@ -36,13 +32,12 @@ spec:
     dbHost: mariadb.hrms.svc.cluster.local
     dbPort: 3306
     dbRootUser: root
-    dbRootPassword: ""
     dbExistingSecret: hrms-db-secrets
     dbExistingSecretPasswordKey: mariadb-root-password
 
     externalRedis:
-      cache: redis-master.hrms.svc.cluster.local:6379
-      queue: redis-master.hrms.svc.cluster.local:6379
+      cache: redis.hrms.svc.cluster.local:6379
+      queue: redis.hrms.svc.cluster.local:6379
 
     nginx:
       replicaCount: 1
