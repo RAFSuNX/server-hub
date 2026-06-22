@@ -1,0 +1,80 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orangehrm-data
+  namespace: orangehrm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orangehrm
+  namespace: orangehrm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: orangehrm
+  template:
+    metadata:
+      labels:
+        app: orangehrm
+    spec:
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox
+          command: ['sh', '-c', 'until nc -z mysql.orangehrm.svc.cluster.local 3306; do sleep 3; done']
+      containers:
+        - name: orangehrm
+          image: orangehrm/orangehrm:5.8.1
+          ports:
+            - containerPort: 80
+          env:
+            - name: ORANGEHRM_DATABASE_HOST
+              value: mysql.orangehrm.svc.cluster.local
+            - name: ORANGEHRM_DATABASE_PORT
+              value: "3306"
+            - name: ORANGEHRM_DATABASE_NAME
+              value: orangehrm
+            - name: ORANGEHRM_DATABASE_USER
+              value: orangehrm
+            - name: ORANGEHRM_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: orangehrm-db
+                  key: mysql-password
+          volumeMounts:
+            - name: data
+              mountPath: /var/www/html/lib/confs
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "2000m"
+              memory: "1Gi"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: orangehrm-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orangehrm
+  namespace: orangehrm
+spec:
+  selector:
+    app: orangehrm
+  ports:
+    - port: 80
+      targetPort: 80

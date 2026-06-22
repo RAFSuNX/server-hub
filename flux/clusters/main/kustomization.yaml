@@ -9,3 +9,4 @@ resources:
   - utils.yaml
   - fisense.yaml
   - hrms.yaml
+  - orangehrm.yaml
