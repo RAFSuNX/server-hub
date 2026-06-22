@@ -121,7 +121,7 @@ spec:
           image: frappe/erpnext:v16.23.1
           env:
             - name: GUNICORN_WORKERS
-              value: "2"
+              value: "4"
           ports:
             - containerPort: 8000
           volumeMounts:
