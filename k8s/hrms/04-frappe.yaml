@@ -126,6 +126,10 @@ spec:
           env:
             - name: GUNICORN_WORKERS
               value: "2"
+            - name: GUNICORN_THREADS
+              value: "4"
+            - name: GUNICORN_TIMEOUT
+              value: "120"
           ports:
             - containerPort: 8000
           volumeMounts:
