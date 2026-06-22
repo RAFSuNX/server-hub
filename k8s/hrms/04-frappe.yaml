@@ -62,6 +62,8 @@ spec:
                   --no-mariadb-socket
                 echo "Site created"
               fi
+              touch sites/.setup-complete
+              echo "Setup complete"
           env:
             - name: DB_HOST
               value: mariadb.hrms.svc.cluster.local
@@ -110,7 +112,7 @@ spec:
       initContainers:
         - name: wait-for-site
           image: busybox
-          command: ['sh', '-c', 'until [ -f /sites/hrms.rogx.cc/site_config.json ]; do echo "waiting for site setup..."; sleep 5; done']
+          command: ['sh', '-c', 'until [ -f /sites/.setup-complete ]; do echo "waiting for site setup..."; sleep 5; done']
           volumeMounts:
             - name: sites
               mountPath: /sites
@@ -168,7 +170,7 @@ spec:
       initContainers:
         - name: wait-for-site
           image: busybox
-          command: ['sh', '-c', 'until [ -f /sites/hrms.rogx.cc/site_config.json ]; do echo "waiting for site setup..."; sleep 5; done']
+          command: ['sh', '-c', 'until [ -f /sites/.setup-complete ]; do echo "waiting for site setup..."; sleep 5; done']
           volumeMounts:
             - name: sites
               mountPath: /sites
@@ -224,7 +226,7 @@ spec:
       initContainers:
         - name: wait-for-site
           image: busybox
-          command: ['sh', '-c', 'until [ -f /sites/hrms.rogx.cc/site_config.json ]; do echo "waiting for site setup..."; sleep 5; done']
+          command: ['sh', '-c', 'until [ -f /sites/.setup-complete ]; do echo "waiting for site setup..."; sleep 5; done']
           volumeMounts:
             - name: sites
               mountPath: /sites
@@ -265,7 +267,7 @@ spec:
       initContainers:
         - name: wait-for-site
           image: busybox
-          command: ['sh', '-c', 'until [ -f /sites/hrms.rogx.cc/site_config.json ]; do echo "waiting for site setup..."; sleep 5; done']
+          command: ['sh', '-c', 'until [ -f /sites/.setup-complete ]; do echo "waiting for site setup..."; sleep 5; done']
           volumeMounts:
             - name: sites
               mountPath: /sites
@@ -307,7 +309,7 @@ spec:
       initContainers:
         - name: wait-for-site
           image: busybox
-          command: ['sh', '-c', 'until [ -f /sites/hrms.rogx.cc/site_config.json ]; do echo "waiting for site setup..."; sleep 5; done']
+          command: ['sh', '-c', 'until [ -f /sites/.setup-complete ]; do echo "waiting for site setup..."; sleep 5; done']
           volumeMounts:
             - name: sites
               mountPath: /sites
@@ -349,7 +351,7 @@ spec:
       initContainers:
         - name: wait-for-site
           image: busybox
-          command: ['sh', '-c', 'until [ -f /sites/hrms.rogx.cc/site_config.json ]; do echo "waiting for site setup..."; sleep 5; done']
+          command: ['sh', '-c', 'until [ -f /sites/.setup-complete ]; do echo "waiting for site setup..."; sleep 5; done']
           volumeMounts:
             - name: sites
               mountPath: /sites
