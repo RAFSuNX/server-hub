@@ -52,8 +52,8 @@ spec:
               echo "Bench configured"
 
               # Step 2: Create site if not exists
-              if bench --site $SITE_NAME version 2>/dev/null; then
-                echo "Site $SITE_NAME already exists, skipping"
+              if [ -f sites/$SITE_NAME/site_config.json ]; then
+                echo "Site $SITE_NAME already exists, skipping (data protected)"
               else
                 bench new-site $SITE_NAME \
                   --mariadb-root-password $DB_ROOT_PASSWORD \
