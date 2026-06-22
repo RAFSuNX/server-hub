@@ -39,6 +39,8 @@ spec:
             - --innodb-buffer-pool-size=1G
             - --innodb-log-file-size=256M
             - --max-connections=200
+            - --innodb-lock-wait-timeout=120
+            - --innodb-deadlock-detect=ON
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:

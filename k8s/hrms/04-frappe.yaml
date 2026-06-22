@@ -125,7 +125,7 @@ spec:
           image: ghcr.io/rafsunx/erpnext-hrms:v16
           env:
             - name: GUNICORN_WORKERS
-              value: "4"
+              value: "2"
           ports:
             - containerPort: 8000
           volumeMounts:
