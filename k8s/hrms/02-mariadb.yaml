@@ -32,6 +32,10 @@ spec:
       containers:
         - name: mariadb
           image: mariadb:10.6
+          args:
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_unicode_ci
+            - --skip-character-set-client-handshake
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
@@ -40,17 +44,6 @@ spec:
                   key: mariadb-root-password
             - name: MYSQL_DATABASE
               value: frappe
-            - name: MYSQL_USER
-              value: frappe
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: hrms-db-secrets
-                  key: mariadb-password
-          args:
-            - --character-set-server=utf8mb4
-            - --collation-server=utf8mb4_unicode_ci
-            - --skip-character-set-client-handshake
           ports:
             - containerPort: 3306
           volumeMounts:

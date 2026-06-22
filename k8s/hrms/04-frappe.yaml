@@ -1,84 +1,370 @@
 ---
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+# Shared sites volume for all Frappe components
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: frappe
+  name: frappe-sites
   namespace: hrms
 spec:
-  interval: 1h
-  url: https://helm.erpnext.com
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 10Gi
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
+# Configurator - runs once to set up bench config
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: frappe-hrms
+  name: frappe-configurator
   namespace: hrms
 spec:
-  interval: 1h
-  timeout: 20m
-  chart:
+  template:
     spec:
-      chart: erpnext
-      version: "7.*"
-      sourceRef:
-        kind: HelmRepository
-        name: frappe
-        namespace: hrms
-  values:
-    image:
-      repository: frappe/erpnext
-      tag: v16.23.1
-
-    # Use our own MariaDB
-    dbHost: mariadb.hrms.svc.cluster.local
-    dbPort: 3306
-    dbRootUser: root
-    dbExistingSecret: hrms-db-secrets
-    dbExistingSecretPasswordKey: mariadb-root-password
-
-    # Use our own Redis
-    externalRedis:
-      cache: redis.hrms.svc.cluster.local:6379
-      queue: redis.hrms.svc.cluster.local:6379
-
-    # Disable bundled subcharts
-    mariadb-subchart:
-      enabled: false
-    redis-cache:
-      enabled: false
-    redis-queue:
-      enabled: false
-
-    nginx:
-      replicaCount: 1
-      service:
-        type: ClusterIP
-        port: 8080
-
-    worker:
-      gunicorn:
-        replicaCount: 1
-      default:
-        replicaCount: 1
-      short:
-        replicaCount: 1
-      long:
-        replicaCount: 1
-
-    scheduler:
-      enabled: true
-
-    persistence:
-      worker:
-        enabled: true
-        storageClass: longhorn
-        size: 10Gi
-
-    createSite:
-      enabled: true
-      siteName: hrms.rogx.cc
-      dbType: mariadb
-      adminPasswordSecret: hrms-admin
-      adminPasswordSecretKey: adminPassword
-      installApps:
-        - hrms
+      restartPolicy: OnFailure
+      containers:
+        - name: configurator
+          image: frappe/erpnext:v16.23.1
+          command:
+            - bash
+            - -c
+            - |
+              ls -1 apps > sites/apps.txt;
+              bench set-config -g db_host $DB_HOST;
+              bench set-config -gp db_port $DB_PORT;
+              bench set-config -g redis_cache "redis://$REDIS_CACHE";
+              bench set-config -g redis_queue "redis://$REDIS_QUEUE";
+              bench set-config -g redis_socketio "redis://$REDIS_QUEUE";
+              bench set-config -gp socketio_port 9000;
+          env:
+            - name: DB_HOST
+              value: mariadb.hrms.svc.cluster.local
+            - name: DB_PORT
+              value: "3306"
+            - name: REDIS_CACHE
+              value: redis-cache.hrms.svc.cluster.local:6379
+            - name: REDIS_QUEUE
+              value: redis-queue.hrms.svc.cluster.local:6379
+          volumeMounts:
+            - name: sites
+              mountPath: /home/frappe/frappe-bench/sites
+      volumes:
+        - name: sites
+          persistentVolumeClaim:
+            claimName: frappe-sites
+---
+# Create site job - runs once after configurator
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: frappe-create-site
+  namespace: hrms
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+        - name: wait-for-db
+          image: busybox
+          command: ['sh', '-c', 'until nc -z mariadb.hrms.svc.cluster.local 3306; do sleep 2; done']
+      containers:
+        - name: create-site
+          image: frappe/erpnext:v16.23.1
+          command:
+            - bash
+            - -c
+            - |
+              bench new-site hrms.rogx.cc \
+                --mariadb-root-password $DB_ROOT_PASSWORD \
+                --admin-password $ADMIN_PASSWORD \
+                --install-app hrms \
+                --no-mariadb-socket || echo "Site may already exist"
+          env:
+            - name: DB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hrms-db-secrets
+                  key: mariadb-root-password
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hrms-admin
+                  key: adminPassword
+          volumeMounts:
+            - name: sites
+              mountPath: /home/frappe/frappe-bench/sites
+      volumes:
+        - name: sites
+          persistentVolumeClaim:
+            claimName: frappe-sites
+---
+# Backend (gunicorn)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frappe-backend
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frappe-backend
+  template:
+    metadata:
+      labels:
+        app: frappe-backend
+    spec:
+      containers:
+        - name: backend
+          image: frappe/erpnext:v16.23.1
+          env:
+            - name: GUNICORN_WORKERS
+              value: "2"
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: sites
+              mountPath: /home/frappe/frappe-bench/sites
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "2000m"
+              memory: "4Gi"
+      volumes:
+        - name: sites
+          persistentVolumeClaim:
+            claimName: frappe-sites
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frappe-backend
+  namespace: hrms
+spec:
+  selector:
+    app: frappe-backend
+  ports:
+    - port: 8000
+      targetPort: 8000
+---
+# Websocket
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frappe-websocket
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frappe-websocket
+  template:
+    metadata:
+      labels:
+        app: frappe-websocket
+    spec:
+      containers:
+        - name: websocket
+          image: frappe/erpnext:v16.23.1
+          command: ["node", "/home/frappe/frappe-bench/apps/frappe/socketio.js"]
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: sites
+              mountPath: /home/frappe/frappe-bench/sites
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+      volumes:
+        - name: sites
+          persistentVolumeClaim:
+            claimName: frappe-sites
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frappe-websocket
+  namespace: hrms
+spec:
+  selector:
+    app: frappe-websocket
+  ports:
+    - port: 9000
+      targetPort: 9000
+---
+# Queue workers
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frappe-queue-short
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frappe-queue-short
+  template:
+    metadata:
+      labels:
+        app: frappe-queue-short
+    spec:
+      containers:
+        - name: worker
+          image: frappe/erpnext:v16.23.1
+          command: ["bench", "worker", "--queue", "short,default"]
+          volumeMounts:
+            - name: sites
+              mountPath: /home/frappe/frappe-bench/sites
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+      volumes:
+        - name: sites
+          persistentVolumeClaim:
+            claimName: frappe-sites
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frappe-queue-long
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frappe-queue-long
+  template:
+    metadata:
+      labels:
+        app: frappe-queue-long
+    spec:
+      containers:
+        - name: worker
+          image: frappe/erpnext:v16.23.1
+          command: ["bench", "worker", "--queue", "long,default,short"]
+          volumeMounts:
+            - name: sites
+              mountPath: /home/frappe/frappe-bench/sites
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+      volumes:
+        - name: sites
+          persistentVolumeClaim:
+            claimName: frappe-sites
+---
+# Scheduler
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frappe-scheduler
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frappe-scheduler
+  template:
+    metadata:
+      labels:
+        app: frappe-scheduler
+    spec:
+      containers:
+        - name: scheduler
+          image: frappe/erpnext:v16.23.1
+          command: ["bench", "schedule"]
+          volumeMounts:
+            - name: sites
+              mountPath: /home/frappe/frappe-bench/sites
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+      volumes:
+        - name: sites
+          persistentVolumeClaim:
+            claimName: frappe-sites
+---
+# Frontend (nginx)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frappe-frontend
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frappe-frontend
+  template:
+    metadata:
+      labels:
+        app: frappe-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: frappe/erpnext:v16.23.1
+          command: ["nginx-entrypoint.sh"]
+          env:
+            - name: BACKEND
+              value: frappe-backend.hrms.svc.cluster.local:8000
+            - name: SOCKETIO
+              value: frappe-websocket.hrms.svc.cluster.local:9000
+            - name: FRAPPE_SITE_NAME_HEADER
+              value: hrms.rogx.cc
+            - name: UPSTREAM_REAL_IP_ADDRESS
+              value: "127.0.0.1"
+            - name: UPSTREAM_REAL_IP_HEADER
+              value: X-Forwarded-For
+            - name: UPSTREAM_REAL_IP_RECURSIVE
+              value: "off"
+            - name: PROXY_READ_TIMEOUT
+              value: "120"
+            - name: CLIENT_MAX_BODY_SIZE
+              value: 50m
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: sites
+              mountPath: /home/frappe/frappe-bench/sites
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+      volumes:
+        - name: sites
+          persistentVolumeClaim:
+            claimName: frappe-sites
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frappe-frontend
+  namespace: hrms
+spec:
+  selector:
+    app: frappe-frontend
+  ports:
+    - port: 80
+      targetPort: 8080

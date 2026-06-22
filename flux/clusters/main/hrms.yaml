@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: kube-system-apps
+    - name: namespaces
   interval: 10m
   path: ./k8s/hrms
   prune: true
