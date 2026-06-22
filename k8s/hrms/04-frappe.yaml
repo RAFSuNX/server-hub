@@ -35,9 +35,9 @@ spec:
         - name: setup
           image: ghcr.io/rafsunx/frappe-hrms:latest
           resources:
-            limits:
-              cpu: "3000m"
-              memory: "4Gi"
+            requests:
+              cpu: "100m"
+              memory: "512Mi"
           command:
             - bash
             - -c
