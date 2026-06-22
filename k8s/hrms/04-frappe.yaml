@@ -29,15 +29,25 @@ spec:
       repository: frappe/erpnext
       tag: v16.23.1
 
+    # Use our own MariaDB
     dbHost: mariadb.hrms.svc.cluster.local
     dbPort: 3306
     dbRootUser: root
     dbExistingSecret: hrms-db-secrets
     dbExistingSecretPasswordKey: mariadb-root-password
 
+    # Use our own Redis
     externalRedis:
       cache: redis.hrms.svc.cluster.local:6379
       queue: redis.hrms.svc.cluster.local:6379
+
+    # Disable bundled subcharts
+    mariadb-subchart:
+      enabled: false
+    redis-cache:
+      enabled: false
+    redis-queue:
+      enabled: false
 
     nginx:
       replicaCount: 1
