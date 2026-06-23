@@ -33,18 +33,12 @@ spec:
             - name: TZ
               value: "UTC"
           resources:
-
             requests:
-
-              cpu: "50m"
-
-              memory: "1Gi"
-
+              cpu: "2000m"
+              memory: "2Gi"
             limits:
-
-              cpu: "4000m"
-
-              memory: "8Gi"
+              cpu: "3000m"
+              memory: "6Gi"
           volumeMounts:
             - name: config
               mountPath: /config
