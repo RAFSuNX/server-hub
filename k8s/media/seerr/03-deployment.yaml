@@ -32,18 +32,12 @@ spec:
         - containerPort: 5055
           protocol: TCP
         resources:
-
           requests:
-
-            cpu: "10m"
-
-            memory: "256Mi"
-
+            cpu: "100m"
+            memory: "512Mi"
           limits:
-
             cpu: "1000m"
-
-            memory: "1Gi"
+            memory: "4Gi"
         volumeMounts:
         - mountPath: /app/config
           name: config
