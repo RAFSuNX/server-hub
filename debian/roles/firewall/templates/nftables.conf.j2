@@ -49,3 +49,12 @@ table inet filter {
         type filter hook output priority filter; policy accept;
     }
 }
+
+table ip nat {
+    chain postrouting {
+        type nat hook postrouting priority srcnat; policy accept;
+
+        # Masquerade pod/service traffic going out to internet
+        ip saddr { 10.42.0.0/16, 10.43.0.0/16 } oifname != "flannel.1" oifname != "cni0" masquerade
+    }
+}
