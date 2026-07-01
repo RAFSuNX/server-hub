@@ -46,10 +46,6 @@ spec:
               mountPath: /data/tvshows
             - name: movies
               mountPath: /data/movies
-            - name: hza-shows
-              mountPath: /data/hza/tvshows
-            - name: hza-movies
-              mountPath: /data/hza/movies
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -61,12 +57,4 @@ spec:
         - name: movies
           hostPath:
             path: /mnt/storage/Movies
-            type: Directory
-        - name: hza-shows
-          hostPath:
-            path: /mnt/hza/Shows
-            type: Directory
-        - name: hza-movies
-          hostPath:
-            path: /mnt/hza/Movies
             type: Directory

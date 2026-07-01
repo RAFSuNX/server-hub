@@ -58,8 +58,6 @@ spec:
           name: shows
         - mountPath: /downloads
           name: downloads
-        - mountPath: /hza/shows
-          name: hza-shows
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -77,7 +75,3 @@ spec:
           path: /mnt/storage/Downloads
           type: DirectoryOrCreate
         name: downloads
-      - hostPath:
-          path: /mnt/hza/Shows
-          type: Directory
-        name: hza-shows

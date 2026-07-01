@@ -36,8 +36,6 @@ spec:
               mountPath: /opt/alist/data
             - name: storage
               mountPath: /mnt/storage
-            - name: hza
-              mountPath: /mnt/hza
           resources:
 
             requests:
@@ -58,8 +56,4 @@ spec:
         - name: storage
           hostPath:
             path: /mnt/storage
-            type: Directory
-        - name: hza
-          hostPath:
-            path: /mnt/hza
             type: Directory

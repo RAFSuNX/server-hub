@@ -24,8 +24,6 @@ in
   "tailscale_authkey.age".publicKeys       = allNodes;
   "k3s_token.age".publicKeys               = allNodes;
   "rclone_gdrive.age".publicKeys           = allNodes;
-  "hetzner_ssh_key.age".publicKeys         = allNodes;
-  "hza_smb_credentials.age".publicKeys     = allNodes;
 
   # Per-node authorized SSH keys (node + admin only)
   "authorized_keys_systema.age".publicKeys = [ systema admin ];

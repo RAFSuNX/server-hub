@@ -1,6 +1,0 @@
----
-hetzner_smb_host: u566879.your-storagebox.de
-hetzner_smb_user: "{{ vault_hetzner_smb_user }}"
-hetzner_smb_pass: "{{ vault_hetzner_smb_pass }}"
-hetzner_smb_share: backup
-hetzner_smb_mount: /mnt/hza
