@@ -45,7 +45,6 @@
             ./modules/security.nix
             ./modules/longhorn.nix
             ./modules/rclone.nix
-            ./modules/hza-smb.nix
             ./modules/gitops.nix
             # ./modules/bandwidth-guard.nix # TODO
           ];
