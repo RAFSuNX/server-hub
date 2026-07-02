@@ -54,7 +54,7 @@ table ip nat {
     chain postrouting {
         type nat hook postrouting priority srcnat; policy accept;
 
-        # Masquerade pod/service traffic going out to internet
-        ip saddr { 10.42.0.0/16, 10.43.0.0/16 } oifname "enp0s6" masquerade
+        # Masquerade pod/service traffic going out to internet or over tailscale
+        ip saddr { 10.42.0.0/16, 10.43.0.0/16 } oifname { "enp0s6", "tailscale0" } masquerade
     }
 }
