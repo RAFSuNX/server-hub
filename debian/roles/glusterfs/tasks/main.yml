@@ -33,8 +33,11 @@
   ansible.builtin.command: gluster peer probe {{ item }}
   loop: "{{ glusterfs_peers }}"
   when: inventory_hostname == glusterfs_init_node
-  changed_when: true
-  failed_when: false
+  register: peer_probe
+  changed_when: "'already in peer list' not in peer_probe.stdout"
+  failed_when:
+    - peer_probe.rc != 0
+    - "'already in peer list' not in peer_probe.stdout"
 
 - name: Wait for peers to connect
   ansible.builtin.command: gluster peer status
@@ -78,11 +81,19 @@
     - "'already enabled' not in quota_enable.stderr"
   changed_when: "'already enabled' not in quota_enable.stderr"
 
+- name: Check current quota limit (init node only)
+  ansible.builtin.command: gluster volume quota {{ glusterfs_volume_name }} list
+  when: inventory_hostname == glusterfs_init_node
+  register: quota_list
+  changed_when: false
+
 - name: Set per-node brick size limit via quota (init node only)
   ansible.builtin.command: >
     gluster volume quota {{ glusterfs_volume_name }}
     limit-usage / {{ glusterfs_total_quota }}
-  when: inventory_hostname == glusterfs_init_node
+  when: >
+    inventory_hostname == glusterfs_init_node and
+    glusterfs_total_quota not in quota_list.stdout
   changed_when: true
 
 - name: Mount GlusterFS volume on all nodes

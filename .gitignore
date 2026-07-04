@@ -36,3 +36,4 @@ data/
 .DS_Store
 Thumbs.db
 talos/
+server-hub-secrets-backup.age

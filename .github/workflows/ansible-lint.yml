@@ -1,0 +1,44 @@
+---
+name: Ansible Lint
+
+on:
+  push:
+    paths:
+      - "debian/**"
+      - ".github/workflows/ansible-lint.yml"
+  pull_request:
+    paths:
+      - "debian/**"
+      - ".github/workflows/ansible-lint.yml"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: debian
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ansible-lint and yamllint
+        run: pip install ansible-lint yamllint
+
+      - name: Install role dependencies
+        run: ansible-galaxy collection install -r requirements.yml
+
+      - name: yamllint
+        run: yamllint .
+
+      - name: ansible-lint
+        run: ansible-lint
+
+      - name: ansible-playbook syntax check
+        run: |
+          for playbook in playbooks/*.yml; do
+            ansible-playbook --syntax-check -i inventory/hosts.yml "$playbook"
+          done

@@ -67,10 +67,11 @@
       WantedBy=local-fs.target
   notify: reload systemd and remount tmp
 
-- name: Enable hardened /tmp mount on next reboot
+- name: Enable and start hardened /tmp mount now
   ansible.builtin.systemd:
     name: tmp.mount
     enabled: true
+    state: started
     daemon_reload: true
   when: not ansible_check_mode
 
@@ -79,9 +80,9 @@
     path: /etc/hosts
     marker: "# {mark} OciSystem cluster nodes"
     block: |
-      100.75.192.102 systema
-      100.73.23.127  systemb
-      100.76.99.35   systemc
+      {% for host in groups['ocisystem'] %}
+      {{ hostvars[host]['tailscale_node_ip'] }} {{ host }}
+      {% endfor %}
   when: "'ocisystem' in group_names"
 
 - name: Check if Docker is installed

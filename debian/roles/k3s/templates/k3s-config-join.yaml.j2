@@ -1,18 +1,18 @@
 # OciSystem - k3s join node config
 # Applied by Ansible. Do not edit manually.
 
-server: "https://{{ hostvars[k3s_init_node]['tailscale_node_ip'] | default('100.75.192.102') }}:6443"
+server: "https://{{ hostvars[k3s_init_node]['tailscale_node_ip'] }}:6443"
 token: "{{ k3s_token }}"
 
 advertise-address: "{{ tailscale_node_ip }}"
 node-ip: "{{ tailscale_node_ip }}"
 node-external-ip: "{{ tailscale_node_ip }}"
-flannel-iface: tailscale0
+flannel-iface: "{{ tailscale_iface }}"
 
 tls-san:
-  - "{{ hostvars['systema']['tailscale_node_ip'] | default('100.75.192.102') }}"
-  - "{{ hostvars['systemb']['tailscale_node_ip'] | default('100.73.23.127') }}"
-  - "{{ hostvars['systemc']['tailscale_node_ip'] | default('100.76.99.35') }}"
+{% for host in groups['ocisystem'] %}
+  - "{{ hostvars[host]['tailscale_node_ip'] }}"
+{% endfor %}
   - systema
   - systemb
   - systemc

@@ -1,0 +1,16 @@
+---
+exclude_paths:
+  - .cache/
+  - inventory/group_vars/all/vault.yml
+
+skip_list:
+  - yaml[line-length]
+  # Pre-existing repo-wide style debt, not part of this cleanup pass.
+  # Fix incrementally: capitalize handler names, prefix register/set_fact
+  # vars with the role name, name the plays in site.yml.
+  - name[casing]
+  - name[play]
+  - var-naming[no-role-prefix]
+
+warn_list:
+  - experimental

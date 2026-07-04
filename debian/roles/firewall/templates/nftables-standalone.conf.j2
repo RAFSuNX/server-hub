@@ -11,7 +11,7 @@ table inet filter {
         type filter hook input priority filter; policy drop;
 
         iifname "lo" accept
-        iifname "tailscale0" accept
+        iifname "{{ tailscale_iface }}" accept
 
         ct state established,related accept
         ct state invalid drop
@@ -31,8 +31,8 @@ table inet filter {
         ip daddr 172.16.0.0/12 ct state established,related accept
 
         # Tailscale → container subnets and back
-        iifname "tailscale0" ip daddr 172.16.0.0/12 accept
-        ip saddr 172.16.0.0/12 oifname "tailscale0" accept
+        iifname "{{ tailscale_iface }}" ip daddr 172.16.0.0/12 accept
+        ip saddr 172.16.0.0/12 oifname "{{ tailscale_iface }}" accept
     }
 
     chain output {

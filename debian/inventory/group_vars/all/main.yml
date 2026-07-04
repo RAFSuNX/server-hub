@@ -1,6 +1,25 @@
+---
 ansible_user: rafsunx
 ansible_become: true
 ansible_become_method: sudo
-ansible_become_pass: ""
 ansible_python_interpreter: /usr/bin/python3
 ansible_remote_tmp: ~/.ansible/tmp
+
+# Sudo is passwordless (NOPASSWD, see roles/base/tasks/main.yml) once the
+# base role has run once with -K. Never add a real ansible_become_pass
+# here in plaintext.
+
+dns_resolvers:
+  - 1.1.1.1
+  - 1.0.0.1
+  - 9.9.9.9
+  - 8.8.8.8
+
+# Tailscale interface name is stable across hosts; override per-host in
+# host_vars if it's ever not tailscale0.
+tailscale_iface: tailscale0
+
+# Public NIC - autodetected per-host from the default route, so it's
+# correct even if NIC naming differs across hosts/hypervisors. Override
+# in host_vars only if a host's default route isn't its real public NIC.
+public_iface: "{{ ansible_default_ipv4.interface }}"

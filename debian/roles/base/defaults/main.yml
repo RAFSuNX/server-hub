@@ -19,5 +19,4 @@ base_packages_install:
   - unattended-upgrades
   - apt-listchanges
   - lsof
-  - net-tools
   - dnsutils
