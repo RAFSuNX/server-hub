@@ -1,4 +1,18 @@
 ---
+- name: Install Longhorn prerequisites
+  ansible.builtin.apt:
+    name:
+      - open-iscsi
+      - nfs-common
+    state: present
+    update_cache: true
+
+- name: Enable and start iscsid (required for Longhorn volume attachment)
+  ansible.builtin.systemd:
+    name: iscsid
+    enabled: true
+    state: started
+
 - name: Get node Tailscale IP
   ansible.builtin.command: tailscale ip -4
   register: ts_ip_raw
