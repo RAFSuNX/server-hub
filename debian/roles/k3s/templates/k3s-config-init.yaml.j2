@@ -10,12 +10,10 @@ node-external-ip: "{{ tailscale_node_ip }}"
 flannel-iface: "{{ tailscale_iface }}"
 
 tls-san:
-{% for host in groups['ocisystem'] %}
+{% for host in groups['ociSystem'] %}
   - "{{ hostvars[host]['tailscale_node_ip'] }}"
+  - "{{ host }}"
 {% endfor %}
-  - systema
-  - systemb
-  - systemc
 
 cluster-cidr: "{{ k3s_cluster_cidr }}"
 service-cidr: "{{ k3s_service_cidr }}"

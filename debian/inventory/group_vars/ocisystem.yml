@@ -1,8 +1,0 @@
----
-# OciSystem - k3s HA cluster
-# All nodes are control plane (embedded etcd, 3-node quorum). No workers.
-k3s_cluster_name: OciSystem
-k3s_role: server
-
-server_timezone: Asia/Dhaka
-ssh_port: 6969

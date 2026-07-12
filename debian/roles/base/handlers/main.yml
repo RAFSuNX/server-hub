@@ -13,3 +13,7 @@
   ansible.builtin.systemd:
     daemon_reload: true
   when: not ansible_check_mode
+
+- name: update grub
+  ansible.builtin.command: update-grub
+  changed_when: true

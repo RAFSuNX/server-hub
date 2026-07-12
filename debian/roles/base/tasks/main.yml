@@ -67,11 +67,13 @@
       WantedBy=local-fs.target
   notify: reload systemd and remount tmp
 
-- name: Enable and start hardened /tmp mount now
+- name: Enable hardened /tmp mount
+  # Not started live here on purpose: remounting /tmp as tmpfs mid-play can
+  # wipe Ansible's own in-flight module payload out from under itself if it
+  # lands under /tmp. Enabling only, takes effect on next boot.
   ansible.builtin.systemd:
     name: tmp.mount
     enabled: true
-    state: started
     daemon_reload: true
   when: not ansible_check_mode
 
@@ -80,10 +82,10 @@
     path: /etc/hosts
     marker: "# {mark} OciSystem cluster nodes"
     block: |
-      {% for host in groups['ocisystem'] %}
+      {% for host in groups['ociSystem'] %}
       {{ hostvars[host]['tailscale_node_ip'] }} {{ host }}
       {% endfor %}
-  when: "'ocisystem' in group_names"
+  when: "'ociSystem' in group_names"
 
 - name: Check if Docker is installed
   ansible.builtin.stat:
@@ -103,6 +105,19 @@
       }
   when: docker_binary.stat.exists
   notify: restart docker
+
+- name: Stop dhclient overwriting resolv.conf on lease renewal/boot
+  # OCI's DHCP client rewrites /etc/resolv.conf with the cloud metadata
+  # resolver (169.254.169.254) on every reboot otherwise, silently
+  # reverting our configured resolvers.
+  ansible.builtin.copy:
+    dest: /etc/dhcp/dhclient-enter-hooks.d/no-resolvconf-overwrite
+    owner: root
+    group: root
+    mode: "0755"
+    content: |
+      #!/bin/sh
+      make_resolv_conf() { :; }
 
 - name: Configure DNS resolvers
   ansible.builtin.template:
@@ -125,4 +140,11 @@
     name: unattended-upgrades
     enabled: true
     state: started
+
+- name: Set GRUB to boot straight to OS - no menu, no timeout (server, not desktop)
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_TIMEOUT='
+    line: "GRUB_TIMEOUT=0"
+  notify: update grub
   when: not ansible_check_mode

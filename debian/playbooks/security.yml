@@ -1,6 +1,6 @@
 ---
 # Security baseline - idempotent, safe to re-run anytime.
-# Applies to both ocisystem and standalone groups; per-group values
+# Applies to both ociSystem and standalone groups; per-group values
 # (ssh_port, etc.) come from inventory/group_vars, not from this playbook.
 - name: Security baseline
   hosts: all

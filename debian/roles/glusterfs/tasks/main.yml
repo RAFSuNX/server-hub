@@ -31,7 +31,7 @@
 
 - name: Probe all peers (init node only)
   ansible.builtin.command: gluster peer probe {{ item }}
-  loop: "{{ glusterfs_peers }}"
+  loop: "{{ groups['ociSystem'] }}"
   when: inventory_hostname == glusterfs_init_node
   register: peer_probe
   changed_when: "'already in peer list' not in peer_probe.stdout"
@@ -52,9 +52,7 @@
   ansible.builtin.command: >
     gluster volume create {{ glusterfs_volume_name }}
     transport tcp
-    systema:{{ glusterfs_brick_path }}
-    systemb:{{ glusterfs_brick_path }}
-    systemc:{{ glusterfs_brick_path }}
+    {% for node in groups['ociSystem'] %}{{ node }}:{{ glusterfs_brick_path }} {% endfor %}
     force
   when: inventory_hostname == glusterfs_init_node
   register: volume_create
@@ -101,5 +99,5 @@
     path: "{{ glusterfs_mount_path }}"
     src: "localhost:/{{ glusterfs_volume_name }}"
     fstype: glusterfs
-    opts: defaults,_netdev,backupvolfile-server=systema
+    opts: "defaults,_netdev,backupvolfile-server={{ glusterfs_init_node }}"
     state: mounted

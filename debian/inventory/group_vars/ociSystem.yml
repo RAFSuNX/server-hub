@@ -1,0 +1,12 @@
+---
+# OciSystem - k3s HA cluster
+# All nodes are control plane (embedded etcd, 3-node quorum). No workers.
+k3s_cluster_name: OciSystem
+k3s_role: server
+
+# Single source of truth for which node bootstraps the cluster/volume.
+# glusterfs and k3s roles both read this instead of hardcoding a hostname.
+cluster_init_node: systema
+
+server_timezone: Asia/Dhaka
+ssh_port: 22

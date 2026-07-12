@@ -3,7 +3,9 @@ ansible_user: rafsunx
 ansible_become: true
 ansible_become_method: sudo
 ansible_python_interpreter: /usr/bin/python3
-ansible_remote_tmp: ~/.ansible/tmp
+# remote_tmp is set in ansible.cfg (absolute path, not ~) - a `~`-based
+# path here doesn't survive become-to-root reliably and silently fell
+# back to /tmp, which the base role's tmpfs remount then wiped mid-task.
 
 # Sudo is passwordless (NOPASSWD, see roles/base/tasks/main.yml) once the
 # base role has run once with -K. Never add a real ansible_become_pass

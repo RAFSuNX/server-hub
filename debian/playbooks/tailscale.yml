@@ -3,7 +3,7 @@
 # Auth key is never stored in repo - pass at runtime:
 #   ansible-playbook playbooks/tailscale.yml -e "tailscale_auth_key=tskey-auth-..."
 - name: Tailscale
-  hosts: ocisystem
+  hosts: ociSystem
   become: true
   roles:
     - tailscale
