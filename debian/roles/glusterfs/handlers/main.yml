@@ -1,0 +1,6 @@
+---
+- name: reload systemd and restart glusterfs mount retry unit
+  ansible.builtin.systemd:
+    name: glusterfs-mount-retry
+    state: restarted
+    daemon_reload: true

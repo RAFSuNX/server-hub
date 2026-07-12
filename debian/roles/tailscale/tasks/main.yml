@@ -40,6 +40,27 @@
     enabled: true
     state: started
 
+- name: Install ethtool
+  ansible.builtin.apt:
+    name: ethtool
+    state: present
+
+- name: Deploy UDP GRO forwarding offload unit (exit node/subnet router perf)
+  ansible.builtin.template:
+    src: tailscale-udp-gro.service.j2
+    dest: /etc/systemd/system/tailscale-udp-gro.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload systemd and restart udp-gro unit
+
+- name: Enable and start UDP GRO forwarding offload unit
+  ansible.builtin.systemd:
+    name: tailscale-udp-gro
+    enabled: true
+    state: started
+    daemon_reload: true
+
 - name: Connect to Tailscale network
   ansible.builtin.command:
     cmd: >

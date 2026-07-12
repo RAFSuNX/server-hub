@@ -95,9 +95,27 @@
   changed_when: true
 
 - name: Mount GlusterFS volume on all nodes
+  # noauto - boot-time mounting is handled by glusterfs-mount-retry.service
+  # below instead, since the fstab auto-mount only waits for glusterd.service
+  # to start, not for it to finish reconnecting to peers over Tailscale.
   ansible.posix.mount:
     path: "{{ glusterfs_mount_path }}"
     src: "localhost:/{{ glusterfs_volume_name }}"
     fstype: glusterfs
-    opts: "defaults,_netdev,backupvolfile-server={{ glusterfs_init_node }}"
+    opts: "noauto,_netdev,backupvolfile-server={{ glusterfs_init_node }}"
     state: mounted
+
+- name: Deploy GlusterFS mount retry unit
+  ansible.builtin.template:
+    src: glusterfs-mount-retry.service.j2
+    dest: /etc/systemd/system/glusterfs-mount-retry.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload systemd and restart glusterfs mount retry unit
+
+- name: Enable GlusterFS mount retry unit
+  ansible.builtin.systemd:
+    name: glusterfs-mount-retry
+    enabled: true
+    daemon_reload: true

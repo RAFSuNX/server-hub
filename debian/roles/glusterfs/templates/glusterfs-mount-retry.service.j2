@@ -1,0 +1,18 @@
+# Applied by Ansible. Do not edit manually.
+# fstab's _netdev mount only waits for glusterd.service to start, not for
+# it to actually finish reconnecting to peers over Tailscale - which takes
+# longer on join nodes than the init node. Retry instead of one-shot.
+
+[Unit]
+Description=Retry GlusterFS storage mount until glusterd is actually ready
+After=network-online.target glusterd.service
+Wants=network-online.target
+Requires=glusterd.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'for i in $(seq 1 24); do mountpoint -q {{ glusterfs_mount_path }} && exit 0; mount {{ glusterfs_mount_path }} && exit 0; sleep 5; done; exit 1'
+
+[Install]
+WantedBy=multi-user.target
