@@ -43,7 +43,7 @@ spec:
                 secretKeyRef:
                   name: searxng-secret
                   key: SEARXNG_SECRET_KEY
-            - name: SEARXNG_REDIS_URL
+            - name: SEARXNG_VALKEY_URL
               value: redis://searxng-redis:6379/0
           readinessProbe:
             httpGet:
