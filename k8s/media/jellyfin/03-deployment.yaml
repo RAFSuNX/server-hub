@@ -53,8 +53,8 @@ spec:
         - name: shows
           hostPath:
             path: /mnt/storage/Shows
-            type: Directory
+            type: DirectoryOrCreate
         - name: movies
           hostPath:
             path: /mnt/storage/Movies
-            type: Directory
+            type: DirectoryOrCreate

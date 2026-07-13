@@ -6,3 +6,4 @@ resources:
   - namespaces.yaml
   - networking.yaml
   - utils.yaml
+  - media.yaml

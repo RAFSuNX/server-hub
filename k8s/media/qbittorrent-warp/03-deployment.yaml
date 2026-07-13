@@ -64,8 +64,6 @@ spec:
         - mountPath: /downloads
           name: downloads
       dnsPolicy: ClusterFirst
-      imagePullSecrets:
-      - name: ghcr-secret
       restartPolicy: Always
       schedulerName: default-scheduler
       affinity:
