@@ -20,6 +20,15 @@ spec:
         app.kubernetes.io/name: searxng
     spec:
       enableServiceLinks: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: searxng
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: searxng
           image: searxng/searxng:latest
@@ -34,6 +43,20 @@ spec:
                 secretKeyRef:
                   name: searxng-secret
                   key: SEARXNG_SECRET_KEY
+            - name: SEARXNG_REDIS_URL
+              value: redis://searxng-redis:6379/0
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
           resources:
             requests:
               memory: "128Mi"

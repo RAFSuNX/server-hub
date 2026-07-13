@@ -20,6 +20,7 @@ resources:
   - searxng/01-configmap.yaml
   - searxng/02-deployment.yaml
   - searxng/03-service.yaml
+  - searxng/04-redis.yaml
   - uptime-kuma/02-storage.yaml
   - uptime-kuma/03-deployment.yaml
   - uptime-kuma/04-service.yaml
