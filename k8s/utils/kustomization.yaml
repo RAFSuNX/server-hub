@@ -1,12 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - homepage/00-storage.yaml
-  - homepage/01-rbac.yaml
-  - homepage/01-secret.yaml
-  - homepage/02-configmap.yaml
-  - homepage/03-deployment.yaml
-  - homepage/04-service.yaml
   - alist/01-storage.yaml
   - alist/02-deployment.yaml
   - alist/03-service.yaml
@@ -20,3 +14,6 @@ resources:
   - searxng/01-configmap.yaml
   - searxng/02-deployment.yaml
   - searxng/03-service.yaml
+  - uptime-kuma/02-storage.yaml
+  - uptime-kuma/03-deployment.yaml
+  - uptime-kuma/04-service.yaml
