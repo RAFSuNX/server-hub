@@ -168,18 +168,6 @@ data:
                   url: http://prowlarr.media
                   key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
 
-            - qBittorrent:
-                icon: qbittorrent.png
-                href: http://10.43.1.14
-                description: Torrents
-                namespace: media
-                app: qbittorrent
-                widget:
-                  type: qbittorrent
-                  url: http://qbittorrent.media
-                  username: "{{HOMEPAGE_VAR_QBIT_USER}}"
-                  password: "{{HOMEPAGE_VAR_QBIT_PASS}}"
-
             - qBittorrent WARP:
                 icon: qbittorrent.png
                 href: http://10.43.1.16
