@@ -45,6 +45,10 @@ spec:
                   key: SEARXNG_SECRET_KEY
             - name: SEARXNG_VALKEY_URL
               value: redis://searxng-redis:6379/0
+            - name: GRANIAN_WORKERS
+              value: "2"
+            - name: GRANIAN_BLOCKING_THREADS
+              value: "12"
           readinessProbe:
             httpGet:
               path: /healthz
@@ -59,11 +63,11 @@ spec:
             periodSeconds: 20
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "10m"
+              memory: "256Mi"
+              cpu: "200m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "1Gi"
+              cpu: "2000m"
           volumeMounts:
             - name: searxng-config
               mountPath: /etc/searxng/settings.yml
