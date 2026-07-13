@@ -11,3 +11,4 @@ resources:
   - kite/04-service.yaml
   - prometheus/01-helmrepository.yaml
   - prometheus/02-helmrelease.yaml
+  - flux-git-auth/00-fisense-secret.yaml
