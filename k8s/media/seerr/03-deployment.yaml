@@ -44,6 +44,8 @@ spec:
       securityContext:
         fsGroup: 1000
       dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: ghcr-secret
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       volumes:
