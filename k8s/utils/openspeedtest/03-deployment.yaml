@@ -19,9 +19,9 @@ spec:
     spec:
       containers:
         - name: openspeedtest
-          image: lscr.io/linuxserver/librespeed:latest
+          image: openspeedtest/latest:latest
           ports:
-            - containerPort: 80
+            - containerPort: 3000
           resources:
             requests:
               cpu: "50m"
