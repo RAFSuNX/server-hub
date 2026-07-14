@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: openspeedtest
-          image: openspeedtest/speed-test:latest
+          image: docker.io/openspeedtest/speed-test:latest
           ports:
             - containerPort: 3000
           resources:
