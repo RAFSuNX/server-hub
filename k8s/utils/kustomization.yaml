@@ -24,3 +24,5 @@ resources:
   - uptime-kuma/02-storage.yaml
   - uptime-kuma/03-deployment.yaml
   - uptime-kuma/04-service.yaml
+  - openspeedtest/03-deployment.yaml
+  - openspeedtest/04-service.yaml
