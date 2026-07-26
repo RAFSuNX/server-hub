@@ -26,3 +26,7 @@ resources:
   - uptime-kuma/04-service.yaml
   - openspeedtest/03-deployment.yaml
   - openspeedtest/04-service.yaml
+  - litellm/00-secret.yaml
+  - litellm/01-configmap.yaml
+  - litellm/02-deployment.yaml
+  - litellm/03-service.yaml

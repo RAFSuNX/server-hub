@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: litellm-config
+  namespace: utils
+data:
+  config.yaml: |
+    model_list:
+      - model_name: agentrouter/glm-5.2
+        litellm_params:
+          model: anthropic/glm-5.2
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY
+          extra_headers:
+            user-agent: Anthropic/Python 0.117.1
+            x-stainless-lang: python
+            x-stainless-package-version: "0.117.1"
+            x-stainless-os: Linux
+            x-stainless-arch: x64
+            x-stainless-runtime: CPython
+            x-stainless-runtime-version: "3.13.5"
+            x-stainless-async: "false"
+
+    general_settings:
+      master_key: os.environ/LITELLM_MASTER_KEY

@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litellm
+  namespace: utils
+  labels:
+    app: litellm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: litellm
+  template:
+    metadata:
+      labels:
+        app: litellm
+        app.kubernetes.io/name: litellm
+    spec:
+      containers:
+        - name: litellm
+          image: ghcr.io/berriai/litellm:main-stable
+          imagePullPolicy: Always
+          args:
+            - "--config"
+            - "/app/config.yaml"
+            - "--port"
+            - "4000"
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - secretRef:
+                name: litellm-secret
+          readinessProbe:
+            httpGet:
+              path: /health/liveliness
+              port: 4000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /health/liveliness
+              port: 4000
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          volumeMounts:
+            - name: litellm-config
+              mountPath: /app/config.yaml
+              subPath: config.yaml
+      volumes:
+        - name: litellm-config
+          configMap:
+            name: litellm-config
