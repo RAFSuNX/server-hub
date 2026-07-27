@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: her-server
+  namespace: her
+spec:
+  selector:
+    app: her-server
+  ports:
+    - port: 80
+      targetPort: 8000
+  type: ClusterIP

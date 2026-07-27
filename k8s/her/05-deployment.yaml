@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: her-server
+  namespace: her
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: her-server
+  template:
+    metadata:
+      labels:
+        app: her-server
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: her-server
+          image: ghcr.io/rafsunx/her/server:99d9e0a
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: her-server-config
+            - secretRef:
+                name: her-server-secrets
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

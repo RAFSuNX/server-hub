@@ -1,0 +1,28 @@
+# Job specs are immutable after creation - before the next deploy that needs a new migration,
+# bump this name (or `kubectl delete job/her-server-migrate -n her` first) so Flux can re-apply it.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: her-server-migrate
+  namespace: her
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:17-alpine
+          command:
+            - sh
+            - -c
+            - until pg_isready -h postgres -U her; do echo waiting for postgres; sleep 3; done
+      containers:
+        - name: migrate
+          image: ghcr.io/rafsunx/her/server:99d9e0a
+          command: ["uv", "run", "alembic", "upgrade", "head"]
+          envFrom:
+            - configMapRef:
+                name: her-server-config
+            - secretRef:
+                name: her-server-secrets
