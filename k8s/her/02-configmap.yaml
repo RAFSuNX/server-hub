@@ -25,6 +25,8 @@ data:
   MIN_AGE: "18"
   MAX_AGE_GAP_YEARS: "8"
   PORT: "8000"
+  # Not secret - same project_id already embedded in the committed google-services.json.
+  FIREBASE_PROJECT_ID: "itsher69"
   # Logs full LLM request/response bodies (entire persona prompts + user conversations) when
   # true - kept on for this deployment per explicit request, revisit before wider rollout.
   DEBUG: "true"
