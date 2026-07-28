@@ -5,10 +5,14 @@ metadata:
   namespace: her
 data:
   LLM_CHAT_URL: "https://api.fireworks.ai/inference/v1/chat/completions"
-  LLM_CHAT_MODEL: "accounts/fireworks/models/deepseek-v4-flash"
+  # deepseek-v4-flash reproducibly hung on long-context non-streaming requests (fixed
+  # server-side by streaming, see server/llm.py) but was also inconsistent run-to-run even
+  # after that fix. Switched to Fireworks' hosted GLM-5.2 (glm-5p2 alias) - same weights as
+  # z.ai's own glm-5.2, schema-compliant across trials, and 2-4x faster than z.ai in testing.
+  LLM_CHAT_MODEL: "accounts/fireworks/models/glm-5p2"
   # Explicit rather than left to fall back to LLM_CHAT_MODEL - previously pinned to
   # glm-4.5-air, which only exists on z.ai and would 404 against the Fireworks URL above.
-  LLM_INITIATE_MODEL: "accounts/fireworks/models/deepseek-v4-flash"
+  LLM_INITIATE_MODEL: "accounts/fireworks/models/glm-5p2"
   LLM_EMBEDDINGS_URL: "https://integrate.api.nvidia.com/v1/embeddings"
   LLM_EMBEDDING_MODEL: "nvidia/nv-embed-v1"
   LLM_EMBEDDING_DIMENSIONS: "4096"
