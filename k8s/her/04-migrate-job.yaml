@@ -1,9 +1,8 @@
 # Job specs are immutable after creation - k8s won't let this get updated in place (image tag,
-# etc), only deleted and recreated. Fixed name, not bumped per-migration: before every deploy
-# that includes this file's changes, run
-#   kubectl delete job/her-server-migrate -n her --ignore-not-found
-# then let Flux (or `kubectl apply`) recreate it fresh. `alembic upgrade head` is idempotent - a
-# no-op if nothing's pending - so re-running this on every deploy, migration or not, is harmless.
+# etc), only deleted and recreated. Fixed name (not bumped per-migration) + this Kustomization's
+# force: true (../flux/clusters/main/her.yaml) means Flux replaces it automatically on every
+# sync when this file changes - no manual kubectl step needed. `alembic upgrade head` is
+# idempotent - a no-op if nothing's pending - so re-running this on every deploy is harmless.
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -25,7 +24,7 @@ spec:
             - until pg_isready -h postgres -U her; do echo waiting for postgres; sleep 3; done
       containers:
         - name: migrate
-          image: ghcr.io/rafsunx/her-server:sha-aca2f0d
+          image: ghcr.io/rafsunx/her-server:sha-52839f2
           command: ["uv", "run", "alembic", "upgrade", "head"]
           envFrom:
             - configMapRef:
