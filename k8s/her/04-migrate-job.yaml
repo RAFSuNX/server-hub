@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: her-server-migrate
+  name: her-server-migrate-0007
   namespace: her
 spec:
   backoffLimit: 6
@@ -19,7 +19,7 @@ spec:
             - until pg_isready -h postgres -U her; do echo waiting for postgres; sleep 3; done
       containers:
         - name: migrate
-          image: ghcr.io/rafsunx/her/server:99d9e0a
+          image: ghcr.io/rafsunx/her-server:sha-3073ed8
           command: ["uv", "run", "alembic", "upgrade", "head"]
           envFrom:
             - configMapRef:
