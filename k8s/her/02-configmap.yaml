@@ -27,6 +27,7 @@ data:
   PORT: "8000"
   # Not secret - same project_id already embedded in the committed google-services.json.
   FIREBASE_PROJECT_ID: "itsher69"
-  # Logs full LLM request/response bodies (entire persona prompts + user conversations) when
-  # true - kept on for this deployment per explicit request, revisit before wider rollout.
-  DEBUG: "true"
+  # Logs full LLM request/response bodies (entire persona prompts + real user conversations)
+  # when true - was left on since early testing; turned off now that real users, Google
+  # Sign-In, and push notifications are all live. Flip back to "true" only for active debugging.
+  DEBUG: "false"

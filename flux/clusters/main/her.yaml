@@ -9,6 +9,11 @@ spec:
   interval: 10m
   path: ./k8s/her
   prune: true
+  # Without this, an immutable-field change (e.g. the migrate Job's image tag) fails to
+  # reconcile - server-side apply's conflict on that field silently blocks the sync on every
+  # attempt until someone notices and manually deletes the resource - force replaces it
+  # automatically instead, so pushing a new image tag is genuinely hands-off end to end.
+  force: true
   sourceRef:
     kind: GitRepository
     name: flux-system
