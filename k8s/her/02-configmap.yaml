@@ -4,9 +4,11 @@ metadata:
   name: her-server-config
   namespace: her
 data:
-  LLM_CHAT_URL: "https://api.z.ai/api/paas/v4/chat/completions"
-  LLM_CHAT_MODEL: "glm-5.2"
-  LLM_INITIATE_MODEL: "glm-4.5-air"
+  LLM_CHAT_URL: "https://api.fireworks.ai/inference/v1/chat/completions"
+  LLM_CHAT_MODEL: "accounts/fireworks/models/deepseek-v4-flash"
+  # Explicit rather than left to fall back to LLM_CHAT_MODEL - previously pinned to
+  # glm-4.5-air, which only exists on z.ai and would 404 against the Fireworks URL above.
+  LLM_INITIATE_MODEL: "accounts/fireworks/models/deepseek-v4-flash"
   LLM_EMBEDDINGS_URL: "https://integrate.api.nvidia.com/v1/embeddings"
   LLM_EMBEDDING_MODEL: "nvidia/nv-embed-v1"
   LLM_EMBEDDING_DIMENSIONS: "4096"
