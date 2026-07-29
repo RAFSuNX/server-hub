@@ -8,3 +8,4 @@ resources:
   - 04-migrate-job.yaml
   - 05-deployment.yaml
   - 06-service.yaml
+  - 07-redis.yaml

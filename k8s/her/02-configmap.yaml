@@ -16,6 +16,9 @@ data:
   LLM_EMBEDDINGS_URL: "https://integrate.api.nvidia.com/v1/embeddings"
   LLM_EMBEDDING_MODEL: "nvidia/nv-embed-v1"
   LLM_EMBEDDING_DIMENSIONS: "4096"
+  # Cross-worker rate limiting/OTP counters (server/limiter.py, auth.py) - required now that the
+  # deployment runs --workers > 1 per pod plus multiple pod replicas.
+  REDIS_URL: "redis://redis:6379"
   JWT_ALGORITHM: "HS256"
   JWT_EXPIRES_MINUTES: "43200"
   OTP_TTL_MINUTES: "10"
