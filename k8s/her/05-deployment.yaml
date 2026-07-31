@@ -25,6 +25,11 @@ spec:
                 name: her-server-config
             - secretRef:
                 name: her-server-secrets
+          env:
+            # Single-user deployment right now - 4 workers (the image's default) x 2 replicas
+            # means 8 full copies of the app's connection pools/clients for no concurrent load.
+            - name: WORKERS
+              value: "2"
           readinessProbe:
             httpGet:
               path: /health
@@ -40,7 +45,7 @@ spec:
           resources:
             requests:
               cpu: "100m"
-              memory: "128Mi"
+              memory: "256Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "4Gi"
