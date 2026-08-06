@@ -25,6 +25,29 @@
     mode: "0440"
     validate: /usr/sbin/visudo -cf %s
 
+- name: Discover local user home directories
+  ansible.builtin.find:
+    paths: /home
+    file_type: directory
+  register: home_dirs
+
+- name: Ensure ~/.local/bin is on PATH for every found user (incl. root)
+  # uv (and other user-installed tooling) puts binaries in ~/.local/bin;
+  # without this on PATH, freshly `uv`-installed pythons/tools silently
+  # aren't runnable in interactive shells.
+  ansible.builtin.blockinfile:
+    path: "{{ item }}/.bashrc"
+    marker: "# {mark} local bin PATH"
+    create: true
+    owner: "{{ item | basename }}"
+    group: "{{ item | basename }}"
+    mode: "0644"
+    block: |
+      if [ -d "$HOME/.local/bin" ] ; then
+          PATH="$HOME/.local/bin:$PATH"
+      fi
+  loop: "{{ (home_dirs.files | map(attribute='path') | list) + ['/root'] }}"
+
 - name: Apply kernel hardening via sysctl
   ansible.builtin.template:
     src: sysctl-hardening.conf.j2
@@ -106,6 +129,16 @@
   when: docker_binary.stat.exists
   notify: restart docker
 
+- name: Check for isc-dhcp-client
+  ansible.builtin.stat:
+    path: /usr/sbin/dhclient
+  register: dhclient_binary
+
+- name: Check for dhcpcd
+  ansible.builtin.stat:
+    path: /usr/sbin/dhcpcd
+  register: dhcpcd_binary
+
 - name: Stop dhclient overwriting resolv.conf on lease renewal/boot
   # OCI's DHCP client rewrites /etc/resolv.conf with the cloud metadata
   # resolver (169.254.169.254) on every reboot otherwise, silently
@@ -118,6 +151,16 @@
     content: |
       #!/bin/sh
       make_resolv_conf() { :; }
+  when: dhclient_binary.stat.exists
+
+- name: Stop dhcpcd overwriting resolv.conf on lease renewal/boot
+  # Same OCI metadata-resolver problem as dhclient above, but dhcpcd
+  # (used on non-ISC-dhclient hosts, e.g. servera) has its own opt-out.
+  ansible.builtin.lineinfile:
+    path: /etc/dhcpcd.conf
+    line: "nohook resolv.conf"
+    insertafter: EOF
+  when: dhcpcd_binary.stat.exists
 
 - name: Configure DNS resolvers
   ansible.builtin.template:
