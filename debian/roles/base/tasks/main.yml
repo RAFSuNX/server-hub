@@ -178,11 +178,22 @@
     group: root
     mode: "0644"
 
-- name: Enable unattended-upgrades service
+- name: Disable unattended-upgrades service
+  # Manual upgrades only — auto-upgrades restarted tailscaled mid-flight on
+  # all cluster nodes simultaneously (1.98.8→1.102.2, 2026-08-09 22:51),
+  # destroying Flannel's VXLAN interface and taking down pod networking.
   ansible.builtin.systemd:
     name: unattended-upgrades
-    enabled: true
-    state: started
+    enabled: false
+    state: stopped
+  failed_when: false
+
+- name: Disable apt-daily-upgrade timer
+  ansible.builtin.systemd:
+    name: apt-daily-upgrade.timer
+    enabled: false
+    state: stopped
+  failed_when: false
 
 - name: Set GRUB to boot straight to OS - no menu, no timeout (server, not desktop)
   ansible.builtin.lineinfile:

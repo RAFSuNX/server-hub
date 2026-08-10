@@ -8,7 +8,11 @@ Unattended-Upgrade::Allowed-Origins {
 };
 
 // Security patches only - not all updates
-Unattended-Upgrade::Package-Blacklist {};
+// Tailscale blacklisted: auto-upgrade restarts tailscaled, destroying Flannel
+// VXLAN on k3s nodes. Upgrade Tailscale manually after draining nodes.
+Unattended-Upgrade::Package-Blacklist {
+    "tailscale";
+};
 
 // Remove unused dependencies after upgrade
 Unattended-Upgrade::Remove-Unused-Dependencies "true";
