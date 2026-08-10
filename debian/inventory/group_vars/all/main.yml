@@ -15,7 +15,6 @@ dns_resolvers:
   - 1.1.1.1
   - 1.0.0.1
   - 9.9.9.9
-  - 8.8.8.8
 
 # Tailscale interface name is stable across hosts; override per-host in
 # host_vars if it's ever not tailscale0.

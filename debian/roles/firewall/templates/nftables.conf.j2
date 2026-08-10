@@ -3,7 +3,14 @@
 # Applied by Ansible. Do not edit manually.
 # k3s runs entirely over Tailscale - public interface has SSH only.
 
-flush ruleset
+# Flush only tables we own.
+# k3s manages 'ip filter', 'ip nat', 'ip mangle', 'ip6 filter', 'ip6 nat' via
+# iptables-nft — those are NOT touched here. We use 'inet filter' and 'inet nat'
+# which k3s never creates, so flushing them is safe and idempotent.
+add table inet filter
+add table inet nat
+flush table inet filter
+flush table inet nat
 
 table inet filter {
 
@@ -49,7 +56,7 @@ table inet filter {
     }
 }
 
-table ip nat {
+table inet nat {
     chain postrouting {
         type nat hook postrouting priority srcnat; policy accept;
 
