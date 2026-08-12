@@ -46,6 +46,10 @@ spec:
               mountPath: /data/tvshows
             - name: movies
               mountPath: /data/movies
+            - name: pri-shows
+              mountPath: /data/pri_shows
+            - name: pri-movies
+              mountPath: /data/pri_movies
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -58,3 +62,11 @@ spec:
           hostPath:
             path: /mnt/storage/Movies
             type: DirectoryOrCreate
+        - name: pri-shows
+          hostPath:
+            path: /mnt/storage/pri_shows
+            type: Directory
+        - name: pri-movies
+          hostPath:
+            path: /mnt/storage/pri_movies
+            type: Directory
