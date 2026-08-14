@@ -1,0 +1,17 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: open360
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: namespaces
+  interval: 5m
+  path: ./k8s/open360
+  prune: true
+  # force: true so that bumping the initContainer image tag (an immutable field on a running
+  # pod) doesn't silently stall reconciliation — Flux will delete + recreate the deployment.
+  force: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system

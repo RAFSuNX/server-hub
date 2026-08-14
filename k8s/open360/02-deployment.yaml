@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open360
+  namespace: open360
+  labels:
+    app: open360
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: open360
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: open360
+    spec:
+      initContainers:
+        - name: migrate
+          image: ghcr.io/rafsunx/open360:992837c4758e0e2476aef65c2456629f58039429
+          command:
+            - doppler
+            - run
+            - --
+            - node
+            - node_modules/.bin/prisma
+            - migrate
+            - deploy
+          env:
+            - name: DOPPLER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: doppler-token-open360
+                  key: DOPPLER_TOKEN
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1001
+            capabilities:
+              drop:
+                - ALL
+      containers:
+        - name: open360
+          image: ghcr.io/rafsunx/open360:992837c4758e0e2476aef65c2456629f58039429
+          imagePullPolicy: Always
+          command:
+            - doppler
+            - run
+            - --
+            - node
+            - server.js
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            - name: DOPPLER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: doppler-token-open360
+                  key: DOPPLER_TOKEN
+          readinessProbe:
+            httpGet:
+              path: /login
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /login
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 1001
+            capabilities:
+              drop:
+                - ALL
