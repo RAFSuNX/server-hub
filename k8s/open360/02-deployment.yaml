@@ -20,6 +20,8 @@ spec:
       labels:
         app: open360
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       initContainers:
         - name: migrate
           image: ghcr.io/rafsunx/open360:992837c4758e0e2476aef65c2456629f58039429
