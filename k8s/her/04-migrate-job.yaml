@@ -24,7 +24,7 @@ spec:
             - until pg_isready -h postgres -U her; do echo waiting for postgres; sleep 3; done
       containers:
         - name: migrate
-          image: ghcr.io/rafsunx/her-server:sha-e76471c
+          image: ghcr.io/rafsunx/her-server:sha-f94bc91
           command: ["uv", "run", "alembic", "upgrade", "head"]
           envFrom:
             - configMapRef:
