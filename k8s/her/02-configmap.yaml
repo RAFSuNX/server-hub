@@ -4,6 +4,8 @@ metadata:
   name: her-server-config
   namespace: her
 data:
+  # Active providers (comma-separated priority order): fireworks | baseten | fireworks,baseten
+  LLM_ACTIVE_PROVIDERS: "fireworks"
   LLM_CHAT_URL: "https://api.fireworks.ai/inference/v1/chat/completions"
   # Earlier plain deepseek-v4-flash reproducibly hung on long-context non-streaming requests
   # (fixed server-side by streaming, see server/llm.py) but was also inconsistent run-to-run
@@ -36,3 +38,6 @@ data:
   # this means real conversation content lands in server logs in plaintext - revisit once that
   # tradeoff isn't worth it anymore.
   DEBUG: "true"
+  # Baseten provider (fallback) — activate by changing LLM_ACTIVE_PROVIDERS above
+  BASETEN_CHAT_URL: "https://inference.baseten.co/v1/chat/completions"
+  BASETEN_CHAT_MODEL: "deepseek-ai/DeepSeek-V4-Flash-0731"
