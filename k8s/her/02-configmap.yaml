@@ -15,7 +15,7 @@ data:
   # glm-4.5-air, which only exists on z.ai and would 404 against the Fireworks URL above.
   LLM_INITIATE_MODEL: "accounts/fireworks/models/deepseek-v4-flash-0731"
   LLM_EMBEDDINGS_URL: "https://api.voyageai.com/v1/embeddings"
-  LLM_EMBEDDING_MODEL: "voyage-3-large"
+  LLM_EMBEDDING_MODEL: "voyage-4-large"
   LLM_EMBEDDING_DIMENSIONS: "1024"
   # Cross-worker rate limiting/OTP counters (server/limiter.py, auth.py) - required now that the
   # deployment runs --workers > 1 per pod plus multiple pod replicas.
