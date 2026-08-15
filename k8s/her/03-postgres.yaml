@@ -32,6 +32,13 @@ spec:
       containers:
         - name: postgres
           image: pgvector/pgvector:pg17
+          args:
+            - "-c"
+            - "max_connections=200"
+            - "-c"
+            - "shared_buffers=2GB"
+            - "-c"
+            - "effective_cache_size=6GB"
           env:
             - name: POSTGRES_USER
               value: her
@@ -50,11 +57,11 @@ spec:
               subPath: postgres
           resources:
             requests:
-              cpu: "100m"
-              memory: "256Mi"
+              cpu: "200m"
+              memory: "2Gi"
             limits:
-              cpu: "1000m"
-              memory: "1Gi"
+              cpu: "2000m"
+              memory: "8Gi"
           readinessProbe:
             exec:
               command: ["pg_isready", "-U", "her"]

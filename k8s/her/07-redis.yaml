@@ -1,3 +1,17 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: her-redis-data
+  namespace: her
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,6 +19,8 @@ metadata:
   namespace: her
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: her-redis
@@ -16,20 +32,32 @@ spec:
       containers:
         - name: redis
           image: redis:7-alpine
+          args:
+            - "--appendonly"
+            - "yes"
+            - "--dir"
+            - "/data"
           ports:
             - containerPort: 6379
+          volumeMounts:
+            - name: data
+              mountPath: /data
           resources:
             requests:
               cpu: "50m"
-              memory: "64Mi"
+              memory: "128Mi"
             limits:
               cpu: "500m"
-              memory: "256Mi"
+              memory: "512Mi"
           readinessProbe:
             exec:
               command: ["redis-cli", "ping"]
             initialDelaySeconds: 5
             periodSeconds: 5
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: her-redis-data
 ---
 apiVersion: v1
 kind: Service
