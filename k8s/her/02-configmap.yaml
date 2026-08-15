@@ -5,7 +5,7 @@ metadata:
   namespace: her
 data:
   # Active providers (comma-separated priority order): fireworks | baseten | fireworks,baseten
-  LLM_ACTIVE_PROVIDERS: "fireworks"
+  LLM_ACTIVE_PROVIDERS: "baseten,fireworks"
   LLM_CHAT_URL: "https://api.fireworks.ai/inference/v1/chat/completions"
   # Earlier plain deepseek-v4-flash reproducibly hung on long-context non-streaming requests
   # (fixed server-side by streaming, see server/llm.py) but was also inconsistent run-to-run
