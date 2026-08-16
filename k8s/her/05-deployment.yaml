@@ -12,12 +12,14 @@ spec:
     metadata:
       labels:
         app: her-server
+      # Must be > uvicorn --timeout-graceful-shutdown (30s) + preStop sleep (10s).
+      terminationGracePeriodSeconds: 60
     spec:
       imagePullSecrets:
         - name: ghcr-secret
       containers:
         - name: her-server
-          image: ghcr.io/rafsunx/her-server:sha-a55bf03
+          image: ghcr.io/rafsunx/her-server:sha-e3bfba3
           ports:
             - containerPort: 8000
           envFrom:
@@ -30,6 +32,13 @@ spec:
             # DB connections: budget(40) / workers(4) = 10/worker × 8 = 80 connections ≤ 200.
             - name: WORKERS
               value: "4"
+          lifecycle:
+            preStop:
+              exec:
+                # Gives k8s time to remove the pod from the load balancer before
+                # SIGTERM fires. Without this, new requests still arrive at the pod
+                # during the ~5s it takes iptables rules to propagate, then fail.
+                command: ["sleep", "10"]
           readinessProbe:
             httpGet:
               path: /health
