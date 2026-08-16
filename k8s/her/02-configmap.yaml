@@ -8,7 +8,7 @@ data:
   # "one"      → Fireworks only
   # "two"      → Baseten only
   # "one,two"  → Fireworks primary, Baseten fallback
-  ACTIVE_CHAT_MODELS: "one,two"
+  ACTIVE_CHAT_MODELS: "two"
 
   # ── Embeddings ─────────────────────────────────────────────────────────────
   # Must match the vector column size in the DB. Changing requires a migration.
