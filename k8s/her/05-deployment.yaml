@@ -24,7 +24,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: her-server
-          image: ghcr.io/rafsunx/her-server:sha-41661fa
+          image: ghcr.io/rafsunx/her-server:sha-2fb3ca3
           ports:
             - containerPort: 8000
           envFrom:
