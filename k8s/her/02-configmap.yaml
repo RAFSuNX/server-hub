@@ -4,40 +4,39 @@ metadata:
   name: her-server-config
   namespace: her
 data:
-  # Active providers (comma-separated priority order): fireworks | baseten | fireworks,baseten
-  LLM_ACTIVE_PROVIDERS: "fireworks,baseten"
-  LLM_CHAT_URL: "https://api.fireworks.ai/inference/v1/chat/completions"
-  # Earlier plain deepseek-v4-flash reproducibly hung on long-context non-streaming requests
-  # (fixed server-side by streaming, see server/llm.py) but was also inconsistent run-to-run
-  # even after that fix, so this moved to Fireworks' hosted GLM-5.2 for a while. Back on
-  # deepseek now via the dated -0731 release - re-evaluate if the old hang/inconsistency
-  # resurfaces.
-  LLM_CHAT_MODEL: "accounts/fireworks/models/deepseek-v4-flash-0731"
-  # Explicit rather than left to fall back to LLM_CHAT_MODEL - previously pinned to
-  # glm-4.5-air, which only exists on z.ai and would 404 against the Fireworks URL above.
-  LLM_INITIATE_MODEL: "accounts/fireworks/models/deepseek-v4-flash-0731"
-  LLM_EMBEDDINGS_URL: "https://api.voyageai.com/v1/embeddings"
-  LLM_EMBEDDING_MODEL: "voyage-4-large"
-  LLM_EMBEDDING_DIMENSIONS: "1024"
-  # Cross-worker rate limiting/OTP counters (server/limiter.py, auth.py) - required now that the
-  # deployment runs --workers > 1 per pod plus multiple pod replicas.
+  # ── Active chat models ─────────────────────────────────────────────────────
+  # "one"      → Fireworks only
+  # "two"      → Baseten only
+  # "one,two"  → Fireworks primary, Baseten fallback
+  ACTIVE_CHAT_MODELS: "one,two"
+
+  # ── Embeddings ─────────────────────────────────────────────────────────────
+  # Must match the vector column size in the DB. Changing requires a migration.
+  # URL and model name are hardcoded in llm/models/embeddings/embeddings_model_one.py.
+  EMBEDDINGS_MODEL_ONE_DIMENSIONS: "1024"
+
+  # ── Redis ──────────────────────────────────────────────────────────────────
+  # Required for cross-worker rate limiting and OTP counters.
   REDIS_URL: "redis://redis:6379"
+
+  # ── Auth ───────────────────────────────────────────────────────────────────
   JWT_ALGORITHM: "HS256"
   JWT_EXPIRES_MINUTES: "43200"
   OTP_TTL_MINUTES: "10"
   OTP_MAX_ATTEMPTS: "5"
   OTP_REQUEST_LIMIT_PER_HOUR: "5"
-  GIRLFRIEND_UNLOCK_TRUST_SCORE: "40"
+
+  # ── Game mechanics ─────────────────────────────────────────────────────────
+  GIRLFRIEND_UNLOCK_TRUST_SCORE: "65"
   MIN_AGE: "18"
   MAX_AGE_GAP_YEARS: "8"
-  PORT: "8000"
-  # Not secret - same project_id already embedded in the committed google-services.json.
+
+  # ── Firebase ───────────────────────────────────────────────────────────────
+  # Not secret — same project_id already in the committed google-services.json.
   FIREBASE_PROJECT_ID: "itsher69"
-  # Logs full LLM request/response bodies (entire persona prompts + real user conversations) -
-  # kept on deliberately for active chat-behavior monitoring/debugging, not an oversight. Note
-  # this means real conversation content lands in server logs in plaintext - revisit once that
-  # tradeoff isn't worth it anymore.
+
+  # ── Server ─────────────────────────────────────────────────────────────────
+  PORT: "8000"
+  # Logs full LLM request/response bodies — deliberate for active monitoring.
+  # Revisit when that tradeoff no longer holds.
   DEBUG: "true"
-  # Baseten provider (fallback) — activate by changing LLM_ACTIVE_PROVIDERS above
-  BASETEN_CHAT_URL: "https://inference.baseten.co/v1/chat/completions"
-  BASETEN_CHAT_MODEL: "deepseek-ai/DeepSeek-V4-Flash-0731"
