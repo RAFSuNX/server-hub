@@ -35,9 +35,11 @@ spec:
           lifecycle:
             preStop:
               exec:
-                # Gives k8s time to remove the pod from the load balancer before
-                # SIGTERM fires. Without this, new requests still arrive at the pod
-                # during the ~5s it takes iptables rules to propagate, then fail.
+                # Gives iptables rules time to propagate before SIGTERM fires.
+                # When k8s removes a pod from Service endpoints, kube-proxy updates
+                # iptables on all nodes — this takes ~2-5s. Without this sleep,
+                # cloudflared still routes new requests to the terminating pod
+                # during that window and they fail.
                 command: ["sleep", "10"]
           readinessProbe:
             httpGet:
