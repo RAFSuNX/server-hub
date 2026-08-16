@@ -1,0 +1,34 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: her-server
+  namespace: her
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: her-server
+  minReplicas: 2
+  maxReplicas: 6  # 3 nodes × 2 pods per node
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70  # scale up when avg CPU hits 70%
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0   # react immediately to load spikes
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60           # add up to 2 pods per minute
+    scaleDown:
+      stabilizationWindowSeconds: 300 # wait 5min of low load before removing pods
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60           # remove at most 1 pod per minute
+      # Removing 1 pod/min + graceful shutdown (30s drain) means each pod gets
+      # time to finish its in-flight LLM calls before the next one is touched.

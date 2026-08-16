@@ -9,3 +9,4 @@ resources:
   - 05-deployment.yaml
   - 06-service.yaml
   - 07-redis.yaml
+  - 08-hpa.yaml
