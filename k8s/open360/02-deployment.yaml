@@ -24,7 +24,7 @@ spec:
         - name: ghcr-secret
       initContainers:
         - name: migrate
-          image: ghcr.io/rafsunx/open360@sha256:799573dcee8efc4a954debec71b00bb777e98078e749619a1c08f868a044b2cd
+          image: ghcr.io/rafsunx/open360@sha256:d6173128b56d76d30eea78a37e9c2dfc420b7daa464968ca940091e52e3649b8
           command: ["node_modules/.bin/prisma", "migrate", "deploy"]
           envFrom:
             - secretRef:
