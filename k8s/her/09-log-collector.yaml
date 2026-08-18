@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: her-log-collector
+  namespace: her
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: her-log-reader
+rules:
+  - apiGroups: [""]
+    resources: [pods, pods/log]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: her-log-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: her-log-reader
+subjects:
+  - kind: ServiceAccount
+    name: her-log-collector
+    namespace: her
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: her-logs
+  namespace: her
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: her-log-collector
+  namespace: her
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: her-log-collector
+  template:
+    metadata:
+      labels:
+        app: her-log-collector
+    spec:
+      serviceAccountName: her-log-collector
+      containers:
+        - name: collector
+          image: bitnami/kubectl:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              LOG_FILE="/logs/her-$(date +%F).log"
+              echo "[$(date -u +%FT%TZ)] Log collector started" >> "$LOG_FILE"
+
+              # Stream logs from all her-server pods with pod/container prefix and timestamps.
+              # Restarts automatically if pods change (kubectl exits when label set changes).
+              while true; do
+                kubectl logs \
+                  -n her \
+                  -l app=her-server \
+                  --all-containers \
+                  --prefix \
+                  --timestamps \
+                  --follow \
+                  2>&1 \
+                | grep -v '"GET /health HTTP' \
+                >> "$LOG_FILE" &
+                PID=$!
+
+                # Rotate to a new daily file at midnight
+                while kill -0 $PID 2>/dev/null; do
+                  NEXT_FILE="/logs/her-$(date +%F).log"
+                  if [ "$NEXT_FILE" != "$LOG_FILE" ]; then
+                    LOG_FILE="$NEXT_FILE"
+                    echo "[$(date -u +%FT%TZ)] Log rotated to $LOG_FILE" >> "$LOG_FILE"
+                    kill $PID 2>/dev/null
+                    break
+                  fi
+                  sleep 30
+                done
+
+                wait $PID 2>/dev/null
+                sleep 2
+              done
+          volumeMounts:
+            - name: logs
+              mountPath: /logs
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+      volumes:
+        - name: logs
+          persistentVolumeClaim:
+            claimName: her-logs
