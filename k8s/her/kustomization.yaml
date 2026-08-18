@@ -10,3 +10,7 @@ resources:
   - 06-service.yaml
   - 07-redis.yaml
   - 08-hpa.yaml
+
+images:
+  - name: ghcr.io/rafsunx/her-server
+    newTag: sha-2b29f64
