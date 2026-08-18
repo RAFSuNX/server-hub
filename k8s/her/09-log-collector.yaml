@@ -26,17 +26,22 @@ subjects:
     name: her-log-collector
     namespace: her
 ---
+# Logs accumulate indefinitely — delete files manually inside the pod when needed.
+# reclaimPolicy Retain means the PV survives even if the PVC is deleted.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: her-logs
   namespace: her
+  annotations:
+    # Remind operators: data is NOT auto-deleted. Manual cleanup only.
+    her.app/retention: "manual"
 spec:
   accessModes: [ReadWriteOnce]
   storageClassName: longhorn
   resources:
     requests:
-      storage: 5Gi
+      storage: 10Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -54,6 +59,11 @@ spec:
         app: her-log-collector
     spec:
       serviceAccountName: her-log-collector
+      # Run as root so we can always write to the Longhorn volume regardless of fsGroup.
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      terminationGracePeriodSeconds: 10
       containers:
         - name: collector
           image: bitnami/kubectl:latest
@@ -61,12 +71,25 @@ spec:
             - /bin/sh
             - -c
             - |
-              LOG_FILE="/logs/her-$(date +%F).log"
-              echo "[$(date -u +%FT%TZ)] Log collector started" >> "$LOG_FILE"
+              set -e
+              mkdir -p /logs
 
-              # Stream logs from all her-server pods with pod/container prefix and timestamps.
-              # Restarts automatically if pods change (kubectl exits when label set changes).
+              log() {
+                echo "[$(date -u +%FT%TZ)] $*"
+              }
+
+              LOG_FILE="/logs/her-$(date +%F).log"
+              log "=== Log collector started ===" >> "$LOG_FILE"
+
+              # kubectl logs --follow gets ALL logs since pod start then streams new ones.
+              # On restart we get some duplicates (from pod start) but never gaps.
+              # Append-only (>>) so old files are never touched or deleted.
               while true; do
+                CURRENT_DATE=$(date +%F)
+                LOG_FILE="/logs/her-${CURRENT_DATE}.log"
+
+                log "Streaming her-server logs → $LOG_FILE" >> "$LOG_FILE"
+
                 kubectl logs \
                   -n her \
                   -l app=her-server \
@@ -79,19 +102,20 @@ spec:
                 >> "$LOG_FILE" &
                 PID=$!
 
-                # Rotate to a new daily file at midnight
+                # Check every 60s for midnight (date change) — rotate to new file.
+                # Killing the kubectl process causes the outer loop to restart it,
+                # picking up the new LOG_FILE path.
                 while kill -0 $PID 2>/dev/null; do
-                  NEXT_FILE="/logs/her-$(date +%F).log"
-                  if [ "$NEXT_FILE" != "$LOG_FILE" ]; then
-                    LOG_FILE="$NEXT_FILE"
-                    echo "[$(date -u +%FT%TZ)] Log rotated to $LOG_FILE" >> "$LOG_FILE"
+                  sleep 60
+                  NEW_DATE=$(date +%F)
+                  if [ "$NEW_DATE" != "$CURRENT_DATE" ]; then
+                    log "Date changed to $NEW_DATE — rotating log file" >> "$LOG_FILE"
                     kill $PID 2>/dev/null
                     break
                   fi
-                  sleep 30
                 done
 
-                wait $PID 2>/dev/null
+                wait $PID 2>/dev/null || true
                 sleep 2
               done
           volumeMounts:
@@ -103,7 +127,7 @@ spec:
               memory: 32Mi
             limits:
               cpu: 100m
-              memory: 64Mi
+              memory: 128Mi
       volumes:
         - name: logs
           persistentVolumeClaim:
