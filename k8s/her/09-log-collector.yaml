@@ -99,7 +99,7 @@ spec:
                   --follow \
                   2>&1 \
                 | grep -v '"GET /health HTTP' \
-                >> "$LOG_FILE" &
+                | tee -a "$LOG_FILE" &
                 PID=$!
 
                 # Check every 60s for midnight (date change) — rotate to new file.
