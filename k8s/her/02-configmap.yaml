@@ -5,10 +5,12 @@ metadata:
   namespace: her
 data:
   # ── Active chat models ─────────────────────────────────────────────────────
-  # "one"      → Fireworks only
-  # "two"      → Baseten only
-  # "one,two"  → Fireworks primary, Baseten fallback
-  ACTIVE_CHAT_MODELS: "one"
+  # "one"          → OpenRouter only
+  # "two"          → Fireworks only
+  # "three"        → Baseten only
+  # "two,three"    → Fireworks primary, Baseten fallback
+  # "one,two,three" → OpenRouter primary, Fireworks fallback, Baseten last resort
+  ACTIVE_CHAT_MODELS: "two"
 
   # ── Embeddings ─────────────────────────────────────────────────────────────
   # Must match the vector column size in the DB. Changing requires a migration.
