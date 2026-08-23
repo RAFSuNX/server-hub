@@ -10,7 +10,7 @@ data:
   # "three"        → Baseten only
   # "two,three"    → Fireworks primary, Baseten fallback
   # "one,two,three" → OpenRouter primary, Fireworks fallback, Baseten last resort
-  ACTIVE_CHAT_MODELS: "two"
+  ACTIVE_CHAT_MODELS: "one,two"
 
   # ── Embeddings ─────────────────────────────────────────────────────────────
   # Must match the vector column size in the DB. Changing requires a migration.
