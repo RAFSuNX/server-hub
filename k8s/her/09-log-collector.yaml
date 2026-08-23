@@ -81,12 +81,15 @@ spec:
               LOG_FILE="/logs/her-$(date +%F).log"
               log "=== Log collector started ===" >> "$LOG_FILE"
 
-              # kubectl logs --follow gets ALL logs since pod start then streams new ones.
-              # On restart we get some duplicates (from pod start) but never gaps.
+              # kubectl logs --follow only follows pods that existed when the command started.
+              # Restart every 10 minutes so new pods (deploys, restarts) are always picked up.
+              # On restart we get brief duplicates from pod start but never gaps.
               # Append-only (>>) so old files are never touched or deleted.
+              RESTART_INTERVAL=600
               while true; do
                 CURRENT_DATE=$(date +%F)
                 LOG_FILE="/logs/her-${CURRENT_DATE}.log"
+                STARTED=$(date +%s)
 
                 log "Streaming her-server logs → $LOG_FILE" >> "$LOG_FILE"
 
@@ -102,14 +105,18 @@ spec:
                 | tee -a "$LOG_FILE" &
                 PID=$!
 
-                # Check every 60s for midnight (date change) — rotate to new file.
-                # Killing the kubectl process causes the outer loop to restart it,
-                # picking up the new LOG_FILE path.
+                # Check every 30s — restart at midnight (log rotation) or after
+                # RESTART_INTERVAL seconds (pick up new pods from rolling deploys).
                 while kill -0 $PID 2>/dev/null; do
-                  sleep 60
+                  sleep 30
                   NEW_DATE=$(date +%F)
+                  ELAPSED=$(( $(date +%s) - STARTED ))
                   if [ "$NEW_DATE" != "$CURRENT_DATE" ]; then
                     log "Date changed to $NEW_DATE — rotating log file" >> "$LOG_FILE"
+                    kill $PID 2>/dev/null
+                    break
+                  elif [ "$ELAPSED" -ge "$RESTART_INTERVAL" ]; then
+                    log "Restarting to pick up new pods after ${ELAPSED}s" >> "$LOG_FILE"
                     kill $PID 2>/dev/null
                     break
                   fi
