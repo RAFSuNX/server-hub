@@ -27,11 +27,11 @@ spec:
               value: self-hosted,arm64,linux
             - name: RUNNER_WORKDIR
               value: /runner/_work
-            - name: ACCESS_TOKEN
+            - name: RUNNER_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: github-runner-secret
-                  key: ACCESS_TOKEN
+                  key: RUNNER_TOKEN
           volumeMounts:
             - name: data
               mountPath: /runner
