@@ -5,12 +5,12 @@ metadata:
   namespace: her
 data:
   # ── Active chat models ─────────────────────────────────────────────────────
-  # "one"          → OpenRouter only
-  # "two"          → Fireworks only
-  # "three"        → Baseten only
-  # "two,three"    → Fireworks primary, Baseten fallback
-  # "one,two,three" → OpenRouter primary, Fireworks fallback, Baseten last resort
-  ACTIVE_CHAT_MODELS: "one,two"
+  # "one"          → OpenRouter (Muse Spark 1.2 Contributor)
+  # "two"          → Fireworks
+  # "three"        → Baseten
+  # "four"         → Nous portal (Hermes 4 405B — $0.09/M in, $0.37/M out)
+  # "four,two"     → Nous primary, Fireworks fallback
+  ACTIVE_CHAT_MODELS: "four,one,two"
 
   # ── Embeddings ─────────────────────────────────────────────────────────────
   # Must match the vector column size in the DB. Changing requires a migration.
