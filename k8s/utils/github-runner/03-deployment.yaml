@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-runner
+  namespace: utils
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: github-runner
+  template:
+    metadata:
+      labels:
+        app: github-runner
+    spec:
+      containers:
+        - name: runner
+          image: myoung34/github-runner:latest
+          env:
+            - name: RUNNER_NAME
+              value: k3s-arm64
+            - name: RUNNER_SCOPE
+              value: repo
+            - name: REPO_URL
+              value: https://github.com/RAFSuNX/OPEN360
+            - name: LABELS
+              value: self-hosted,arm64,linux
+            - name: RUNNER_WORKDIR
+              value: /runner/_work
+            - name: ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: github-runner-secret
+                  key: ACCESS_TOKEN
+          volumeMounts:
+            - name: data
+              mountPath: /runner
+            - name: docker-sock
+              mountPath: /var/run/docker.sock
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "3"
+              memory: 4Gi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: github-runner-data
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock

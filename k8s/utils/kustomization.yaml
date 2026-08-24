@@ -30,3 +30,6 @@ resources:
   - litellm/01-configmap.yaml
   - litellm/02-deployment.yaml
   - litellm/03-service.yaml
+  - github-runner/01-secret.yaml
+  - github-runner/02-storage.yaml
+  - github-runner/03-deployment.yaml
