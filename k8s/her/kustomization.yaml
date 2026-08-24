@@ -15,4 +15,4 @@ resources:
 images:
   - name: ghcr.io/rafsunx/her-server
 
-    newTag: sha-7a8cfa3
+    newTag: sha-d7631a9
