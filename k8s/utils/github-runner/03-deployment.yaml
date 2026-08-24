@@ -14,6 +14,24 @@ spec:
         app: github-runner
     spec:
       containers:
+        - name: dind
+          image: docker:27-dind
+          securityContext:
+            privileged: true
+          env:
+            - name: DOCKER_TLS_CERTDIR
+              value: ""
+          volumeMounts:
+            - name: data
+              mountPath: /runner
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "3"
+              memory: 4Gi
+
         - name: runner
           image: myoung34/github-runner:latest
           env:
@@ -27,6 +45,8 @@ spec:
               value: self-hosted,arm64,linux
             - name: RUNNER_WORKDIR
               value: /runner/_work
+            - name: DOCKER_HOST
+              value: tcp://localhost:2375
             - name: RUNNER_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -35,19 +55,15 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /runner
-            - name: docker-sock
-              mountPath: /var/run/docker.sock
           resources:
             requests:
               cpu: 100m
               memory: 256Mi
             limits:
-              cpu: "3"
-              memory: 4Gi
+              cpu: "1"
+              memory: 512Mi
+
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: github-runner-data
-        - name: docker-sock
-          hostPath:
-            path: /var/run/docker.sock
