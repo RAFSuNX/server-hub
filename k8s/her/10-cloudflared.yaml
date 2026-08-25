@@ -1,0 +1,73 @@
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: her-cloudflared-token
+  namespace: her
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: doppler-her
+    kind: ClusterSecretStore
+  target:
+    name: her-cloudflared-token
+  data:
+    - secretKey: token
+      remoteRef:
+        key: CLOUDFLARED_TUNNEL_TOKEN
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared
+  namespace: her
+  labels:
+    app: cloudflared
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloudflared
+  template:
+    metadata:
+      labels:
+        app: cloudflared
+    spec:
+      dnsPolicy: ClusterFirst
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:2026.6.1
+          command: ["cloudflared"]
+          args:
+            - tunnel
+            - --no-autoupdate
+            - run
+            - --protocol
+            - quic
+            - --token
+            - $(TUNNEL_TOKEN)
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: her-cloudflared-token
+                  key: token
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

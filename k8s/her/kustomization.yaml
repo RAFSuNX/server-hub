@@ -11,6 +11,7 @@ resources:
   - 07-redis.yaml
   - 08-hpa.yaml
   - 09-log-collector.yaml
+  - 10-cloudflared.yaml
 
 images:
   - name: ghcr.io/rafsunx/her-server
