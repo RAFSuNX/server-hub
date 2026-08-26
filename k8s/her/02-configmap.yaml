@@ -11,6 +11,8 @@ data:
   # "four"         → Nous portal (Hermes 4 405B — $0.09/M in, $0.37/M out)
   # "four,two"     → Nous primary, Fireworks fallback
   ACTIVE_CHAT_MODELS: "four,one,two"
+  ACTIVE_ONBOARDING_MODEL: "two"
+  ACTIVE_PROACTIVE_MODEL: "two"
 
   # ── Embeddings ─────────────────────────────────────────────────────────────
   # Must match the vector column size in the DB. Changing requires a migration.
