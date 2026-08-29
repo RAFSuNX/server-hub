@@ -33,3 +33,7 @@ resources:
   - github-runner/01-secret.yaml
   - github-runner/02-storage.yaml
   - github-runner/03-deployment.yaml
+  - n8n/00-secret.yaml
+  - n8n/02-storage.yaml
+  - n8n/03-deployment.yaml
+  - n8n/04-service.yaml
