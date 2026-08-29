@@ -10,7 +10,7 @@ data:
   # "three"        → Baseten
   # "four"         → Nous portal (Hermes 4 405B — $0.09/M in, $0.37/M out)
   # "four,two"     → Nous primary, Fireworks fallback
-  ACTIVE_CHAT_MODELS: "one"
+  ACTIVE_CHAT_MODELS: "one,four"
   ACTIVE_ONBOARDING_MODEL: "two"
   ACTIVE_PROACTIVE_MODEL: "one"
 
