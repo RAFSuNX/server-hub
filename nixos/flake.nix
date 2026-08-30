@@ -8,22 +8,15 @@
 #   - systemb  (k3s join / control-plane / etcd)
 #   - systemc  (k3s join / control-plane / etcd)
 #
-# Secrets: managed with agenix, encrypted to each host's SSH host key.
+# Secrets: managed by Doppler, written to /run/secrets/ at boot.
 # =============================================================================
 
 {
   description = "NixOS cluster — systema / systemb / systemc";
 
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
-    agenix = {
-      url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
-
-  outputs = { self, nixpkgs, agenix }: {
+  outputs = { self, nixpkgs }: {
 
     nixosConfigurations =
       let
@@ -37,16 +30,13 @@
           system = "aarch64-linux";
           specialArgs = { inherit nodeIPs; };
           modules = [
-            agenix.nixosModules.default
             ./hosts/${hostname}
             ./modules/common.nix
             ./modules/k3s.nix
             ./modules/glusterfs.nix
             ./modules/security.nix
             ./modules/longhorn.nix
-            ./modules/rclone.nix
-            ./modules/gitops.nix
-            # ./modules/bandwidth-guard.nix # TODO
+            ./modules/doppler.nix
           ];
         };
       in {

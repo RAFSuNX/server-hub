@@ -8,25 +8,28 @@ let
   allNodes = [ "systema" "systemb" "systemc" ];
   tlsSans  = lib.concatMap (n: [ "--tls-san=${n}" ]) allNodes;
 
-  # Custom Flannel config with MTU 5000 (for Tailscale MTU 7000)
-  flannelConfPath = ../config/flannel-conf.json;
+  flannelConf = pkgs.writeText "flannel-conf.json" (builtins.toJSON {
+    Network      = "10.42.0.0/16";
+    EnableIPv4   = true;
+    EnableIPv6   = false;
+    IPv6Network  = "::/0";
+    Backend      = { Type = "vxlan"; MTU = 7950; };
+  });
 
   commonFlags = [
     "--disable=traefik"
     "--disable=servicelb"
     "--disable-cloud-controller"
     "--flannel-iface=tailscale0"
-    "--flannel-conf=${flannelConfPath}"
+    "--flannel-conf=${flannelConf}"
     "--node-ip=${nodeIPs.${hostname}}"
   ] ++ tlsSans;
 in
 {
-  age.secrets.k3s_token.file = ../secrets/k3s_token.age;
-
   services.k3s = {
     enable    = true;
     role      = "server";
-    tokenFile = config.age.secrets.k3s_token.path;
+    tokenFile = "/run/secrets/k3s_token";
 
     extraFlags = if isInitNode then
       [ "--cluster-init" ] ++ commonFlags
@@ -34,10 +37,9 @@ in
       [ "--server=https://${initNode}:6443" ] ++ commonFlags;
   };
 
-  # Ensure k3s starts after Tailscale tunnel is up
   systemd.services.k3s = {
-    after  = [ "tailscaled.service" ];
-    wants  = [ "tailscaled.service" ];
+    after = [ "tailscaled.service" "doppler-secrets.service" ];
+    wants = [ "tailscaled.service" "doppler-secrets.service" ];
   };
 
   environment.variables.KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
