@@ -19,9 +19,6 @@
     (_ip: names: !(builtins.elem config.networking.hostName names))
     (lib.mapAttrs' (name: ip: lib.nameValuePair ip [ name ]) nodeIPs);
 
-  # Secrets
-  age.secrets.tailscale_authkey.file = ../secrets/tailscale_authkey.age;
-
   # User — SSH authorized keys defined per-host in hosts/<hostname>/default.nix
   users.users.rafsunx = {
     isNormalUser = true;
@@ -83,7 +80,7 @@
   # Tailscale
   services.tailscale = {
     enable      = true;
-    authKeyFile = config.age.secrets.tailscale_authkey.path;
+    authKeyFile = "/run/secrets/tailscale_authkey";
     extraUpFlags = [
       "--advertise-exit-node"
       "--hostname=${config.networking.hostName}"
@@ -93,7 +90,7 @@
 
   # Tailscale MTU and netfilter optimization via systemd service
   systemd.services.tailscale-mtu = {
-    description = "Set Tailscale MTU to 7000 and disable netfilter";
+    description = "Set Tailscale MTU to 8000 and disable netfilter";
     after = [ "tailscaled.service" "sys-devices-virtual-net-tailscale0.device" ];
     wants = [ "sys-devices-virtual-net-tailscale0.device" ];
     wantedBy = [ "multi-user.target" ];
@@ -101,7 +98,7 @@
       Type = "oneshot";
       RemainAfterExit = true;
       ExecStart = pkgs.writeShellScript "set-tailscale-opts" ''
-        ${pkgs.iproute2}/bin/ip link set tailscale0 mtu 7000
+        ${pkgs.iproute2}/bin/ip link set tailscale0 mtu 8000
         ${pkgs.tailscale}/bin/tailscale set --netfilter-mode=off
       '';
     };
