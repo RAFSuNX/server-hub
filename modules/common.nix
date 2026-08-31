@@ -84,22 +84,28 @@
     extraUpFlags = [
       "--advertise-exit-node"
       "--hostname=${config.networking.hostName}"
-      "--netfilter-mode=off"  # Disable netfilter for maximum performance
+      "--netfilter-mode=off"
     ];
   };
 
-  # Tailscale MTU and netfilter optimization via systemd service
-  systemd.services.tailscale-mtu = {
-    description = "Set Tailscale MTU to 8000 and disable netfilter";
-    after = [ "tailscaled.service" "sys-devices-virtual-net-tailscale0.device" ];
-    wants = [ "sys-devices-virtual-net-tailscale0.device" ];
+  # TS_DEBUG_MTU tells tailscaled to use 8000 MTU on the tunnel from the start
+  # (same as Debian's TS_DEBUG_MTU in /etc/default/tailscaled).
+  # This is the proper way — "ip link set" fights tailscaled resetting the MTU.
+  systemd.services.tailscaled.environment.TS_DEBUG_MTU = "8000";
+
+  # UDP GRO forwarding offload on the public NIC — Tailscale perf best practice
+  # for exit nodes / subnet routers. Mirrors Debian's tailscale-udp-gro.service.
+  systemd.services.tailscale-gro = {
+    description = "Enable UDP GRO forwarding offload for Tailscale";
+    after   = [ "network-online.target" ];
+    wants   = [ "network-online.target" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = pkgs.writeShellScript "set-tailscale-opts" ''
-        ${pkgs.iproute2}/bin/ip link set tailscale0 mtu 8000
-        ${pkgs.tailscale}/bin/tailscale set --netfilter-mode=off
+      ExecStart = pkgs.writeShellScript "tailscale-gro" ''
+        iface=$(${pkgs.iproute2}/bin/ip route show default | grep -oP 'dev \K\S+' | head -1)
+        ${pkgs.ethtool}/bin/ethtool -K "$iface" rx-udp-gro-forwarding on rx-gro-list off
       '';
     };
   };
@@ -113,7 +119,7 @@
     auto-optimise-store   = true;
   };
 
-  environment.systemPackages = with pkgs; [ git curl vnstat iperf3 ffmpeg-full tmux ];
+  environment.systemPackages = with pkgs; [ git curl vnstat iperf3 ffmpeg-full tmux ethtool ];
 
   time.timeZone = "Asia/Dhaka";
 
