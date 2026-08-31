@@ -93,22 +93,11 @@
   # This is the proper way — "ip link set" fights tailscaled resetting the MTU.
   systemd.services.tailscaled.environment.TS_DEBUG_MTU = "8000";
 
-  # UDP GRO forwarding offload on the public NIC — Tailscale perf best practice
-  # for exit nodes / subnet routers. Mirrors Debian's tailscale-udp-gro.service.
-  systemd.services.tailscale-gro = {
-    description = "Enable UDP GRO forwarding offload for Tailscale";
-    after   = [ "network-online.target" ];
-    wants   = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = pkgs.writeShellScript "tailscale-gro" ''
-        iface=$(${pkgs.iproute2}/bin/ip route show default | grep -oP 'dev \K\S+' | head -1)
-        ${pkgs.ethtool}/bin/ethtool -K "$iface" rx-udp-gro-forwarding on rx-gro-list off
-      '';
-    };
-  };
+  # UDP GRO forwarding on the public NIC — Tailscale perf best practice for exit nodes
+  networking.localCommands = ''
+    iface=$(${pkgs.iproute2}/bin/ip route show default | grep -oP 'dev \K\S+' | head -1)
+    ${pkgs.ethtool}/bin/ethtool -K "$iface" rx-udp-gro-forwarding on rx-gro-list off || true
+  '';
 
   # vnstat — network traffic monitoring
   services.vnstat.enable = true;
