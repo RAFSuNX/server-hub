@@ -7,9 +7,9 @@ metadata:
 data:
   config.yaml: |
     model_list:
-      - model_name: agentrouter/glm-5.2
+      - model_name: agentrouter/glm-5.3
         litellm_params:
-          model: anthropic/glm-5.2
+          model: anthropic/glm-5.3
           api_base: https://agentrouter.org
           api_key: os.environ/AGENTROUTER_API_KEY
           extra_headers:
