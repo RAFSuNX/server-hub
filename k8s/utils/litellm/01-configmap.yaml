@@ -24,3 +24,12 @@ data:
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
+
+    litellm_settings:
+      set_verbose: false
+      json_logs: true
+      request_timeout: 600
+      num_retries: 0
+      max_connections: 20
+      max_keepalive_connections: 10
+      keepalive_expiry: 300

@@ -22,12 +22,14 @@ spec:
       containers:
         - name: litellm
           image: ghcr.io/berriai/litellm:main-stable
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           args:
             - "--config"
             - "/app/config.yaml"
             - "--port"
             - "4000"
+            - "--workers"
+            - "4"
           ports:
             - containerPort: 4000
           envFrom:
