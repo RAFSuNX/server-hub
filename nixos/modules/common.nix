@@ -110,7 +110,7 @@
 
   environment.systemPackages = with pkgs; [ git curl vnstat iperf3 ffmpeg-full tmux ethtool ];
 
-  time.timeZone = "Asia/Dhaka";
+  time.timeZone = "UTC";
 
   system.stateVersion = "25.11";
 }
