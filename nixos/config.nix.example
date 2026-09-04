@@ -3,10 +3,11 @@
 {
   adminUser = "your-username";
 
+  # Use 0.0.0.0 as placeholder on first install, update after tailscale assigns real IPs
   nodeIPs = {
-    systema = "100.x.x.x";  # tailscale IP
-    systemb = "100.x.x.x";
-    systemc = "100.x.x.x";
+    systema = "0.0.0.0";
+    systemb = "0.0.0.0";
+    systemc = "0.0.0.0";
   };
 
   # Per-node SSH public keys for the admin user
