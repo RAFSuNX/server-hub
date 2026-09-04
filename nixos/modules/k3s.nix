@@ -5,8 +5,7 @@ let
   hostname   = config.networking.hostName;
   isInitNode = hostname == initNode;
 
-  allNodes = [ "systema" "systemb" "systemc" ];
-  tlsSans  = map (n: "--tls-san=${n}") allNodes;
+  tlsSans = map (n: "--tls-san=${n}") (builtins.attrNames nodeIPs);
 
   flannelConf = pkgs.writeText "flannel-conf.json" (builtins.toJSON {
     Network      = "10.42.0.0/16";

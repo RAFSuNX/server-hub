@@ -2,12 +2,7 @@
 
 {
   networking.firewall = {
-    enable = true;
-
-    # SSH only — all other ports handled via extraCommands below
-    allowedTCPPorts = [ 22 ];
-
-    # Tailscale VPN fully trusted — all cluster traffic (k3s, GlusterFS, DRBD) uses Tailscale
+    allowedTCPPorts  = [ 22 ];
     trustedInterfaces = [ "tailscale0" ];
   };
 
