@@ -13,6 +13,8 @@ data:
   ACTIVE_CHAT_MODELS: "four,six,one,ten"
   ACTIVE_ONBOARDING_MODEL: "two"
   ACTIVE_PROACTIVE_MODEL: "one"
+  # DeepSeek v4-flash (model four) — headroom over the 2500 config default.
+  CHAT_MODEL_FOUR_MAX_TOKENS: "5000"
 
   # ── Embeddings ─────────────────────────────────────────────────────────────
   # Must match the vector column size in the DB. Changing requires a migration.
