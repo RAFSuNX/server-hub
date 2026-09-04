@@ -43,7 +43,7 @@
       PasswordAuthentication = false;
       PermitRootLogin        = "no";
       MaxAuthTries           = 3;
-      LoginGraceTime         = 20;
+      LoginGraceTime         = 60;
       AddressFamily          = "inet";
       AllowUsers             = [ adminUser ];
       MaxSessions            = 3;
