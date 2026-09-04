@@ -28,7 +28,7 @@
 
   services.fail2ban = {
     enable   = true;
-    maxretry = 3;
+    maxretry = 5;
     bantime  = "-1";
     jails.sshd.settings = {
       enabled = true;
@@ -42,22 +42,7 @@
     settings = {
       PasswordAuthentication = false;
       PermitRootLogin        = "no";
-      MaxAuthTries           = 3;
-      LoginGraceTime         = 60;
-      AddressFamily          = "inet";
       AllowUsers             = [ adminUser ];
-      MaxSessions            = 3;
-      ClientAliveInterval    = 300;
-      ClientAliveCountMax    = 2;
-      X11Forwarding          = false;
-      AllowTcpForwarding     = false;
-      AllowAgentForwarding   = false;
-      PermitUserEnvironment  = false;
-      PerSourcePenalties     = "no";
-      MaxStartups            = "100:30:200";
-      Ciphers       = [ "chacha20-poly1305@openssh.com" "aes256-gcm@openssh.com" "aes128-gcm@openssh.com" "aes256-ctr" "aes192-ctr" "aes128-ctr" ];
-      Macs          = [ "hmac-sha2-512-etm@openssh.com" "hmac-sha2-256-etm@openssh.com" "hmac-sha2-512" "hmac-sha2-256" ];
-      KexAlgorithms = [ "curve25519-sha256" "curve25519-sha256@libssh.org" "diffie-hellman-group16-sha512" "diffie-hellman-group18-sha512" ];
     };
   };
 
