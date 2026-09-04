@@ -13,6 +13,8 @@
 
   # Networking
   networking.networkmanager.enable = true;
+  networking.networkmanager.dns = "none";  # NixOS manages resolv.conf, not NM
+  networking.nameservers = [ "1.1.1.1" "1.0.0.1" "9.9.9.9" ];
 
   # Tailscale hostname resolution — each node maps the other two, not itself
   networking.hosts = lib.filterAttrs
@@ -85,6 +87,7 @@
       "--advertise-exit-node"
       "--hostname=${config.networking.hostName}"
       "--netfilter-mode=off"
+      "--accept-dns=false"
     ];
   };
 
