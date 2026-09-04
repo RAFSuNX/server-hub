@@ -31,7 +31,7 @@
       EnvironmentFile = "/etc/doppler-token";
       ExecStart       = pkgs.writeShellScript "doppler-fetch" ''
         set -euo pipefail
-        fetch() { ${pkgs.doppler}/bin/doppler secrets get "$1" --plain 2>/dev/null; }
+        fetch() { ${pkgs.doppler}/bin/doppler secrets get "$1" --plain; }
 
         install -m600 /dev/null /run/secrets/k3s_token
         fetch K3S_TOKEN > /run/secrets/k3s_token
@@ -39,6 +39,9 @@
         install -m600 /dev/null /run/secrets/tailscale_authkey
         fetch TAILSCALE_AUTH_KEY > /run/secrets/tailscale_authkey
 
+        mkdir -p /home/${adminUser}/.ssh
+        chown ${adminUser}:users /home/${adminUser}/.ssh
+        chmod 700 /home/${adminUser}/.ssh
         install -m600 -o ${adminUser} /dev/null /home/${adminUser}/.ssh/cluster_key
         fetch CLUSTER_SSH_PRIVATE_KEY > /home/${adminUser}/.ssh/cluster_key
 
