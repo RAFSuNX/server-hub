@@ -18,7 +18,6 @@
     "d /home/${adminUser}/.ssh  0700 ${adminUser} ${adminUser} -"
   ];
 
-  # Fetch secrets from Doppler before any cluster services start.
   systemd.services.doppler-secrets = {
     description = "Fetch secrets from Doppler";
     wantedBy    = [ "multi-user.target" ];
@@ -56,7 +55,6 @@
     "/run/secrets/cluster_authorized_keys"
   ];
 
-  # SSH client: use the cluster key when connecting between nodes over Tailscale.
   programs.ssh.extraConfig = ''
     Host systema systemb systemc
       User ${adminUser}
