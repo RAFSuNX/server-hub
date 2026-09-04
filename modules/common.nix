@@ -31,15 +31,13 @@
 
   # Fail2ban — permanent ban after 3 failed SSH attempts
   services.fail2ban = {
-    enable     = true;
-    maxretry   = 3;
-    bantime    = "-1";
+    enable   = true;
+    maxretry = 3;
+    bantime  = "-1";
     jails.sshd.settings = {
-      enabled  = true;
-      port     = "ssh";
-      filter   = "sshd";
-      maxretry = 3;
-      bantime  = "-1";
+      enabled = true;
+      port    = "ssh";
+      filter  = "sshd";
     };
   };
 
@@ -67,8 +65,8 @@
     };
   };
 
-  # Kernel modules — vxlan required for flannel VXLAN backend, tcp_bbr for congestion control
-  boot.kernelModules = [ "vxlan" "tcp_bbr" ];
+  # vxlan required for flannel VXLAN backend; tcp_bbr is auto-loaded by the BBR sysctl
+  boot.kernelModules = [ "vxlan" ];
 
   # IP forwarding — required for Tailscale exit node and subnet routing
   # Network performance optimizations for high-bandwidth Tailscale connections
@@ -128,7 +126,7 @@
     "0.pool.ntp.org" "1.pool.ntp.org" "2.pool.ntp.org" "3.pool.ntp.org"
   ];
 
-  environment.systemPackages = with pkgs; [ git curl vnstat iperf3 ffmpeg-full tmux ethtool ];
+  environment.systemPackages = with pkgs; [ git curl iperf3 ffmpeg-full tmux ethtool ];
 
   time.timeZone = "UTC";
 

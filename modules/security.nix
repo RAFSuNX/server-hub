@@ -76,55 +76,9 @@
     "dccp" "sctp" "rds" "tipc"
   ];
 
-  # Block sensitive ports from non-Tailscale interfaces using iptables
-  # IMPORTANT: All rules use -I nixos-fw 1 (insert at position 1).
-  # Because each insert pushes prior rules down, INSERT ORDER IS REVERSE of evaluation order.
-  # To have rule A evaluated before rule B, insert B first, then A.
-  # Pattern for each port group: insert DROP first, then ACCEPT rules — so ACCEPTs end up above DROP.
-  networking.firewall.extraCommands = ''
-    # --- Simple DROP ports (no exceptions needed) ---
-    # These are inserted first so they end up below the 9100/9502 ACCEPT rules in the chain.
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 111   -j DROP
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p udp --dport 111   -j DROP
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 6443  -j DROP
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 10250 -j DROP
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 24007 -j DROP
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9500  -j DROP
-
-    # --- node-exporter (9100) ---
-    # Insert DROP first, then ACCEPTs — so final chain order is: ACCEPT lo, ACCEPT CIDRs, DROP rest
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9100 -j DROP
-    iptables -I nixos-fw 1 -i lo                                       -p tcp --dport 9100 -j nixos-fw-accept
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW -s 10.42.0.0/16  -p tcp --dport 9100 -j nixos-fw-accept
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW -s 10.43.0.0/16  -p tcp --dport 9100 -j nixos-fw-accept
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW -s 100.64.0.0/10 -p tcp --dport 9100 -j nixos-fw-accept
-
-    # --- Longhorn webhook (9502) ---
-    # Same pattern: DROP first, then ACCEPTs
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9502 -j DROP
-    iptables -I nixos-fw 1 -i lo                                       -p tcp --dport 9502 -j nixos-fw-accept
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW -s 10.42.0.0/16  -p tcp --dport 9502 -j nixos-fw-accept
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW -s 10.43.0.0/16  -p tcp --dport 9502 -j nixos-fw-accept
-    iptables -I nixos-fw 1 -m conntrack --ctstate NEW -s 100.64.0.0/10 -p tcp --dport 9502 -j nixos-fw-accept
-  '';
-
-  networking.firewall.extraStopCommands = ''
-    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 111   -j DROP 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p udp --dport 111   -j DROP 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 6443  -j DROP 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 10250 -j DROP 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 24007 -j DROP 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9500  -j DROP 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9100  -j DROP 2>/dev/null || true
-    iptables -D nixos-fw -i lo                                       -p tcp --dport 9100  -j nixos-fw-accept 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW -s 10.42.0.0/16  -p tcp --dport 9100  -j nixos-fw-accept 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW -s 10.43.0.0/16  -p tcp --dport 9100  -j nixos-fw-accept 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW -s 100.64.0.0/10 -p tcp --dport 9100  -j nixos-fw-accept 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW ! -i tailscale0 -p tcp --dport 9502  -j DROP 2>/dev/null || true
-    iptables -D nixos-fw -i lo                                       -p tcp --dport 9502  -j nixos-fw-accept 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW -s 10.42.0.0/16  -p tcp --dport 9502  -j nixos-fw-accept 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW -s 10.43.0.0/16  -p tcp --dport 9502  -j nixos-fw-accept 2>/dev/null || true
-    iptables -D nixos-fw -m conntrack --ctstate NEW -s 100.64.0.0/10 -p tcp --dport 9502  -j nixos-fw-accept 2>/dev/null || true
-  '';
+  # Allow node-exporter and Longhorn webhook from local pods (cni0).
+  # Cross-node pod traffic arrives on tailscale0 which is already trusted.
+  # All other non-SSH ports are blocked by the default DROP input policy.
+  networking.firewall.interfaces."cni0".allowedTCPPorts = [ 9100 9502 ];
 
 }
