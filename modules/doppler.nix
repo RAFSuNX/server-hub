@@ -6,7 +6,7 @@
 #
 # Doppler secrets this module expects:
 #   K3S_TOKEN               — k3s cluster join token
-#   TAILSCALE_AUTHKEY       — Tailscale auth key for initial node registration
+#   TAILSCALE_AUTH_KEY      — Tailscale auth key for initial node registration
 #   CLUSTER_SSH_PRIVATE_KEY — Ed25519 private key shared across all nodes
 #   CLUSTER_SSH_PUB_KEY     — Corresponding public key (authorizes inter-node SSH)
 
@@ -37,7 +37,7 @@
         fetch K3S_TOKEN > /run/secrets/k3s_token
 
         install -m600 /dev/null /run/secrets/tailscale_authkey
-        fetch TAILSCALE_AUTHKEY > /run/secrets/tailscale_authkey
+        fetch TAILSCALE_AUTH_KEY > /run/secrets/tailscale_authkey
 
         install -m600 -o ${adminUser} /dev/null /home/${adminUser}/.ssh/cluster_key
         fetch CLUSTER_SSH_PRIVATE_KEY > /home/${adminUser}/.ssh/cluster_key
