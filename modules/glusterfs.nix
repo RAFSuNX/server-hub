@@ -44,5 +44,4 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [ glusterfs ];
 }
