@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, adminUser, ... }:
 
 {
   services.glusterfs.enable = true;
@@ -11,21 +11,37 @@
   };
 
   systemd.tmpfiles.rules = [
-    "d /mnt/storage-brick 0775 rafsunx users -"
-    "d /mnt/storage       0775 rafsunx users -"
+    "d /mnt/storage-brick 0775 ${adminUser} users -"
+    "d /mnt/storage       0775 ${adminUser} users -"
   ];
 
+  # noauto — boot-time mount is handled by glusterfs-mount below.
+  # glusterd starts before it reconnects to peers over Tailscale, so a
+  # one-shot mount right after glusterd.service starts fails on join nodes.
   fileSystems."/mnt/storage" = {
     device  = "localhost:/storage";
     fsType  = "glusterfs";
-    options = [
-      "_netdev" "nofail"
-      "x-systemd.automount"
-      "x-systemd.idle-timeout=0"
-      "x-systemd.requires=glusterd.service"
-      "x-systemd.after=glusterd.service"
-      "x-systemd.mount-timeout=30"
-    ];
+    options = [ "noauto" "_netdev" "backupvolfile-server=systema" ];
+  };
+
+  systemd.services.glusterfs-mount = {
+    description = "Retry GlusterFS storage mount until glusterd is ready";
+    after    = [ "network-online.target" "glusterd.service" ];
+    wants    = [ "network-online.target" ];
+    requires = [ "glusterd.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type            = "oneshot";
+      RemainAfterExit = true;
+      ExecStart       = pkgs.writeShellScript "glusterfs-mount" ''
+        for i in $(seq 1 24); do
+          mountpoint -q /mnt/storage && exit 0
+          mount /mnt/storage && exit 0
+          sleep 5
+        done
+        exit 1
+      '';
+    };
   };
 
   environment.systemPackages = with pkgs; [ glusterfs ];

@@ -1,0 +1,18 @@
+# Copy this to config.nix and fill in real values.
+# config.nix is gitignored — never commit it.
+{
+  adminUser = "your-username";
+
+  nodeIPs = {
+    systema = "100.x.x.x";  # tailscale IP
+    systemb = "100.x.x.x";
+    systemc = "100.x.x.x";
+  };
+
+  # Per-node SSH public keys for the admin user
+  sshKeys = {
+    systema = [ "ssh-ed25519 AAAA... user@host" ];
+    systemb = [ "ssh-ed25519 AAAA... user@host" ];
+    systemc = [ "ssh-ed25519 AAAA... user@host" ];
+  };
+}

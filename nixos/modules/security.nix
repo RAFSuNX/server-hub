@@ -42,9 +42,39 @@
     # Ignore broadcast ICMP (smurf attack prevention)
     "net.ipv4.icmp_echo_ignore_broadcasts" = 1;
 
-    # Disable keyboard interactive auth path (belt-and-suspenders)
     "kernel.sysrq" = 0;
+
+    # Hide server uptime from external scanners
+    "net.ipv4.tcp_timestamps" = 0;
+
+    # Log packets with impossible source addresses
+    "net.ipv4.conf.all.log_martians"     = 1;
+    "net.ipv4.conf.default.log_martians" = 1;
+
+    # Ignore bogus ICMP error responses
+    "net.ipv4.icmp_ignore_bogus_error_responses" = 1;
+
+    # Restrict ptrace to parent→child only
+    "kernel.yama.ptrace_scope" = 1;
+
+    # Append PID to core dump filenames, no dumps from SUID programs
+    "kernel.core_uses_pid" = 1;
+    "fs.suid_dumpable"     = 0;
+
+    # Prevent hardlink/symlink attacks (e.g. /tmp tricks)
+    "fs.protected_hardlinks" = 1;
+    "fs.protected_symlinks"  = 1;
+
+    # Null pointer exploit mitigation
+    "vm.mmap_min_addr" = 65536;
   };
+
+  # Block unused/dangerous kernel modules (mirrors Debian's modprobe-disable.conf)
+  boot.blacklistedKernelModules = [
+    "cramfs" "freevxfs" "jffs2" "hfs" "hfsplus" "udf"
+    "usb_storage"
+    "dccp" "sctp" "rds" "tipc"
+  ];
 
   # Block sensitive ports from non-Tailscale interfaces using iptables
   # IMPORTANT: All rules use -I nixos-fw 1 (insert at position 1).

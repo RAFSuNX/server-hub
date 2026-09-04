@@ -1,4 +1,4 @@
-{ config, lib, pkgs, nodeIPs, ... }:
+{ config, lib, pkgs, nodeIPs, adminUser, ... }:
 
 {
   # Boot
@@ -22,7 +22,7 @@
     (lib.mapAttrs' (name: ip: lib.nameValuePair ip [ name ]) nodeIPs);
 
   # User — SSH authorized keys defined per-host in hosts/<hostname>/default.nix
-  users.users.rafsunx = {
+  users.users.${adminUser} = {
     isNormalUser = true;
     extraGroups  = [ "wheel" ];
   };
@@ -47,10 +47,23 @@
   services.openssh = {
     enable = true;
     settings = {
-      PasswordAuthentication = false;
-      PermitRootLogin        = "no";
-      MaxAuthTries           = 3;
-      LoginGraceTime         = 20;
+      PasswordAuthentication     = false;
+      PermitRootLogin            = "no";
+      MaxAuthTries               = 3;
+      LoginGraceTime             = 20;
+      AddressFamily              = "inet";
+      AllowUsers                 = adminUser;
+      MaxSessions                = 3;
+      ClientAliveInterval        = 300;
+      ClientAliveCountMax        = 2;
+      X11Forwarding              = false;
+      AllowTcpForwarding         = false;
+      AllowAgentForwarding       = false;
+      PermitUserEnvironment      = false;
+      UseDNS                     = false;
+      Ciphers                    = "chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr";
+      Macs                       = "hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256";
+      KexAlgorithms              = "curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512";
     };
   };
 
@@ -110,6 +123,10 @@
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store   = true;
   };
+
+  services.timesyncd.servers = [
+    "0.pool.ntp.org" "1.pool.ntp.org" "2.pool.ntp.org" "3.pool.ntp.org"
+  ];
 
   environment.systemPackages = with pkgs; [ git curl vnstat iperf3 ffmpeg-full tmux ethtool ];
 

@@ -1,6 +1,9 @@
 # Claude guidance (local only)
 CLAUDE.md
 
+# NixOS local config — nodeIPs, adminUser, SSH keys (copy from config.nix.example)
+nixos/config.nix
+
 # Environment secrets
 .env
 
