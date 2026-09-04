@@ -56,6 +56,7 @@
   # so every node automatically accepts the cluster key once Doppler writes it.
   services.openssh.authorizedKeysFiles = [
     "%h/.ssh/authorized_keys"
+    "/etc/ssh/authorized_keys.d/%u"
     "/run/secrets/cluster_authorized_keys"
   ];
 
