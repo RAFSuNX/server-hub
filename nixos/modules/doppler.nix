@@ -28,6 +28,7 @@
     serviceConfig = {
       Type            = "oneshot";
       RemainAfterExit = true;
+      Environment     = "HOME=/root";
       EnvironmentFile = "/etc/doppler-token";
       ExecStart       = pkgs.writeShellScript "doppler-fetch" ''
         set -euo pipefail
