@@ -43,6 +43,7 @@
       PasswordAuthentication = false;
       PermitRootLogin        = "no";
       AllowUsers             = [ adminUser ];
+      PerSourcePenalties     = "no";
     };
   };
 
