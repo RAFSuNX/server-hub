@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, adminUser, ... }:
 
 # Requires /etc/doppler-token on each node containing:
 #   DOPPLER_TOKEN=dp.st.prod.xxxxxxxxx
@@ -14,8 +14,8 @@
   environment.systemPackages = with pkgs; [ doppler ];
 
   systemd.tmpfiles.rules = [
-    "d /run/secrets          0700 root root -"
-    "d /root/.ssh            0700 root root -"
+    "d /run/secrets              0700 root       root       -"
+    "d /home/${adminUser}/.ssh  0700 ${adminUser} ${adminUser} -"
   ];
 
   # Fetch secrets from Doppler before any cluster services start.
@@ -40,8 +40,8 @@
         install -m600 /dev/null /run/secrets/tailscale_authkey
         fetch TAILSCALE_AUTHKEY > /run/secrets/tailscale_authkey
 
-        install -m600 /dev/null /root/.ssh/cluster_key
-        fetch CLUSTER_SSH_PRIVATE_KEY > /root/.ssh/cluster_key
+        install -m600 -o ${adminUser} /dev/null /home/${adminUser}/.ssh/cluster_key
+        fetch CLUSTER_SSH_PRIVATE_KEY > /home/${adminUser}/.ssh/cluster_key
 
         install -m644 /dev/null /run/secrets/cluster_authorized_keys
         fetch CLUSTER_SSH_PUB_KEY > /run/secrets/cluster_authorized_keys
@@ -59,8 +59,8 @@
   # SSH client: use the cluster key when connecting between nodes over Tailscale.
   programs.ssh.extraConfig = ''
     Host systema systemb systemc
-      User root
-      IdentityFile /root/.ssh/cluster_key
+      User ${adminUser}
+      IdentityFile /home/${adminUser}/.ssh/cluster_key
       StrictHostKeyChecking accept-new
   '';
 }

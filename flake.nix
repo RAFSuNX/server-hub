@@ -20,15 +20,12 @@
 
     nixosConfigurations =
       let
-        nodeIPs = {
-          systema = "100.120.228.12";
-          systemb = "100.110.116.30";
-          systemc = "100.69.17.116";
-        };
+        # Local config — gitignored, copy from config.nix.example
+        cfg = import ./config.nix;
 
         mkHost = hostname: nixpkgs.lib.nixosSystem {
           system = "aarch64-linux";
-          specialArgs = { inherit nodeIPs; };
+          specialArgs = { inherit (cfg) nodeIPs adminUser; };
           modules = [
             ./hosts/${hostname}
             ./modules/common.nix
@@ -37,6 +34,8 @@
             ./modules/security.nix
             ./modules/longhorn.nix
             ./modules/doppler.nix
+            # SSH keys from config.nix — not in git
+            { users.users.${cfg.adminUser}.openssh.authorizedKeys.keys = cfg.sshKeys.${hostname}; }
           ];
         };
       in {
