@@ -6,7 +6,7 @@ let
   isInitNode = hostname == initNode;
 
   allNodes = [ "systema" "systemb" "systemc" ];
-  tlsSans  = lib.concatMap (n: [ "--tls-san=${n}" ]) allNodes;
+  tlsSans  = map (n: "--tls-san=${n}") allNodes;
 
   flannelConf = pkgs.writeText "flannel-conf.json" (builtins.toJSON {
     Network      = "10.42.0.0/16";
