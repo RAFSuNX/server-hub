@@ -21,7 +21,7 @@
   systemd.services.doppler-secrets = {
     description = "Fetch secrets from Doppler";
     wantedBy    = [ "multi-user.target" ];
-    before      = [ "tailscaled.service" "k3s.service" ];
+    before      = [ "tailscaled.service" "tailscaled-autoconnect.service" "k3s.service" ];
     after       = [ "network-online.target" ];
     wants       = [ "network-online.target" ];
 
