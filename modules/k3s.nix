@@ -23,6 +23,8 @@ let
     "--flannel-iface=tailscale0"
     "--flannel-conf=${flannelConf}"
     "--node-ip=${nodeIPs.${hostname}}"
+    "--advertise-address=${nodeIPs.${hostname}}"
+    "--node-external-ip=${nodeIPs.${hostname}}"
   ] ++ tlsSans;
 in
 {
