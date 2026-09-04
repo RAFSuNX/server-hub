@@ -4,6 +4,9 @@ CLAUDE.md
 # NixOS local config — nodeIPs, adminUser, SSH keys (copy from config.nix.example)
 nixos/config.nix
 
+# NixOS hardware configs — node-specific disk UUIDs, generated on each server
+nixos/hosts/*/hardware-configuration.nix
+
 # Environment secrets
 .env
 
