@@ -4,7 +4,7 @@ metadata:
   name: her-server
   namespace: her
 spec:
-  replicas: 2
+  replicas: 0
   selector:
     matchLabels:
       app: her-server
