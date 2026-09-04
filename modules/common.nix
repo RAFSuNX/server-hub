@@ -45,7 +45,7 @@
       MaxAuthTries           = 3;
       LoginGraceTime         = 20;
       AddressFamily          = "inet";
-      AllowUsers             = adminUser;
+      AllowUsers             = [ adminUser ];
       MaxSessions            = 3;
       ClientAliveInterval    = 300;
       ClientAliveCountMax    = 2;
