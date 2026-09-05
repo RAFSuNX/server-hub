@@ -39,24 +39,7 @@ sudo cp /etc/nixos/config.nix.example /etc/nixos/config.nix
 sudo nano /etc/nixos/config.nix
 ```
 
-Fill in real values:
-```nix
-{
-  adminUser = "rafsunx";
-
-  nodeIPs = {
-    systema = "0.0.0.0";  # update after tailscale assigns IP
-    systemb = "0.0.0.0";
-    systemc = "0.0.0.0";
-  };
-
-  sshKeys = {
-    systema = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGU4GLGFBm6xFx7ncQlPMYLK5D/rmrZ7Kk8Shw/u8tPu rafsunx@systema" ];
-    systemb = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMXg4tKSm2U39RkTY1tT/q3Mk8ijwSHbBySXH7+sY5wT rafsunx@systemb" ];
-    systemc = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIFtPMG/Nk6mgBsXXzy7ESVLD5t44hMVD7KOZ16EAWq rafsunx@systemc" ];
-  };
-}
-```
+See `config.nix.example` for the format. Fill in your real values.
 
 ### 6. Stage untracked files and rebuild
 ```bash
