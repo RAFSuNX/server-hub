@@ -18,6 +18,7 @@ let
 
   serverFlags = [
     "--disable=traefik"
+    "--disable=local-storage"
     "--disable=servicelb"
     "--disable-cloud-controller"
     "--flannel-iface=tailscale0"
