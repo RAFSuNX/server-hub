@@ -26,28 +26,35 @@
     wants       = [ "network-online.target" ];
 
     serviceConfig = {
-      Type            = "oneshot";
-      RemainAfterExit = true;
-      Environment     = "HOME=/root";
-      EnvironmentFile = "/etc/doppler-token";
-      ExecStart       = pkgs.writeShellScript "doppler-fetch" ''
+      Type             = "oneshot";
+      RemainAfterExit  = true;
+      Environment      = "HOME=/root";
+      EnvironmentFile  = "/etc/doppler-token";
+      TimeoutStartSec  = 30;
+      ExecStart        = pkgs.writeShellScript "doppler-fetch" ''
         set -euo pipefail
         fetch() { ${pkgs.doppler}/bin/doppler secrets get "$1" --plain; }
 
+        # Fetch all values first — if any fail, nothing gets written
+        k3s_token=$(fetch K3S_TOKEN)
+        ts_authkey=$(fetch TAILSCALE_AUTH_KEY)
+        cluster_key=$(fetch CLUSTER_SSH_PRIVATE_KEY)
+        cluster_pub=$(fetch CLUSTER_SSH_PUB_KEY)
+
         install -m600 /dev/null /run/secrets/k3s_token
-        fetch K3S_TOKEN > /run/secrets/k3s_token
+        printf '%s' "$k3s_token" > /run/secrets/k3s_token
 
         install -m600 /dev/null /run/secrets/tailscale_authkey
-        fetch TAILSCALE_AUTH_KEY > /run/secrets/tailscale_authkey
+        printf '%s' "$ts_authkey" > /run/secrets/tailscale_authkey
 
         mkdir -p /home/${adminUser}/.ssh
         chown ${adminUser}:users /home/${adminUser}/.ssh
         chmod 700 /home/${adminUser}/.ssh
         install -m600 -o ${adminUser} /dev/null /home/${adminUser}/.ssh/cluster_key
-        fetch CLUSTER_SSH_PRIVATE_KEY > /home/${adminUser}/.ssh/cluster_key
+        printf '%s' "$cluster_key" > /home/${adminUser}/.ssh/cluster_key
 
         install -m644 /dev/null /run/secrets/cluster_authorized_keys
-        fetch CLUSTER_SSH_PUB_KEY > /run/secrets/cluster_authorized_keys
+        printf '%s' "$cluster_pub" > /run/secrets/cluster_authorized_keys
       '';
     };
   };
