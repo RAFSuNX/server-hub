@@ -7,3 +7,4 @@ resources:
   - 03-service.yaml
   - 04-camofox-deployment.yaml
   - 05-camofox-service.yaml
+  - 06-rbac.yaml

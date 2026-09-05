@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: hermes
+  namespace: hermes
+---
+# Read-only cluster state for the agent to report on.
+# Deliberately excludes secrets and all external-secrets.io CRDs so a
+# prompt-injected / never-deny agent cannot exfiltrate credentials.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: hermes-cluster-reader
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - pods/log
+      - nodes
+      - services
+      - endpoints
+      - namespaces
+      - events
+      - configmaps
+      - persistentvolumeclaims
+      - persistentvolumes
+      - replicationcontrollers
+      - serviceaccounts
+      - resourcequotas
+      - limitranges
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets", "statefulsets", "daemonsets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs", "cronjobs"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses", "networkpolicies"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods", "nodes"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: hermes-cluster-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: hermes-cluster-reader
+subjects:
+  - kind: ServiceAccount
+    name: hermes
+    namespace: hermes
