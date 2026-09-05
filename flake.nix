@@ -43,6 +43,7 @@
         systemb = mkHost "systemb";
         systemc = mkHost "systemc";
         systemd = mkHost "systemd";
+        systeme = mkHost "systeme";
       };
 
   };
