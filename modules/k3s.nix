@@ -27,7 +27,6 @@ let
     "--advertise-address=${nodeIPs.${hostname}}"
     "--node-external-ip=${nodeIPs.${hostname}}"
     "--write-kubeconfig-mode=0644"
-    "--egress-selector-mode=disabled"
   ] ++ tlsSans;
 
   agentFlags = [
