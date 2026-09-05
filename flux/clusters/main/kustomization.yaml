@@ -9,4 +9,5 @@ resources:
   - media.yaml
   - her.yaml
   - open360.yaml
+  - hermes.yaml
   # - fisense.yaml

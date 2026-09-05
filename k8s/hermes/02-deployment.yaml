@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes
+  namespace: hermes
+  labels:
+    app: hermes
+spec:
+  replicas: 1
+  # RWO Longhorn volume + single stateful process -> never run two at once
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hermes
+  template:
+    metadata:
+      labels:
+        app: hermes
+    spec:
+      containers:
+        - name: hermes
+          image: nousresearch/hermes-agent:latest
+          # gateway mode: persistent daemon serving chat platforms + OpenAI-compatible API
+          args: ["gateway", "run"]
+          env:
+            # dashboard runs as a supervised s6-rc service in the same container
+            - name: HERMES_DASHBOARD
+              value: "1"
+          ports:
+            - name: gateway
+              containerPort: 8642
+            - name: dashboard
+              containerPort: 9119
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "2Gi"
+            limits:
+              # 2-4Gi recommended; Chromium browser-automation is the memory hog
+              cpu: "2000m"
+              memory: "4Gi"
+          volumeMounts:
+            - name: data
+              mountPath: /opt/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: hermes-data
