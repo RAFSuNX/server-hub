@@ -9,12 +9,11 @@ resources:
   - external-secrets/01-helmrepo.yaml
   - external-secrets/02-helmrelease.yaml
   - external-secrets/03-clustersecretstore.yaml
-  # Re-enable after ESO + doppler ClusterSecretStore exist (kite & flux-git-auth are ExternalSecrets):
-  # - kite/01-rbac.yaml
-  # - kite/00-secret.yaml
-  # - kite/02-storage.yaml
-  # - kite/03-deployment.yaml
-  # - kite/04-service.yaml
+  - kite/01-rbac.yaml
+  - kite/00-secret.yaml
+  - kite/02-storage.yaml
+  - kite/03-deployment.yaml
+  - kite/04-service.yaml
   # - flux-git-auth/00-fisense-secret.yaml
   # Prometheus after Longhorn is healthy:
   # - prometheus/01-helmrepository.yaml
