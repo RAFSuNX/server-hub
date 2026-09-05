@@ -4,7 +4,9 @@ metadata:
   name: her-server
   namespace: her
 spec:
-  replicas: 1
+  # No replicas here on purpose: the her-server HPA (08-hpa.yaml, minReplicas 2)
+  # owns the replica count. Pinning it made every Flux reconcile reset 2->1, which
+  # the HPA immediately bumped back to 2 — endless pod churn. Omit so HPA owns it.
   selector:
     matchLabels:
       app: her-server
