@@ -54,7 +54,7 @@
         printf '%s\n' "$cluster_key" > /home/${adminUser}/.ssh/cluster_key
 
         install -m644 /dev/null /run/secrets/cluster_authorized_keys
-        printf '%s' "$cluster_pub" > /run/secrets/cluster_authorized_keys
+        printf '%s\n' "$cluster_pub" > /run/secrets/cluster_authorized_keys
       '';
     };
   };
