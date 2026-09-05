@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: camofox
+  namespace: hermes
+  labels:
+    app: camofox
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: camofox
+  template:
+    metadata:
+      labels:
+        app: camofox
+    spec:
+      containers:
+        - name: camofox
+          image: ghcr.io/jo-inc/camofox-browser:1.14.0
+          ports:
+            - name: http
+              containerPort: 9377
+          env:
+            # listen on all interfaces so the hermes pod can reach it
+            - name: CAMOFOX_BIND_HOST
+              value: "0.0.0.0"
+            # cap concurrent browser sessions (default 50 is huge for one agent)
+            - name: MAX_SESSIONS
+              value: "8"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              # Firefox + multiple sessions is memory-hungry
+              cpu: "4000m"
+              memory: "4Gi"
+          volumeMounts:
+            # Firefox needs a larger /dev/shm than the 64Mi k8s default
+            - name: dshm
+              mountPath: /dev/shm
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi

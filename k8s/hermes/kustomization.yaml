@@ -5,3 +5,5 @@ resources:
   - 01-storage.yaml
   - 02-deployment.yaml
   - 03-service.yaml
+  - 04-camofox-deployment.yaml
+  - 05-camofox-service.yaml
