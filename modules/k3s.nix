@@ -38,6 +38,7 @@ in
 {
   services.k3s = {
     enable    = true;
+    package   = pkgs.k3s_1_36;
     role      = if isWorker then "agent" else "server";
     tokenFile = "/run/secrets/k3s_token";
 
