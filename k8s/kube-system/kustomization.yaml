@@ -15,6 +15,5 @@ resources:
   - kite/03-deployment.yaml
   - kite/04-service.yaml
   # - flux-git-auth/00-fisense-secret.yaml
-  # Prometheus after Longhorn is healthy:
-  # - prometheus/01-helmrepository.yaml
-  # - prometheus/02-helmrelease.yaml
+  - prometheus/01-helmrepository.yaml
+  - prometheus/02-helmrelease.yaml

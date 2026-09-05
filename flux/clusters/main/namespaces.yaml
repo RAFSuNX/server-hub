@@ -2,11 +2,11 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: namespaces
-  namespace: flux-system
+  namespace: default
 spec:
   interval: 10m
   path: ./k8s/00-namespaces
   prune: true
   sourceRef:
     kind: GitRepository
-    name: flux-system
+    name: default
