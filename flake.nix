@@ -29,10 +29,9 @@
           modules = [
             ./hosts/${hostname}
             ./modules/common.nix
-            # Uncomment k3s/glusterfs/longhorn AFTER first boot once nodeIPs are set in config.nix
-            # ./modules/k3s.nix
-            # ./modules/glusterfs.nix
-            # ./modules/longhorn.nix
+            ./modules/k3s.nix
+            ./modules/glusterfs.nix
+            ./modules/longhorn.nix
             ./modules/security.nix
             ./modules/doppler.nix
             # SSH keys from config.nix — not in git
