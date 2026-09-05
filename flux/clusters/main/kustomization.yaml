@@ -1,9 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - flux-system
+  - default
   # Apps re-enabled one at a time after Flux is healthy.
-  # Uncomment, flip its `namespace: flux-system` -> `default`, commit, watch reconcile, then next.
+  # Uncomment, then in that app's Kustomization CR flip:
+  #   namespace: flux-system   -> namespace: default
+  #   sourceRef.name: flux-system -> sourceRef.name: default
+  # commit, watch reconcile, then next.
   # - kube-system.yaml
   # - namespaces.yaml
   # - networking.yaml
