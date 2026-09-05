@@ -53,19 +53,12 @@
         install -m600 -o ${adminUser} /dev/null /home/${adminUser}/.ssh/cluster_key
         printf '%s\n' "$cluster_key" > /home/${adminUser}/.ssh/cluster_key
 
-        install -m644 /dev/null /run/secrets/cluster_authorized_keys
-        printf '%s\n' "$cluster_pub" > /run/secrets/cluster_authorized_keys
+        # Write cluster pub key to authorized_keys so inter-node SSH works
+        install -m600 -o ${adminUser} /dev/null /home/${adminUser}/.ssh/authorized_keys
+        printf '%s\n' "$cluster_pub" > /home/${adminUser}/.ssh/authorized_keys
       '';
     };
   };
-
-  # sshd checks this file in addition to each user's ~/.ssh/authorized_keys,
-  # so every node automatically accepts the cluster key once Doppler writes it.
-  services.openssh.authorizedKeysFiles = [
-    "%h/.ssh/authorized_keys"
-    "/etc/ssh/authorized_keys.d/%u"
-    "/run/secrets/cluster_authorized_keys"
-  ];
 
   programs.ssh.extraConfig = ''
     Host systema systemb systemc systemd systeme
