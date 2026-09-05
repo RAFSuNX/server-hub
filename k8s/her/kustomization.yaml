@@ -4,15 +4,14 @@ resources:
   - 00-namespace.yaml
   - 01-secret.yaml
   - 03-postgres.yaml
-  # Uncomment after DB restore:
-  # - 02-configmap.yaml
-  # - 04-migrate-job.yaml
-  # - 05-deployment.yaml
-  # - 06-service.yaml
-  # - 07-redis.yaml
-  # - 08-hpa.yaml
-  # - 09-log-collector.yaml
-  # - 10-cloudflared.yaml
+  - 02-configmap.yaml
+  - 04-migrate-job.yaml
+  - 05-deployment.yaml
+  - 06-service.yaml
+  - 07-redis.yaml
+  - 08-hpa.yaml
+  - 09-log-collector.yaml
+  - 10-cloudflared.yaml
 
 images:
   - name: ghcr.io/rafsunx/her-server
