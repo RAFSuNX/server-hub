@@ -16,11 +16,11 @@ resources:
   # - firefox/04-service.yaml
   # - transfersh/03-deployment.yaml
   # - transfersh/04-service.yaml
-  # - searxng/00-secret.yaml
-  # - searxng/01-configmap.yaml
-  # - searxng/02-deployment.yaml
-  # - searxng/03-service.yaml
-  # - searxng/04-redis.yaml
+  - searxng/00-secret.yaml
+  - searxng/01-configmap.yaml
+  - searxng/02-deployment.yaml
+  - searxng/03-service.yaml
+  - searxng/04-redis.yaml
   # - litellm/00-secret.yaml
   # - litellm/01-configmap.yaml
   # - litellm/02-deployment.yaml
