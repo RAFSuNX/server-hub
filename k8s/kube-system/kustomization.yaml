@@ -9,6 +9,7 @@ resources:
   - external-secrets/01-helmrepo.yaml
   - external-secrets/02-helmrelease.yaml
   - external-secrets/03-clustersecretstore.yaml
+  - external-secrets/04-clustersecretstore-her.yaml
   - kite/01-rbac.yaml
   - kite/00-secret.yaml
   - kite/02-storage.yaml

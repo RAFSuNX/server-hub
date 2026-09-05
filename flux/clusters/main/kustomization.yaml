@@ -13,5 +13,5 @@ resources:
   # - utils.yaml
   # - media.yaml
   # - fisense.yaml
-  # - her.yaml
+  - her.yaml
   - open360.yaml
