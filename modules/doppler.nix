@@ -68,7 +68,7 @@
   ];
 
   programs.ssh.extraConfig = ''
-    Host systema systemb systemc
+    Host systema systemb systemc systemd
       User ${adminUser}
       IdentityFile /home/${adminUser}/.ssh/cluster_key
       StrictHostKeyChecking accept-new
