@@ -7,33 +7,33 @@ resources:
   - homepage/02-configmap.yaml
   - homepage/03-deployment.yaml
   - homepage/04-service.yaml
-  - alist/01-storage.yaml
-  - alist/02-deployment.yaml
-  - alist/03-service.yaml
-  - firefox/01-secret.yaml
-  - firefox/02-storage.yaml
-  - firefox/03-deployment.yaml
-  - firefox/04-service.yaml
-  - transfersh/03-deployment.yaml
-  - transfersh/04-service.yaml
-  - searxng/00-secret.yaml
-  - searxng/01-configmap.yaml
-  - searxng/02-deployment.yaml
-  - searxng/03-service.yaml
-  - searxng/04-redis.yaml
-  - uptime-kuma/02-storage.yaml
-  - uptime-kuma/03-deployment.yaml
-  - uptime-kuma/04-service.yaml
-  - openspeedtest/03-deployment.yaml
-  - openspeedtest/04-service.yaml
-  - litellm/00-secret.yaml
-  - litellm/01-configmap.yaml
-  - litellm/02-deployment.yaml
-  - litellm/03-service.yaml
-  - github-runner/01-secret.yaml
-  - github-runner/02-storage.yaml
-  - github-runner/03-deployment.yaml
-  - n8n/00-secret.yaml
-  - n8n/02-storage.yaml
-  - n8n/03-deployment.yaml
-  - n8n/04-service.yaml
+  # - alist/01-storage.yaml
+  # - alist/02-deployment.yaml
+  # - alist/03-service.yaml
+  # - firefox/01-secret.yaml
+  # - firefox/02-storage.yaml
+  # - firefox/03-deployment.yaml
+  # - firefox/04-service.yaml
+  # - transfersh/03-deployment.yaml
+  # - transfersh/04-service.yaml
+  # - searxng/00-secret.yaml
+  # - searxng/01-configmap.yaml
+  # - searxng/02-deployment.yaml
+  # - searxng/03-service.yaml
+  # - searxng/04-redis.yaml
+  # - uptime-kuma/02-storage.yaml
+  # - uptime-kuma/03-deployment.yaml
+  # - uptime-kuma/04-service.yaml
+  # - openspeedtest/03-deployment.yaml
+  # - openspeedtest/04-service.yaml
+  # - litellm/00-secret.yaml
+  # - litellm/01-configmap.yaml
+  # - litellm/02-deployment.yaml
+  # - litellm/03-service.yaml
+  # - github-runner/01-secret.yaml
+  # - github-runner/02-storage.yaml
+  # - github-runner/03-deployment.yaml
+  # - n8n/00-secret.yaml
+  # - n8n/02-storage.yaml
+  # - n8n/03-deployment.yaml
+  # - n8n/04-service.yaml

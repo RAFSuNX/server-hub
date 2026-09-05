@@ -10,7 +10,7 @@ resources:
   - kube-system.yaml
   - namespaces.yaml
   - networking.yaml
-  # - utils.yaml
+  - utils.yaml
   # - media.yaml
   # - fisense.yaml
   - her.yaml
