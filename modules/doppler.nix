@@ -53,9 +53,11 @@
         install -m600 -o ${adminUser} /dev/null /home/${adminUser}/.ssh/cluster_key
         printf '%s\n' "$cluster_key" > /home/${adminUser}/.ssh/cluster_key
 
-        # Write cluster pub key to authorized_keys so inter-node SSH works
-        install -m600 -o ${adminUser} /dev/null /home/${adminUser}/.ssh/authorized_keys
-        printf '%s\n' "$cluster_pub" > /home/${adminUser}/.ssh/authorized_keys
+        # Append cluster pub key to authorized_keys if not already present
+        touch /home/${adminUser}/.ssh/authorized_keys
+        chown ${adminUser}:users /home/${adminUser}/.ssh/authorized_keys
+        chmod 600 /home/${adminUser}/.ssh/authorized_keys
+        grep -qxF "$cluster_pub" /home/${adminUser}/.ssh/authorized_keys || printf '%s\n' "$cluster_pub" >> /home/${adminUser}/.ssh/authorized_keys
       '';
     };
   };
