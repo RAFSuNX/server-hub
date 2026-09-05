@@ -27,9 +27,10 @@
   security.sudo.wheelNeedsPassword = false;
 
   services.fail2ban = {
-    enable   = true;
-    maxretry = 5;
-    bantime  = "-1";
+    enable    = true;
+    maxretry  = 5;
+    bantime   = "-1";
+    ignoreIP  = [ "100.64.0.0/10" "127.0.0.1/8" ];  # Tailscale CGNAT range
     jails.sshd.settings = {
       enabled = true;
       port    = "ssh";
