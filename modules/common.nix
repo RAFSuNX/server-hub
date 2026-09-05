@@ -44,6 +44,16 @@
       PermitRootLogin        = "no";
       AllowUsers             = [ adminUser ];
       PerSourcePenalties     = "no";
+      MaxAuthTries           = 3;
+      LoginGraceTime         = 60;
+      MaxSessions            = 10;
+      ClientAliveInterval    = 300;
+      ClientAliveCountMax    = 2;
+      X11Forwarding          = false;
+      AllowTcpForwarding     = false;
+      AllowAgentForwarding   = false;
+      PermitUserEnvironment  = false;
+      MaxStartups            = "10:30:100";
     };
   };
 
