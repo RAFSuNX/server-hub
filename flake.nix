@@ -25,7 +25,7 @@
 
         mkHost = hostname: nixpkgs.lib.nixosSystem {
           system = "aarch64-linux";
-          specialArgs = { inherit (cfg) nodeIPs adminUser; };
+          specialArgs = { inherit (cfg) nodeIPs adminUser; workerNodes = cfg.workerNodes or []; };
           modules = [
             ./hosts/${hostname}
             ./modules/common.nix
@@ -43,6 +43,7 @@
         systema = mkHost "systema";
         systemb = mkHost "systemb";
         systemc = mkHost "systemc";
+        systemd = mkHost "systemd";
       };
 
   };
