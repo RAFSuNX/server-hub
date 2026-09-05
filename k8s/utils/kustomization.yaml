@@ -21,18 +21,10 @@ resources:
   # - searxng/02-deployment.yaml
   # - searxng/03-service.yaml
   # - searxng/04-redis.yaml
-  # - uptime-kuma/02-storage.yaml
-  # - uptime-kuma/03-deployment.yaml
-  # - uptime-kuma/04-service.yaml
-  # - openspeedtest/03-deployment.yaml
-  # - openspeedtest/04-service.yaml
   # - litellm/00-secret.yaml
   # - litellm/01-configmap.yaml
   # - litellm/02-deployment.yaml
   # - litellm/03-service.yaml
-  # - github-runner/01-secret.yaml
-  # - github-runner/02-storage.yaml
-  # - github-runner/03-deployment.yaml
   # - n8n/00-secret.yaml
   # - n8n/02-storage.yaml
   # - n8n/03-deployment.yaml
