@@ -1,18 +1,20 @@
 # =============================================================================
 # NixOS Cluster Flake
 # =============================================================================
-# Three-node aarch64 cluster on Oracle Cloud.
+# Five-node aarch64 cluster on Oracle Cloud.
 #
 # Nodes:
 #   - systema  (k3s init / control-plane / etcd)
 #   - systemb  (k3s join / control-plane / etcd)
 #   - systemc  (k3s join / control-plane / etcd)
+#   - systemd  (k3s worker)
+#   - systeme  (k3s worker)
 #
 # Secrets: managed by Doppler, written to /run/secrets/ at boot.
 # =============================================================================
 
 {
-  description = "NixOS cluster — systema / systemb / systemc";
+  description = "NixOS cluster — systema / systemb / systemc / systemd / systeme";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
@@ -29,9 +31,9 @@
           modules = [
             ./hosts/${hostname}
             ./modules/common.nix
-            # ./modules/k3s.nix
-            # ./modules/glusterfs.nix
-            # ./modules/longhorn.nix
+            ./modules/k3s.nix
+            ./modules/glusterfs.nix
+            ./modules/longhorn.nix
             ./modules/security.nix
             ./modules/doppler.nix
             # SSH keys from config.nix — not in git
