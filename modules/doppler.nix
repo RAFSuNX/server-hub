@@ -51,7 +51,7 @@
         chown ${adminUser}:users /home/${adminUser}/.ssh
         chmod 700 /home/${adminUser}/.ssh
         install -m600 -o ${adminUser} /dev/null /home/${adminUser}/.ssh/cluster_key
-        printf '%s' "$cluster_key" > /home/${adminUser}/.ssh/cluster_key
+        printf '%s\n' "$cluster_key" > /home/${adminUser}/.ssh/cluster_key
 
         install -m644 /dev/null /run/secrets/cluster_authorized_keys
         printf '%s' "$cluster_pub" > /run/secrets/cluster_authorized_keys
