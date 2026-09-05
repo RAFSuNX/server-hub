@@ -32,6 +32,7 @@ let
     "--flannel-iface=tailscale0"
     "--node-ip=${nodeIPs.${hostname}}"
     "--node-external-ip=${nodeIPs.${hostname}}"
+    "--node-label=node-role.kubernetes.io/worker=worker"
   ];
 in
 {
