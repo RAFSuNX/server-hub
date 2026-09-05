@@ -18,6 +18,7 @@ let
   commonFlags = [
     "--disable=traefik"
     "--disable=servicelb"
+    "--disable=local-storage"
     "--disable-cloud-controller"
     "--flannel-iface=tailscale0"
     "--flannel-conf=${flannelConf}"

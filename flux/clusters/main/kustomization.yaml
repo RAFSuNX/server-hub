@@ -7,7 +7,7 @@ resources:
   #   namespace: flux-system   -> namespace: default
   #   sourceRef.name: flux-system -> sourceRef.name: default
   # commit, watch reconcile, then next.
-  # - kube-system.yaml
+  - kube-system.yaml
   # - namespaces.yaml
   # - networking.yaml
   # - utils.yaml
