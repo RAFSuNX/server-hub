@@ -11,7 +11,7 @@ resources:
   - namespaces.yaml
   - networking.yaml
   - utils.yaml
-  # - media.yaml
+  - media.yaml
   # - fisense.yaml
   - her.yaml
   - open360.yaml
