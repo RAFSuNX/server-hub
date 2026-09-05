@@ -29,9 +29,9 @@
           modules = [
             ./hosts/${hostname}
             ./modules/common.nix
-            ./modules/k3s.nix
-            ./modules/glusterfs.nix
-            ./modules/longhorn.nix
+            # ./modules/k3s.nix
+            # ./modules/glusterfs.nix
+            # ./modules/longhorn.nix
             ./modules/security.nix
             ./modules/doppler.nix
             # SSH keys from config.nix — not in git
