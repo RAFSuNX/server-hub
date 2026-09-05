@@ -4,6 +4,8 @@ resources:
   - 00-namespace.yaml
   - 01-external-secret.yaml
   - postgres.yaml
-  - redis.yaml
-  - 02-deployment.yaml
-  - 03-service.yaml
+  # Uncomment after DB restore:
+  # - 02-deployment.yaml
+  # - 03-service.yaml
+  # Not needed:
+  # - redis.yaml
