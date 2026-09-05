@@ -16,6 +16,9 @@ spec:
       labels:
         app: camofox
     spec:
+      # Service is named "camofox" -> k8s would inject CAMOFOX_PORT=tcp://ip:9377,
+      # which the app parses as its listen port -> NaN crash. Disable the injection.
+      enableServiceLinks: false
       containers:
         - name: camofox
           image: ghcr.io/jo-inc/camofox-browser:1.14.0
@@ -23,6 +26,8 @@ spec:
             - name: http
               containerPort: 9377
           env:
+            - name: CAMOFOX_PORT
+              value: "9377"
             # listen on all interfaces so the hermes pod can reach it
             - name: CAMOFOX_BIND_HOST
               value: "0.0.0.0"
