@@ -6,13 +6,15 @@ metadata:
   namespace: utils
 data:
   config.yaml: |
+    # Three deployments share model_name "agentrouter/glm-5.3" -> LiteLLM
+    # load-balances every request across all three keys (round-robin style).
     model_list:
       - model_name: agentrouter/glm-5.3
         litellm_params:
           model: anthropic/glm-5.3
           api_base: https://agentrouter.org
-          api_key: os.environ/AGENTROUTER_API_KEY
-          extra_headers:
+          api_key: os.environ/AGENTROUTER_API_KEY_1
+          extra_headers: &agentrouter_headers
             user-agent: Anthropic/Python 0.117.1
             x-stainless-lang: python
             x-stainless-package-version: "0.117.1"
@@ -21,15 +23,32 @@ data:
             x-stainless-runtime: CPython
             x-stainless-runtime-version: "3.13.5"
             x-stainless-async: "false"
+      - model_name: agentrouter/glm-5.3
+        litellm_params:
+          model: anthropic/glm-5.3
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_2
+          extra_headers: *agentrouter_headers
+      - model_name: agentrouter/glm-5.3
+        litellm_params:
+          model: anthropic/glm-5.3
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_3
+          extra_headers: *agentrouter_headers
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
+
+    router_settings:
+      # spread load across the 3 keys; a rate-limited key is cooled down
+      # and the request retries on the next key (see num_retries below)
+      routing_strategy: simple-shuffle
 
     litellm_settings:
       set_verbose: false
       json_logs: true
       request_timeout: 600
-      num_retries: 0
+      num_retries: 2
       max_connections: 20
       max_keepalive_connections: 10
       keepalive_expiry: 300
