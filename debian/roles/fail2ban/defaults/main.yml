@@ -1,5 +1,0 @@
----
-fail2ban_bantime: -1
-fail2ban_findtime: 10m
-fail2ban_maxretry: 3
-# ssh_port is set per-group in inventory/group_vars/{ociSystem,standalone}.yml

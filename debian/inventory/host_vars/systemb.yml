@@ -1,5 +1,0 @@
----
-# Static fallback used when this host isn't targeted in the current play run
-# (so hostvars lookups from other hosts' templates still resolve). The k3s
-# role overwrites this with a live-queried fact when systemb is in-play.
-tailscale_node_ip: 100.116.195.31

@@ -1,6 +1,0 @@
----
-glusterfs_brick_path: /mnt/storage-brick
-glusterfs_mount_path: /mnt/storage
-glusterfs_volume_name: media
-glusterfs_total_quota: "500GB"
-glusterfs_init_node: "{{ cluster_init_node }}"

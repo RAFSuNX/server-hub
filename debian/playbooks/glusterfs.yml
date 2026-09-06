@@ -1,8 +1,0 @@
----
-# GlusterFS distributed media storage - ~166GB per node = 500GB combined
-# Mounts at /mnt/storage on all nodes over Tailscale
-- name: GlusterFS media storage
-  hosts: ociSystem
-  become: true
-  roles:
-    - glusterfs

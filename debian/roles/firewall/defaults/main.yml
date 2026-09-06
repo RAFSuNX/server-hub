@@ -1,2 +1,0 @@
----
-# ssh_port is set per-group in inventory/group_vars/{ociSystem,standalone}.yml

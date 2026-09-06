@@ -1,4 +1,0 @@
----
-# ssh_port is set per-group in inventory/group_vars/{ociSystem,standalone}.yml
-# - single source of truth, not duplicated here.
-ssh_allow_users: rafsunx

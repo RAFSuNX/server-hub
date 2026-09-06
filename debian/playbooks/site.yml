@@ -1,4 +1,0 @@
----
-# Full node bootstrap - run once on clean Debian 12 install
-- import_playbook: security.yml
-- import_playbook: k3s.yml
