@@ -1,0 +1,51 @@
+---
+# Runs the AgentRouter daily-login/check-in script every 50 min.
+# NOTE: the script itself lives in the ConfigMap "agentrouter-login-script",
+# which is created out-of-band (kubectl, from the local file) because it holds
+# hardcoded account credentials and must NOT be committed to git. If the
+# cluster is rebuilt from git, recreate it with:
+#   kubectl create configmap agentrouter-login-script -n utils \
+#     --from-file=daily_login.py=/path/to/daily_login.py --dry-run=client -o yaml | kubectl apply -f -
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: agentrouter-login
+  namespace: utils
+  labels:
+    app: agentrouter-login
+spec:
+  schedule: "*/50 * * * *"
+  concurrencyPolicy: Forbid
+  # keep no successful jobs (pod removed right after success); keep 1 failure to debug
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 1200
+      backoffLimit: 1
+      # backstop: auto-delete the Job (and its pod) 5 min after it finishes,
+      # so nothing dangles even if the history controller lags
+      ttlSecondsAfterFinished: 300
+      template:
+        spec:
+          restartPolicy: Never
+          enableServiceLinks: false
+          containers:
+            - name: login
+              image: ghcr.io/berriai/litellm:main-stable
+              command: ["python", "/scripts/daily_login.py"]
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: "20m"
+                  memory: "64Mi"
+                limits:
+                  cpu: "250m"
+                  memory: "512Mi"
+          volumes:
+            - name: script
+              configMap:
+                name: agentrouter-login-script

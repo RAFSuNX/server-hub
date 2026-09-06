@@ -25,6 +25,9 @@ resources:
   - litellm/01-configmap.yaml
   - litellm/02-deployment.yaml
   - litellm/03-service.yaml
+  # CronJob only; its script ConfigMap (agentrouter-login-script) is created
+  # out-of-band via kubectl (holds credentials, kept out of git)
+  - agentrouter-login/01-cronjob.yaml
   # - n8n/00-secret.yaml
   # - n8n/02-storage.yaml
   # - n8n/03-deployment.yaml
