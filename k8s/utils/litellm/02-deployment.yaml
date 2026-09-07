@@ -32,6 +32,9 @@ spec:
             - "4"
           ports:
             - containerPort: 4000
+          env:
+            - name: DATABASE_URL
+              value: "sqlite:///./litellm.db"
           envFrom:
             - secretRef:
                 name: litellm-secret
