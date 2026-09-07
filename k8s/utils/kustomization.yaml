@@ -3,10 +3,10 @@ kind: Kustomization
 resources:
   - homepage/00-storage.yaml
   - homepage/01-rbac.yaml
-  - homepage/01-secret.yaml
-  - homepage/02-configmap.yaml
-  - homepage/03-deployment.yaml
-  - homepage/04-service.yaml
+  - homepage/02-secret.yaml
+  - homepage/03-configmap.yaml
+  - homepage/04-deployment.yaml
+  - homepage/05-service.yaml
   # - alist/01-storage.yaml
   # - alist/02-deployment.yaml
   # - alist/03-service.yaml
