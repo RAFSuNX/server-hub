@@ -36,6 +36,82 @@ data:
           api_key: os.environ/AGENTROUTER_API_KEY_3
           extra_headers: *agentrouter_headers
 
+      - model_name: agentrouter/claude-opus-4-8
+        litellm_params:
+          model: anthropic/claude-opus-4-8
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_1
+          extra_headers: *agentrouter_headers
+      - model_name: agentrouter/claude-opus-4-8
+        litellm_params:
+          model: anthropic/claude-opus-4-8
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_2
+          extra_headers: *agentrouter_headers
+      - model_name: agentrouter/claude-opus-4-8
+        litellm_params:
+          model: anthropic/claude-opus-4-8
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_3
+          extra_headers: *agentrouter_headers
+
+      - model_name: agentrouter/claude-opus-5
+        litellm_params:
+          model: anthropic/claude-opus-5
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_1
+          extra_headers: *agentrouter_headers
+      - model_name: agentrouter/claude-opus-5
+        litellm_params:
+          model: anthropic/claude-opus-5
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_2
+          extra_headers: *agentrouter_headers
+      - model_name: agentrouter/claude-opus-5
+        litellm_params:
+          model: anthropic/claude-opus-5
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_3
+          extra_headers: *agentrouter_headers
+
+      - model_name: agentrouter/deepseek-v4-flash
+        litellm_params:
+          model: anthropic/deepseek-v4-flash
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_1
+          extra_headers: *agentrouter_headers
+      - model_name: agentrouter/deepseek-v4-flash
+        litellm_params:
+          model: anthropic/deepseek-v4-flash
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_2
+          extra_headers: *agentrouter_headers
+      - model_name: agentrouter/deepseek-v4-flash
+        litellm_params:
+          model: anthropic/deepseek-v4-flash
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_3
+          extra_headers: *agentrouter_headers
+
+      - model_name: openai/gpt-5.6-sol
+        litellm_params:
+          model: openai/gpt-5.6-sol
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_1
+          extra_headers: *agentrouter_headers
+      - model_name: openai/gpt-5.6-sol
+        litellm_params:
+          model: openai/gpt-5.6-sol
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_2
+          extra_headers: *agentrouter_headers
+      - model_name: openai/gpt-5.6-sol
+        litellm_params:
+          model: openai/gpt-5.6-sol
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_3
+          extra_headers: *agentrouter_headers
+
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
 
