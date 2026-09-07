@@ -1,0 +1,11 @@
+# General Preferences
+- Uses `gh` CLI for GitHub operations (explicitly specified "using gh"). Confidence: 0.9
+- Prefers separating concerns into distinct repos rather than keeping a monorepo — specifically split server-hub into `debian_server` and `nixos_server` by provisioning technology. Confidence: 0.8
+- Prefers quick, decisive action — gives short instructions and expects immediate execution without lengthy discussion. Confidence: 0.8
+- Uses snake_case naming convention for repos (e.g. `debian_server`, `nixos_server`). Confidence: 0.7
+- Prefers public repos by default — explicitly corrected private repos to public. Confidence: 0.8
+- Keeps all repos under `~/repos/` as a flat workspace (not nested inside other project dirs). Confidence: 0.8
+- When verifying deployment state, trusts the live cluster (kubectl) over config files or docs — prefers ground-truth checks against running infrastructure. Confidence: 0.85
+- Fix forward, don't revert — when a change causes a problem, debug and fix in the intended direction rather than undoing/moving things back. Strongly dislikes rollbacks as a first response. Confidence: 0.9
+- Investigate existing repo state before taking corrective action — check what Flux kustomizations, directories, and configs already exist before applying fixes or creating new resources. Don't jump to solutions without understanding the current layout first. Confidence: 0.9
+- When given a specific instruction to check or investigate something, execute that exact check first before doing anything else. Do not pivot to alternative solutions or take other actions. Extremely frustrating when assistant takes action instead of following the literal instruction. Confidence: 0.95

@@ -8,10 +8,12 @@ resources:
   # External Secrets Operator — operator only; ClusterSecretStores are in eso-stores kustomization (dependsOn this)
   - external-secrets/01-helmrepo.yaml
   - external-secrets/02-helmrelease.yaml
-  - kite/01-rbac.yaml
+  # Kite — cluster dashboard
   - kite/00-secret.yaml
+  - kite/01-rbac.yaml
   - kite/02-storage.yaml
   - kite/03-deployment.yaml
   - kite/04-service.yaml
+  # Prometheus
   - prometheus/01-helmrepository.yaml
   - prometheus/02-helmrelease.yaml
