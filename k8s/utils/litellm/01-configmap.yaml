@@ -114,6 +114,7 @@ data:
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
+      disable_admin_ui: true
 
     router_settings:
       # spread load across the 3 keys; a rate-limited key is cooled down
