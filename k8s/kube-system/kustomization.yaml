@@ -5,11 +5,9 @@ resources:
   - longhorn/00-namespace.yaml
   - longhorn/01-helmrepo.yaml
   - longhorn/02-helmrelease.yaml
-  # External Secrets Operator (Doppler). Operator first; store added after CRDs exist.
+  # External Secrets Operator — operator only; ClusterSecretStores are in eso-stores kustomization (dependsOn this)
   - external-secrets/01-helmrepo.yaml
   - external-secrets/02-helmrelease.yaml
-  - external-secrets/03-clustersecretstore.yaml
-  - external-secrets/04-clustersecretstore-her.yaml
   - kite/01-rbac.yaml
   - kite/00-secret.yaml
   - kite/02-storage.yaml

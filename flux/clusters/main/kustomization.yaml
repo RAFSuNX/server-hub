@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - default
   - kube-system.yaml
+  - eso-stores.yaml
   - namespaces.yaml
   - networking.yaml
   - utils.yaml

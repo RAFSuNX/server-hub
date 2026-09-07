@@ -10,3 +10,8 @@ spec:
   sourceRef:
     kind: GitRepository
     name: default
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: external-secrets
+      namespace: default
