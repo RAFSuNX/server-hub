@@ -5,7 +5,7 @@ resources:
   - kube-system.yaml
   - eso-stores.yaml
   - namespaces.yaml
-  - networking.yaml
+  - default.yaml
   - utils.yaml
   - media.yaml
   - her.yaml
