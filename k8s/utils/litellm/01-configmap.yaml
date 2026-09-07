@@ -95,19 +95,19 @@ data:
 
       - model_name: openai/gpt-5.6-sol
         litellm_params:
-          model: openai/gpt-5.6-sol
+          model: anthropic/gpt-5.6-sol
           api_base: https://agentrouter.org
           api_key: os.environ/AGENTROUTER_API_KEY_1
           extra_headers: *agentrouter_headers
       - model_name: openai/gpt-5.6-sol
         litellm_params:
-          model: openai/gpt-5.6-sol
+          model: anthropic/gpt-5.6-sol
           api_base: https://agentrouter.org
           api_key: os.environ/AGENTROUTER_API_KEY_2
           extra_headers: *agentrouter_headers
       - model_name: openai/gpt-5.6-sol
         litellm_params:
-          model: openai/gpt-5.6-sol
+          model: anthropic/gpt-5.6-sol
           api_base: https://agentrouter.org
           api_key: os.environ/AGENTROUTER_API_KEY_3
           extra_headers: *agentrouter_headers
