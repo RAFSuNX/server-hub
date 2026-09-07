@@ -1,5 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - secret-stores/01-doppler.yaml
+  - secret-stores/02-doppler-her.yaml
   - cloudflared/01-secret.yaml
   - cloudflared/02-daemonset.yaml

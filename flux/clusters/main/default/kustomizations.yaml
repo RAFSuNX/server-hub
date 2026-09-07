@@ -20,29 +20,14 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: eso-stores
-  namespace: default
-spec:
-  interval: 5m
-  path: ./k8s/eso-stores
-  prune: true
-  dependsOn:
-    - name: kube-system-apps
-  sourceRef:
-    kind: GitRepository
-    name: default
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: cloudflared
+  name: defaults
   namespace: default
 spec:
   interval: 5m
   path: ./k8s/default
   prune: true
   dependsOn:
-    - name: eso-stores
+    - name: kube-system-apps
   sourceRef:
     kind: GitRepository
     name: default
