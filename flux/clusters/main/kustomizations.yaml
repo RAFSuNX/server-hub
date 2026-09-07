@@ -1,0 +1,117 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: kube-system-apps
+  namespace: default
+spec:
+  interval: 10m
+  path: ./k8s/kube-system
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: default
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: external-secrets
+      namespace: default
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: eso-stores
+  namespace: default
+spec:
+  interval: 5m
+  path: ./k8s/eso-stores
+  prune: true
+  dependsOn:
+    - name: kube-system-apps
+  sourceRef:
+    kind: GitRepository
+    name: default
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: default
+  namespace: default
+spec:
+  interval: 5m
+  path: ./k8s/default
+  prune: true
+  dependsOn:
+    - name: eso-stores
+  sourceRef:
+    kind: GitRepository
+    name: default
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: her
+  namespace: default
+spec:
+  interval: 10m
+  path: ./k8s/her
+  prune: true
+  # force: immutable-field changes (e.g. migrate Job image tag) are replaced automatically
+  force: true
+  sourceRef:
+    kind: GitRepository
+    name: default
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: hermes
+  namespace: default
+spec:
+  interval: 5m
+  path: ./k8s/hermes
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: default
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: media
+  namespace: default
+spec:
+  interval: 5m
+  path: ./k8s/media
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: default
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: open360
+  namespace: default
+spec:
+  interval: 5m
+  path: ./k8s/open360
+  prune: true
+  # force: immutable-field changes (initContainer image tag) replaced automatically
+  force: true
+  sourceRef:
+    kind: GitRepository
+    name: default
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: utils
+  namespace: default
+spec:
+  interval: 5m
+  path: ./k8s/utils
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: default

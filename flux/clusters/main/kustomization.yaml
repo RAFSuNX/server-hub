@@ -2,12 +2,4 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - default
-  - kube-system.yaml
-  - eso-stores.yaml
-  - default.yaml
-  - utils.yaml
-  - media.yaml
-  - her.yaml
-  - open360.yaml
-  - hermes.yaml
-  # - fisense.yaml
+  - kustomizations.yaml
