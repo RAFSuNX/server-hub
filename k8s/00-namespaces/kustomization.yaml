@@ -1,8 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - 00-media.yaml
-  - 00-utils.yaml
-  - 00-her.yaml
-  - 00-hermes.yaml
-  - 00-open360.yaml
