@@ -29,7 +29,7 @@ spec:
             - "--port"
             - "4000"
             - "--num_workers"
-            - "4"
+            - "2"
           ports:
             - containerPort: 4000
           envFrom:
