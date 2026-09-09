@@ -117,9 +117,15 @@ data:
       disable_admin_ui: true
 
     router_settings:
-      # spread load across the 3 keys; a rate-limited key is cooled down
-      # and the request retries on the next key (see num_retries below)
-      routing_strategy: simple-shuffle
+      # Rate-limit-aware routing across the 3 separate agentrouter accounts.
+      # usage-based-routing-v2 prefers the key with the most available quota and
+      # skips keys currently on cooldown, so a rate-limited/starved account doesn't
+      # take down the request — the next account picks it up.
+      routing_strategy: usage-based-routing-v2
+      cooldown_time: 60        # seconds to cool down a key after a failure/rate-limit
+      allowed_fails: 3         # park a key after 3 fails in the cooldown window
+      max_retries: 2           # retry the request across the other keys
+      enable_pre_call_checks: true
 
     litellm_settings:
       set_verbose: false
