@@ -124,7 +124,6 @@ data:
       routing_strategy: usage-based-routing-v2
       cooldown_time: 60        # seconds to cool down a key after a failure/rate-limit
       allowed_fails: 3         # park a key after 3 fails in the cooldown window
-      max_retries: 2           # retry the request across the other keys
       enable_pre_call_checks: true
 
     litellm_settings:
