@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: oci-billing-watcher
+  namespace: oci
+spec:
+  schedule: "0 16 * * *"
+  timeZone: "Asia/Dhaka"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          imagePullSecrets:
+            - name: ghcr-secret
+          containers:
+            - name: oci-billing-watcher
+              image: ghcr.io/rafsunx/oci-billing-watcher:latest
+              command: ["python", "checker.py"]
+              volumeMounts:
+                - name: oci
+                  mountPath: /app/config.yaml
+                  subPath: config.yaml
+                  readOnly: true
+                - name: oci
+                  mountPath: /keys/account1.pem
+                  subPath: account1.pem
+                  readOnly: true
+                - name: oci
+                  mountPath: /keys/account2.pem
+                  subPath: account2.pem
+                  readOnly: true
+                - name: oci
+                  mountPath: /keys/account3.pem
+                  subPath: account3.pem
+                  readOnly: true
+                - name: oci
+                  mountPath: /keys/account4.pem
+                  subPath: account4.pem
+                  readOnly: true
+                - name: oci
+                  mountPath: /keys/account5.pem
+                  subPath: account5.pem
+                  readOnly: true
+          volumes:
+            - name: oci
+              secret:
+                secretName: oci-billing
+                defaultMode: 0400

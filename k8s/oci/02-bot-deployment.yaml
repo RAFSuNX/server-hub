@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oci-billing-bot
+  namespace: oci
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oci-billing-bot
+  template:
+    metadata:
+      labels:
+        app: oci-billing-bot
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: oci-billing-bot
+          image: ghcr.io/rafsunx/oci-billing-watcher:latest
+          command: ["python", "bot.py"]
+          volumeMounts:
+            - name: oci
+              mountPath: /app/config.yaml
+              subPath: config.yaml
+              readOnly: true
+            - name: oci
+              mountPath: /keys/account1.pem
+              subPath: account1.pem
+              readOnly: true
+            - name: oci
+              mountPath: /keys/account2.pem
+              subPath: account2.pem
+              readOnly: true
+            - name: oci
+              mountPath: /keys/account3.pem
+              subPath: account3.pem
+              readOnly: true
+            - name: oci
+              mountPath: /keys/account4.pem
+              subPath: account4.pem
+              readOnly: true
+            - name: oci
+              mountPath: /keys/account5.pem
+              subPath: account5.pem
+              readOnly: true
+      volumes:
+        - name: oci
+          secret:
+            secretName: oci-billing
+            defaultMode: 0400
