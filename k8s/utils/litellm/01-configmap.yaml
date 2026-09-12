@@ -171,3 +171,4 @@ data:
       max_connections: 20
       max_keepalive_connections: 10
       keepalive_expiry: 300
+      drop_params: true
