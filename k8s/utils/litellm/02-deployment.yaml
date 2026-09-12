@@ -18,6 +18,8 @@ spec:
       labels:
         app: litellm
         app.kubernetes.io/name: litellm
+      annotations:
+        checksum/config: "26679a060303b852"
     spec:
       containers:
         - name: litellm
