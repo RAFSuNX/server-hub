@@ -35,6 +35,21 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
+  name: amanat
+  namespace: default
+spec:
+  interval: 5m
+  path: ./k8s/amanat
+  prune: true
+  # force: migration Job is immutable — replaced automatically on every sync
+  force: true
+  sourceRef:
+    kind: GitRepository
+    name: default
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
   name: her
   namespace: default
 spec:

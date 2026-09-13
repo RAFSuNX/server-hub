@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-backup
+  namespace: amanat
+spec:
+  # Daily at 02:00 Dhaka time (UTC+6 = 20:00 UTC previous day)
+  schedule: "0 20 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: ghcr.io/rafsunx/amanat-backup:main
+              envFrom:
+                - secretRef:
+                    name: amanat-secrets
+              resources:
+                requests:
+                  memory: 64Mi
+                  cpu: 50m
+                limits:
+                  memory: 256Mi
+                  cpu: 200m

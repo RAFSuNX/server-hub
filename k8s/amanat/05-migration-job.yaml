@@ -1,0 +1,26 @@
+# Job specs are immutable - force: true in the Flux Kustomization replaces it automatically on every sync.
+# Runs both main and audit DB migrations before the app starts.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+  namespace: amanat
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: ghcr.io/rafsunx/amanat:main
+          command: ["sh", "-c", "npm run db:migrate && npm run db:audit:migrate"]
+          envFrom:
+            - secretRef:
+                name: amanat-secrets
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
