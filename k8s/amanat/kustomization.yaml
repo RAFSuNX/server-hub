@@ -12,3 +12,5 @@ resources:
 images:
   - name: ghcr.io/rafsunx/amanat
     newTag: main
+  - name: ghcr.io/rafsunx/amanat-migrate
+    newTag: main

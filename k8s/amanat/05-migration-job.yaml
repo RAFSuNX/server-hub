@@ -12,8 +12,8 @@ spec:
       restartPolicy: Never
       containers:
         - name: migrate
-          image: ghcr.io/rafsunx/amanat:main
-          command: ["sh", "-c", "npm run db:migrate && npm run db:audit:migrate"]
+          # Dedicated migrate image has drizzle-kit + SQL; app image is pruned standalone and cannot run migrations.
+          image: ghcr.io/rafsunx/amanat-migrate:main
           envFrom:
             - secretRef:
                 name: amanat-secrets
