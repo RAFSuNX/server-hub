@@ -112,40 +112,30 @@ data:
           api_key: os.environ/AGENTROUTER_API_KEY_3
           extra_headers: *agentrouter_headers
 
-      # bynara router (OpenAI-compatible /v1), free-tier models
-      - model_name: bynara/deepseek-v4.1-flash-free
+      # bynara router (OpenAI-compatible /v1), models confirmed working on the current plan
+      - model_name: bynara/agnes-2.5-flash
         litellm_params:
-          model: openai/deepseek-v4.1-flash-free
+          model: openai/agnes-2.5-flash
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/glm-5.3-flash-free
+      - model_name: bynara/agnes-3-flash
         litellm_params:
-          model: openai/glm-5.3-flash-free
+          model: openai/agnes-3-flash
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/glm-5.3-free
+      - model_name: bynara/laguna-s-2.1
         litellm_params:
-          model: openai/glm-5.3-free
+          model: openai/laguna-s-2.1
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/ling-3.0-flash-fin-free
+      - model_name: bynara/stepfun-3.7-flash
         litellm_params:
-          model: openai/ling-3.0-flash-fin-free
+          model: openai/stepfun-3.7-flash
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/muse-spark-1.3-contributor-free
+      - model_name: bynara/tencent-hy3-free
         litellm_params:
-          model: openai/muse-spark-1.3-contributor-free
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/nemotron-3.5-lightning-free
-        litellm_params:
-          model: openai/nemotron-3.5-lightning-free
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/qwen3.8-flash-free
-        litellm_params:
-          model: openai/qwen3.8-flash-free
+          model: openai/tencent-hy3-free
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
 
