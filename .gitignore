@@ -43,3 +43,6 @@ data/
 Thumbs.db
 talos/
 server-hub-secrets-backup.age
+
+# Local command-code tool state (per-machine, not shared)
+.commandcode/
