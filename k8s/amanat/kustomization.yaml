@@ -8,6 +8,7 @@ resources:
   - 04-deployment.yaml
   - 05-migration-job.yaml
   - 06-backup-cronjob.yaml
+  - 07-sync-worker.yaml
 
 images:
   - name: ghcr.io/rafsunx/amanat
