@@ -16,6 +16,8 @@ spec:
       labels:
         app: blueberrix-bot
     spec:
+      securityContext:
+        fsGroup: 1000
       imagePullSecrets:
         - name: ghcr-secret
       # Seed the PVC from the image's /seed on first boot only.
