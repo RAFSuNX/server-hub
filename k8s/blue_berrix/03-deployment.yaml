@@ -40,6 +40,7 @@ spec:
       containers:
         - name: bot
           image: ghcr.io/rafsunx/blueberrix-bot:placeholder
+          imagePullPolicy: Always
           env:
             - name: WORK_DIR
               value: /data
@@ -49,7 +50,7 @@ spec:
             # Subscription auth: leave --local-only OFF (auth comes from `cmd login` in the pod).
             # BYOK: add --local-only and mount a providers.json with a keyed provider.
             - name: CMD_EXTRA_ARGS
-              value: "--yolo --skip-onboarding"
+              value: "--yolo --skip-onboarding --trust"
             - name: TELEGRAM_BOT_TOKEN
               valueFrom:
                 secretKeyRef:
