@@ -1,0 +1,16 @@
+---
+# One volume, two subpaths:
+#   home/  -> /home/bot   (cmd auth: ~/.commandcode/auth.json — survives restarts/updates)
+#   data/  -> /data       (her files: PROFILE, PRIONTI, sessions/, tools/, reply-draft skill)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: blueberrix
+  namespace: blueberrix
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 2Gi

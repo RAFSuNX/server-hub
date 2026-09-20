@@ -1,0 +1,78 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blueberrix-bot
+  namespace: blueberrix
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: blueberrix-bot
+  template:
+    metadata:
+      labels:
+        app: blueberrix-bot
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      # Seed the PVC from the image's /seed on first boot only.
+      initContainers:
+        - name: seed
+          image: ghcr.io/rafsunx/blueberrix-bot:placeholder
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /data/botstate
+              if [ ! -f /data/.seeded ]; then
+                cp -a /seed/. /data/
+                touch /data/.seeded
+              fi
+          volumeMounts:
+            - name: store
+              mountPath: /data
+              subPath: data
+      containers:
+        - name: bot
+          image: ghcr.io/rafsunx/blueberrix-bot:placeholder
+          env:
+            - name: WORK_DIR
+              value: /data
+            # Leave MODEL empty to use the CLI default, or pin one (e.g. claude-sonnet-5).
+            - name: MODEL
+              value: ""
+            # Subscription auth: leave --local-only OFF (auth comes from `cmd login` in the pod).
+            # BYOK: add --local-only and mount a providers.json with a keyed provider.
+            - name: CMD_EXTRA_ARGS
+              value: "--yolo --skip-onboarding"
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: blueberrix-secrets
+                  key: TELEGRAM_BOT_TOKEN
+            - name: TELEGRAM_ALLOWED_CHAT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: blueberrix-secrets
+                  key: TELEGRAM_ALLOWED_CHAT_ID
+          volumeMounts:
+            - name: store
+              mountPath: /home/bot
+              subPath: home
+            - name: store
+              mountPath: /data
+              subPath: data
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+      volumes:
+        - name: store
+          persistentVolumeClaim:
+            claimName: blueberrix
