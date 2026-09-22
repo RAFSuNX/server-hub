@@ -1,0 +1,31 @@
+# Drizzle migrations + RLS, run as the OWNER role via `npm run db:setup`.
+# Uses the dedicated `-migrate` image (Dockerfile `migrate` target: full deps +
+# source), NOT the minimal standalone app image which has no drizzle-kit.
+#
+# Job specs are immutable - fixed name + this app's Flux Kustomization force:true
+# means Flux replaces it on every sync when this file changes. db:setup is
+# idempotent (drizzle tracks applied migrations, rls.sql is re-runnable), so
+# re-running on each deploy is harmless.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: expertsschool-migrate
+  namespace: expertsschool
+spec:
+  backoffLimit: 6
+  # Kill a migration that hangs instead of running forever, and clean up the
+  # finished Job automatically so old ones don't pile up across deploys.
+  activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: migrate
+          image: ghcr.io/ai-avatar-bangladesh-ltd/expertsschool-migrate:placeholder
+          command: ["npm", "run", "db:setup"]
+          envFrom:
+            - secretRef:
+                name: expertsschool-secrets

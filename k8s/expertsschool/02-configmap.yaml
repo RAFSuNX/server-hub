@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: expertsschool-config
+  namespace: expertsschool
+data:
+  # In-cluster Valkey/Redis (03-redis.yaml). Fixed address, not a secret -
+  # deliberately kept out of Doppler.
+  REDIS_URL: "redis://redis:6379"

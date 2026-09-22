@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: expertsschool
+  namespace: expertsschool
+spec:
+  selector:
+    app: expertsschool
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: ClusterIP

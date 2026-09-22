@@ -1,0 +1,79 @@
+---
+# Cloudflare Tunnel for expertsschool. Create the tunnel in the Cloudflare
+# dashboard, store its token in Doppler expertsschool/prd as
+# CLOUDFLARED_TUNNEL_TOKEN, and map the public hostname (expertsschool.com) to
+# http://expertsschool:80 in the tunnel's public-hostname config.
+# NOTE: cdn.expertsschool.com is served by a separate Cloudflare Worker (video),
+# NOT this tunnel.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: expertsschool-cloudflared-token
+  namespace: expertsschool
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: doppler-expertsschool
+    kind: ClusterSecretStore
+  target:
+    name: expertsschool-cloudflared-token
+  data:
+    - secretKey: token
+      remoteRef:
+        key: CLOUDFLARED_TUNNEL_TOKEN
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared
+  namespace: expertsschool
+  labels:
+    app: cloudflared
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloudflared
+  template:
+    metadata:
+      labels:
+        app: cloudflared
+    spec:
+      dnsPolicy: ClusterFirst
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:2026.6.1
+          command: ["cloudflared"]
+          args:
+            - tunnel
+            - --no-autoupdate
+            - run
+            - --protocol
+            - quic
+            - --token
+            - $(TUNNEL_TOKEN)
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: expertsschool-cloudflared-token
+                  key: token
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

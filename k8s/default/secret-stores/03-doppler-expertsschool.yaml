@@ -1,0 +1,17 @@
+# Doppler ClusterSecretStore for the "expertsschool" project (config: prd).
+# Auth token is a bootstrap secret created out-of-band (not in git):
+#   kubectl create secret generic doppler-expertsschool-token -n default \
+#     --from-literal=dopplerToken=<doppler service token for expertsschool/prd>
+apiVersion: external-secrets.io/v1
+kind: ClusterSecretStore
+metadata:
+  name: doppler-expertsschool
+spec:
+  provider:
+    doppler:
+      auth:
+        secretRef:
+          dopplerToken:
+            name: doppler-expertsschool-token
+            namespace: default
+            key: dopplerToken
