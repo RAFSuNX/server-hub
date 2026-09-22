@@ -5,7 +5,6 @@ resources:
   - 01-secret.yaml
   - 02-configmap.yaml
   - 03-redis.yaml
-  - 04-migrate-job.yaml
   - 05-deployment.yaml
   - 06-service.yaml
   - 07-hpa.yaml
