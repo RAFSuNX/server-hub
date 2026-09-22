@@ -26,6 +26,12 @@ spec:
           image: ghcr.io/ai-avatar-bangladesh-ltd/expertsschool:placeholder
           ports:
             - containerPort: 3000
+          env:
+            # Some cluster nodes have broken IPv6 egress; Neon/Firebase/etc.
+            # publish AAAA records, so Node's Happy-Eyeballs opens a blackholed
+            # IPv6 socket and hangs. Force IPv4-only for all outbound.
+            - name: NODE_OPTIONS
+              value: "--dns-result-order=ipv4first --no-network-family-autoselection"
           envFrom:
             - configMapRef:
                 name: expertsschool-config
