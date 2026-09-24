@@ -1,0 +1,12 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: expertsschool
+  namespace: expertsschool
+spec:
+  # Voluntary disruptions (node drains, upgrades) may never take the service to
+  # zero - keep at least 2 pods serving at all times.
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: expertsschool

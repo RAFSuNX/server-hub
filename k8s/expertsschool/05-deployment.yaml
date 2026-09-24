@@ -18,7 +18,7 @@ spec:
       labels:
         app: expertsschool
     spec:
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 45
       imagePullSecrets:
         - name: ghcr-secret
       containers:
@@ -40,20 +40,40 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["sleep", "5"]
-          # readiness proves deps (DB/Valkey) reachable; liveness just checks the process
+                # Sleep so this pod is pulled from the Service endpoints BEFORE
+                # the process stops -> in-flight requests drain instead of being
+                # cut (the "aborted" errors), and clients aren't bounced onto a
+                # dying pod during a rollout.
+                command: ["sleep", "8"]
+          # startup gates liveness+readiness during boot, so a cold pod still
+          # warming up (DB connect, first render) is never killed mid-startup.
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            periodSeconds: 3
+            failureThreshold: 30 # up to ~90s to come up before liveness bites
+            timeoutSeconds: 5
+          # readiness = "can it serve?" (deps reachable). On fail the pod is only
+          # removed from the load balancer, NOT killed. 5s timeout so a 1-2s DB
+          # blip doesn't yank every pod out at once.
           readinessProbe:
             httpGet:
               path: /api/health
               port: 3000
-            initialDelaySeconds: 5
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          # liveness = "is the process alive?" Hits /api/live, which touches NO
+          # dependencies, so a slow DB/Redis can never get a pod KILLED (which
+          # was causing the restart cascades).
           livenessProbe:
             httpGet:
-              path: /
+              path: /api/live
               port: 3000
-            initialDelaySeconds: 15
-            periodSeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
           resources:
             requests:
               cpu: "200m"

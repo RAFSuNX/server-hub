@@ -9,9 +9,13 @@ resources:
   - 06-service.yaml
   - 07-hpa.yaml
   - 08-cloudflared.yaml
+  - 09-pdb.yaml
 
+# Pinned to an immutable per-release tag (not :latest): Flux rolls out this
+# exact image itself, so there's no manual pod recycling and no fighting Flux.
+# Bump both to the new sha-<commit> after each build to deploy.
 images:
   - name: ghcr.io/ai-avatar-bangladesh-ltd/expertsschool
-    newTag: latest
+    newTag: sha-99dd16b56f496951c95b04a1a8344fa043f9e1b3
   - name: ghcr.io/ai-avatar-bangladesh-ltd/expertsschool-migrate
-    newTag: latest
+    newTag: sha-99dd16b56f496951c95b04a1a8344fa043f9e1b3

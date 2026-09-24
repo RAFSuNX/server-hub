@@ -39,6 +39,13 @@ spec:
             - "yes"
             - "--dir"
             - "/data"
+            # Bound memory + evict LRU under pressure (cache is derived data) so
+            # growth never OOM-kills the pod (limit is 512Mi). Leaves headroom
+            # for AOF buffers / copy-on-write.
+            - "--maxmemory"
+            - "384mb"
+            - "--maxmemory-policy"
+            - "allkeys-lru"
           ports:
             - containerPort: 6379
           volumeMounts:
