@@ -18,6 +18,14 @@ spec:
       containers:
         - name: postgres
           image: postgres:17-alpine
+          command:
+            - postgres
+            - -c
+            - wal_level=logical
+            - -c
+            - max_replication_slots=5
+            - -c
+            - max_wal_senders=5
           env:
             - name: POSTGRES_DB
               value: amanat
