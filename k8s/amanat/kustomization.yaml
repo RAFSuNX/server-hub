@@ -12,6 +12,6 @@ resources:
 
 images:
   - name: ghcr.io/rafsunx/amanat
-    newTag: sha-6ed9b9b51d7eaa6b1e62641adbdb080b8b815e2b
+    newTag: sha-750b76a32c754f024ed7965945a5b1507a9f5128
   - name: ghcr.io/rafsunx/amanat-migrate
-    newTag: sha-6ed9b9b51d7eaa6b1e62641adbdb080b8b815e2b
+    newTag: sha-750b76a32c754f024ed7965945a5b1507a9f5128
