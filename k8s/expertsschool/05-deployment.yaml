@@ -21,6 +21,27 @@ spec:
       terminationGracePeriodSeconds: 45
       imagePullSecrets:
         - name: ghcr-secret
+      initContainers:
+        # Runs `drizzle-kit migrate` + applies rls.sql as the OWNER role before the app starts.
+        # Guarantees schema is up-to-date before any app pod accepts traffic.
+        # Uses DATABASE_OWNER_URL from expertsschool-secrets (synced from Doppler).
+        # NETWORK NOTE: requires direct Neon endpoint (non-pooler) to be reachable from the cluster.
+        # If the first rollout hangs here, verify egress to ep-*.neon.tech:5432 from a pod.
+        - name: migrate
+          image: ghcr.io/ai-avatar-bangladesh-ltd/expertsschool-migrate:placeholder
+          env:
+            - name: NODE_OPTIONS
+              value: "--dns-result-order=ipv4first --no-network-family-autoselection"
+          envFrom:
+            - secretRef:
+                name: expertsschool-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
       containers:
         - name: expertsschool
           image: ghcr.io/ai-avatar-bangladesh-ltd/expertsschool:placeholder
