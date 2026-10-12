@@ -29,6 +29,8 @@ spec:
             # dashboard runs as a supervised s6-rc service in the same container
             - name: HERMES_DASHBOARD
               value: "1"
+            - name: TZ
+              value: "Asia/Dhaka"
           ports:
             - name: gateway
               containerPort: 8642
