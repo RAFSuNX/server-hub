@@ -131,18 +131,6 @@ spec:
     kind: GitRepository
     name: default
 ---
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: blueberrix
-  namespace: default
-spec:
-  interval: 5m
-  path: ./k8s/blue_berrix
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: default
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
