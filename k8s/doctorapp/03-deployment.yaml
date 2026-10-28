@@ -17,6 +17,9 @@ spec:
     metadata:
       labels:
         app: doctorapp
+      annotations:
+        # bump to force a rolling restart when config (env) changes
+        configVersion: "2"
     spec:
       imagePullSecrets:
         - name: ghcr-secret
