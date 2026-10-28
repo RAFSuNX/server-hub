@@ -10,5 +10,5 @@ data:
   # Kept on "development" so the OTP is shown on the verify page (SMS is still a
   # stub) - lets you log in to the test deploy without a real SMS gateway.
   ENVIRONMENT: "development"
-  BASE_URL: "http://doctorapp.local"
-  CLINIC_PORTAL_URL: "https://clinic.aiavatar.pp.ua/login"
+  BASE_URL: "https://docapp.aiavatar.pp.ua"
+  CLINIC_PORTAL_URL: "https://clinic.aiavatar.pp.ua"
