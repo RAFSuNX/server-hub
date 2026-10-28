@@ -6,8 +6,12 @@ resources:
   - 02-configmap.yaml
   - 03-deployment.yaml
   - 04-service.yaml
+  - 05-clinic-deployment.yaml
+  - 06-clinic-service.yaml
 
 # Bump newTag after each build to roll out that image.
 images:
   - name: ghcr.io/ai-avatar-bangladesh-ltd/doctorapp
+    newTag: latest
+  - name: ghcr.io/ai-avatar-bangladesh-ltd/doctorapp-clinic
     newTag: latest
