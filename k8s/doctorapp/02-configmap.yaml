@@ -11,4 +11,4 @@ data:
   # stub) - lets you log in to the test deploy without a real SMS gateway.
   ENVIRONMENT: "development"
   BASE_URL: "http://doctorapp.local"
-  CLINIC_PORTAL_URL: "http://doctorapp.local:5173"
+  CLINIC_PORTAL_URL: "https://clinic.aiavatar.pp.ua/login"
