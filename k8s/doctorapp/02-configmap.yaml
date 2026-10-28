@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: doctorapp-config
+  namespace: doctorapp
+data:
+  # Test config only - no secrets. Third-party integrations are all mocked.
+  DATABASE_URL: "postgresql+asyncpg://postgres:doctorapp@doctorapp-db:5432/doctorapp"
+  SECRET_KEY: "test-insecure-not-for-prod"
+  # Kept on "development" so the OTP is shown on the verify page (SMS is still a
+  # stub) - lets you log in to the test deploy without a real SMS gateway.
+  ENVIRONMENT: "development"
+  BASE_URL: "http://doctorapp.local"
+  CLINIC_PORTAL_URL: "http://doctorapp.local:5173"

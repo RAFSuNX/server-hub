@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: doctorapp
+  namespace: doctorapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: doctorapp
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: doctorapp
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      initContainers:
+        # Apply migrations (creates schema + app_user RLS role), then seed demo data.
+        # Both seed scripts are idempotent, so this is safe on every rollout/restart.
+        - name: migrate-and-seed
+          image: ghcr.io/ai-avatar-bangladesh-ltd/doctorapp:test
+          imagePullPolicy: Always
+          command:
+            - sh
+            - -c
+            - "alembic upgrade head && python scripts/seed_dev.py && python scripts/seed_demo.py"
+          envFrom:
+            - configMapRef:
+                name: doctorapp-config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+      containers:
+        - name: doctorapp
+          image: ghcr.io/ai-avatar-bangladesh-ltd/doctorapp:test
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: doctorapp-config
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            periodSeconds: 3
+            failureThreshold: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/live
+              port: 8000
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi

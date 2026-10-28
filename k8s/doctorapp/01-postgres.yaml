@@ -1,0 +1,69 @@
+---
+# In-cluster Postgres for the DoctorAPP TEST deploy only.
+# Credentials are intentionally in-manifest (test, non-sensitive). Swap for a
+# managed DB + Doppler ExternalSecret when this goes to real staging/prod.
+apiVersion: v1
+kind: Service
+metadata:
+  name: doctorapp-db
+  namespace: doctorapp
+spec:
+  selector:
+    app: doctorapp-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: doctorapp-db
+  namespace: doctorapp
+spec:
+  serviceName: doctorapp-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: doctorapp-db
+  template:
+    metadata:
+      labels:
+        app: doctorapp-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: doctorapp
+            - name: POSTGRES_DB
+              value: doctorapp
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres"]
+            periodSeconds: 5
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
