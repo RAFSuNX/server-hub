@@ -16,6 +16,6 @@ resources:
 # Bump both to the new sha-<commit> after each build to deploy.
 images:
   - name: ghcr.io/ai-avatar-bangladesh-ltd/expertsschool
-    newTag: sha-3eb4736ba7d0056b10ddbe5194e3f9367d268b85
+    newTag: sha-3ed4708ffc6dffafd4cffd012ceff6d5b342fcf6
   - name: ghcr.io/ai-avatar-bangladesh-ltd/expertsschool-migrate
-    newTag: sha-3eb4736ba7d0056b10ddbe5194e3f9367d268b85
+    newTag: sha-3ed4708ffc6dffafd4cffd012ceff6d5b342fcf6
