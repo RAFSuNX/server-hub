@@ -23,6 +23,7 @@ spec:
       containers:
         - name: hermes
           image: nousresearch/hermes-agent:latest
+          imagePullPolicy: Always
           # gateway mode: persistent daemon serving chat platforms + OpenAI-compatible API
           args: ["gateway", "run"]
           env:
