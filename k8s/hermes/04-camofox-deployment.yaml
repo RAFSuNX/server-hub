@@ -33,7 +33,10 @@ spec:
               value: "0.0.0.0"
             # cap concurrent browser sessions (default 50 is huge for one agent)
             - name: MAX_SESSIONS
-              value: "8"
+              value: "4"
+            # Cap Node.js heap to prevent OOM crashes (was hitting heap limit with 8 sessions)
+            - name: NODE_OPTIONS
+              value: "--max-old-space-size=2048"
           resources:
             requests:
               cpu: "500m"
@@ -42,6 +45,13 @@ spec:
               # Firefox + multiple sessions is memory-hungry
               cpu: "4000m"
               memory: "4Gi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9377
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            failureThreshold: 3
           volumeMounts:
             # Firefox needs a larger /dev/shm than the 64Mi k8s default
             - name: dshm
@@ -50,4 +60,4 @@ spec:
         - name: dshm
           emptyDir:
             medium: Memory
-            sizeLimit: 1Gi
+            sizeLimit: 2Gi
