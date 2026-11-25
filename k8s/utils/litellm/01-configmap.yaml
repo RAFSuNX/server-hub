@@ -8,7 +8,9 @@ data:
   config.yaml: |
     # agentrouter: 3 keys load-balanced per model (usage-based-routing-v2).
     # Anthropic SDK stainless headers required - returns 401 without them.
-    # Models confirmed available: claude-opus-4-8, claude-opus-5, deepseek-v4-flash, gpt-6-astra
+    # Models confirmed available 2026-11-25: claude-opus-4-8, claude-opus-5,
+    #   deepseek-v4-flash, gpt-6-astra (unlimited 24/7), gpt-6.1-sol (recommended, low multiplier)
+    # claude-opus-5.5 temporarily offline on agentrouter per their notice.
     model_list:
       - model_name: agentrouter/claude-opus-4-8
         litellm_params:
@@ -94,7 +96,27 @@ data:
           api_key: os.environ/AGENTROUTER_API_KEY_3
           extra_headers: *agentrouter_headers
 
-      # bynara router (OpenAI-compatible /v1), models confirmed available 2026-09-28
+      # gpt-6.1-sol: recommended by agentrouter — unlimited, low multiplier (added 2026-11-25)
+      - model_name: agentrouter/gpt-6.1-sol
+        litellm_params:
+          model: openai/gpt-6.1-sol
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_1
+          extra_headers: *agentrouter_headers
+      - model_name: agentrouter/gpt-6.1-sol
+        litellm_params:
+          model: openai/gpt-6.1-sol
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_2
+          extra_headers: *agentrouter_headers
+      - model_name: agentrouter/gpt-6.1-sol
+        litellm_params:
+          model: openai/gpt-6.1-sol
+          api_base: https://agentrouter.org
+          api_key: os.environ/AGENTROUTER_API_KEY_3
+          extra_headers: *agentrouter_headers
+
+      # bynara router — synced to live models 2026-11-25 (47 models)
       - model_name: bynara/agnes-2.5-flash
         litellm_params:
           model: openai/agnes-2.5-flash
@@ -105,29 +127,24 @@ data:
           model: openai/agnes-3-flash
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/agnes-video-v2.0
-        litellm_params:
-          model: openai/agnes-video-v2.0
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/claude-fable-5
-        litellm_params:
-          model: openai/claude-fable-5
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/claude-fable-5.1
         litellm_params:
           model: openai/claude-fable-5.1
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
+      - model_name: bynara/claude-fable-5.2
+        litellm_params:
+          model: openai/claude-fable-5.2
+          api_base: https://router.bynara.id/v1
+          api_key: os.environ/BYNARA_API_KEY
+      - model_name: bynara/claude-haiku-5.5
+        litellm_params:
+          model: openai/claude-haiku-5.5
+          api_base: https://router.bynara.id/v1
+          api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/claude-opus-4.8
         litellm_params:
           model: openai/claude-opus-4.8
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/claude-opus-5
-        litellm_params:
-          model: openai/claude-opus-5
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/claude-opus-5.5
@@ -140,29 +157,9 @@ data:
           model: openai/claude-sonnet-5
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/deepseek-v4-flash
+      - model_name: bynara/claude-sonnet-5.5
         litellm_params:
-          model: openai/deepseek-v4-flash
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/deepseek-v4-flash-alibaba
-        litellm_params:
-          model: openai/deepseek-v4-flash-alibaba
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/deepseek-v4-flash-vision-exp
-        litellm_params:
-          model: openai/deepseek-v4-flash-vision-exp
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/deepseek-v4-pro
-        litellm_params:
-          model: openai/deepseek-v4-pro
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/deepseek-v4-pro-alibaba
-        litellm_params:
-          model: openai/deepseek-v4-pro-alibaba
+          model: openai/claude-sonnet-5.5
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/deepseek-v4.1-flash
@@ -170,19 +167,19 @@ data:
           model: openai/deepseek-v4.1-flash
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/gemini-3.1-pro-high
+      - model_name: bynara/deepseek-v4.1-flash-abliterated
         litellm_params:
-          model: openai/gemini-3.1-pro-high
+          model: openai/deepseek-v4.1-flash-abliterated
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/gemini-3.8-flash-high
+      - model_name: bynara/deepseek-v4.1-flash-fast
         litellm_params:
-          model: openai/gemini-3.8-flash-high
+          model: openai/deepseek-v4.1-flash-fast
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/glm-5.2
+      - model_name: bynara/drex-max-v1.1
         litellm_params:
-          model: openai/glm-5.2
+          model: openai/drex-max-v1.1
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/glm-5.3
@@ -190,9 +187,19 @@ data:
           model: openai/glm-5.3
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
+      - model_name: bynara/glm-5.3-abliterated
+        litellm_params:
+          model: openai/glm-5.3-abliterated
+          api_base: https://router.bynara.id/v1
+          api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/glm-5.3-flash
         litellm_params:
           model: openai/glm-5.3-flash
+          api_base: https://router.bynara.id/v1
+          api_key: os.environ/BYNARA_API_KEY
+      - model_name: bynara/glm-5.3-flash-abliterated
+        litellm_params:
+          model: openai/glm-5.3-flash-abliterated
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/gpt-5.6-luna
@@ -225,9 +232,34 @@ data:
           model: openai/gpt-6-sol
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/jev
+      - model_name: bynara/gpt-6.1-sol
         litellm_params:
-          model: openai/jev
+          model: openai/gpt-6.1-sol
+          api_base: https://router.bynara.id/v1
+          api_key: os.environ/BYNARA_API_KEY
+      - model_name: bynara/gpt-6.1-terra
+        litellm_params:
+          model: openai/gpt-6.1-terra
+          api_base: https://router.bynara.id/v1
+          api_key: os.environ/BYNARA_API_KEY
+      - model_name: bynara/gpt-6.2-astra
+        litellm_params:
+          model: openai/gpt-6.2-astra
+          api_base: https://router.bynara.id/v1
+          api_key: os.environ/BYNARA_API_KEY
+      - model_name: bynara/gpt-6.2-sol
+        litellm_params:
+          model: openai/gpt-6.2-sol
+          api_base: https://router.bynara.id/v1
+          api_key: os.environ/BYNARA_API_KEY
+      - model_name: bynara/grok-4.7
+        litellm_params:
+          model: openai/grok-4.7
+          api_base: https://router.bynara.id/v1
+          api_key: os.environ/BYNARA_API_KEY
+      - model_name: bynara/jev-1.14.0
+        litellm_params:
+          model: openai/jev-1.14.0
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/kimi-k2.7-code
@@ -235,59 +267,19 @@ data:
           model: openai/kimi-k2.7-code
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/kimi-k2.8-preview
-        litellm_params:
-          model: openai/kimi-k2.8-preview
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/kimi-k3
         litellm_params:
           model: openai/kimi-k3
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/laguna-s-2.1
+      - model_name: bynara/kimi-k3.1-pro
         litellm_params:
-          model: openai/laguna-s-2.1
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/ling-3.0-flash-fin-free
-        litellm_params:
-          model: openai/ling-3.0-flash-fin-free
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/ling-3.0-flash-sante-free
-        litellm_params:
-          model: openai/ling-3.0-flash-sante-free
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/longcat-2.5
-        litellm_params:
-          model: openai/longcat-2.5
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/mimo-v2.5
-        litellm_params:
-          model: openai/mimo-v2.5
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/mimo-v2.5-free
-        litellm_params:
-          model: openai/mimo-v2.5-free
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/mimo-v2.5-pro
-        litellm_params:
-          model: openai/mimo-v2.5-pro
+          model: openai/kimi-k3.1-pro
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/mimo-v2.6-flash
         litellm_params:
           model: openai/mimo-v2.6-flash
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/mimo-v2.6-flash-free
-        litellm_params:
-          model: openai/mimo-v2.6-flash-free
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/mimo-v2.6-pro
@@ -298,6 +290,11 @@ data:
       - model_name: bynara/minimax-m3
         litellm_params:
           model: openai/minimax-m3
+          api_base: https://router.bynara.id/v1
+          api_key: os.environ/BYNARA_API_KEY
+      - model_name: bynara/minimax-m3.1-flash
+        litellm_params:
+          model: openai/minimax-m3.1-flash
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/muse-spark-1.2
@@ -320,24 +317,9 @@ data:
           model: openai/muse-spark-1.3-contributor
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/muse-spark-1.3-contributor-free
+      - model_name: bynara/muse-wonder
         litellm_params:
-          model: openai/muse-spark-1.3-contributor-free
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/nemotron-3-super-free
-        litellm_params:
-          model: openai/nemotron-3-super-free
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/nemotron-3-ultra-free
-        litellm_params:
-          model: openai/nemotron-3-ultra-free
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/nemotron-3.5-lightning-free
-        litellm_params:
-          model: openai/nemotron-3.5-lightning-free
+          model: openai/muse-wonder
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
       - model_name: bynara/qwen3.8-27b
@@ -355,29 +337,19 @@ data:
           model: openai/qwen3.8-max
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/qwen3.8-max-alibaba
+      - model_name: bynara/qwen4-max
         litellm_params:
-          model: openai/qwen3.8-max-alibaba
+          model: openai/qwen4-max
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/space-bunny-alpha
+      - model_name: bynara/deepseek-v4-flash
         litellm_params:
-          model: openai/space-bunny-alpha
+          model: openai/deepseek-v4-flash
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/space-bunny-alpha-bynara
+      - model_name: bynara/deepseek-v4-pro
         litellm_params:
-          model: openai/space-bunny-alpha-bynara
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/step-5-preview
-        litellm_params:
-          model: openai/step-5-preview
-          api_base: https://router.bynara.id/v1
-          api_key: os.environ/BYNARA_API_KEY
-      - model_name: bynara/stepfun-3.7-flash
-        litellm_params:
-          model: openai/stepfun-3.7-flash
+          model: openai/deepseek-v4-pro
           api_base: https://router.bynara.id/v1
           api_key: os.environ/BYNARA_API_KEY
 
@@ -386,13 +358,10 @@ data:
       disable_admin_ui: true
 
     router_settings:
-      # Rate-limit-aware routing across the 3 separate agentrouter accounts.
-      # usage-based-routing-v2 prefers the key with the most available quota and
-      # skips keys currently on cooldown, so a rate-limited/starved account doesn't
-      # take down the request — the next account picks it up.
+      # usage-based-routing-v2: prefers key with most quota, skips rate-limited keys
       routing_strategy: usage-based-routing-v2
-      cooldown_time: 60        # seconds to cool down a key after a failure/rate-limit
-      allowed_fails: 3         # park a key after 3 fails in the cooldown window
+      cooldown_time: 60
+      allowed_fails: 3
       enable_pre_call_checks: true
 
     litellm_settings:
