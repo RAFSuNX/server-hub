@@ -11,12 +11,13 @@ resources:
   - 08-cloudflared.yaml
   - 09-pdb.yaml
   - 10-postgres.yaml
+  - 11-db-sync.yaml
 
 # Pinned to an immutable per-release tag (not :latest): Flux rolls out this
 # exact image itself, so there's no manual pod recycling and no fighting Flux.
 # Bump both to the new sha-<commit> after each build to deploy.
 images:
   - name: ghcr.io/ai-avatar-bangladesh-ltd/expertsschool
-    newTag: sha-2c2b27db5c8d3f91955ddd709e8b84d0bbcefc0d
+    newTag: sha-6bd03779f9e2d611de8bb68e5e719706d433c015
   - name: ghcr.io/ai-avatar-bangladesh-ltd/expertsschool-migrate
-    newTag: sha-2c2b27db5c8d3f91955ddd709e8b84d0bbcefc0d
+    newTag: sha-6bd03779f9e2d611de8bb68e5e719706d433c015
